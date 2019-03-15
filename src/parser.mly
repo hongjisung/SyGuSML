@@ -9,7 +9,6 @@
 %token <string> STRINGCONST
 %token <string> SYMBOL
 
-
 %token CHECKSYNTH
 %token CONSTANT
 %token CONSTRAINT

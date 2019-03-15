@@ -1,5 +1,10 @@
-ocamlyacc parser.mly  
-ocamllex lexer.mll  
-ocamlc parser.mli parser.ml -o parser  
-ocamlc lexer.ml -o lexer  
-ocaml test.ml
+# synKU
+
+## Run
+
+```Bash
+$ git clone https://github.com/hongjisung/synKU && cd synKU
+$ make install-deps
+$ make
+$ ./main.native <inputfile>
+```
