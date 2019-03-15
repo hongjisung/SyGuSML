@@ -40,18 +40,13 @@
 
 %token EOF
 
-%start problem
-%type <int list> problem
+%start sygus
+%type <Ast.cmd list> sygus
 %%
 
-problem:
-  | sygus EOF {($1)}
-;
-
 sygus:
-  | cmd {[]}
-  | cmd sygus {[]}
-  | /*epsilon*/ {[]}
+  | cmd sygus {[CheckSynth]}
+  | EOF {[]}
 ;
 
 literal:
@@ -80,7 +75,7 @@ index:
 
 sort:
   | identifier {[$1]}
-  | LPAREN identifier sorts RPAREN {$2::$3} 
+  | LPAREN identifier sorts RPAREN {$2::$3}
 ;
 
 sorts:

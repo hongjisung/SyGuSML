@@ -1,11 +1,11 @@
 let parse_from_channel channel =
   let lexbuf = Lexing.from_channel channel in
-  let ast = Parser.problem Lexer.start lexbuf in
+  let ast = Parser.sygus Lexer.start lexbuf in
   ast
 
 let parse s =
   let lexbuf = Lexing.from_string s in
-  let ast = Parser.problem Lexer.start lexbuf in
+  let ast = Parser.sygus Lexer.start lexbuf in
   ast
 
 let rec ast_to_string exprs =

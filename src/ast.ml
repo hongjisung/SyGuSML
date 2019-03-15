@@ -1,0 +1,2 @@
+type cmd =
+  | CheckSynth
