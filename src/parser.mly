@@ -45,12 +45,12 @@
 %%
 
 sygus:
-  | cmd sygus {[CheckSynth]}
+    cmd sygus {[CheckSynth]}
   | EOF {[]}
 ;
 
 literal:
-  | NUMERAL {($1)}
+    NUMERAL {($1)}
   | DECIMAL {($1)}
   | BOOLCONST {($1)}
   | HEXCONST {($1)}
@@ -59,32 +59,32 @@ literal:
 ;
 
 identifier:
-  | SYMBOL {($1)}
+    SYMBOL {($1)}
   | LPAREN UNDERBAR SYMBOL indexes RPAREN {($3)}
 ;
 
 indexes:
-  | index {[$1]}
+    index {[$1]}
   | index indexes {$1::$2}
 ;
 
 index:
-  | NUMERAL {($1)}
+    NUMERAL {($1)}
   | SYMBOL {($1)}
 ;
 
 sort:
-  | identifier {[$1]}
+    identifier {[$1]}
   | LPAREN identifier sorts RPAREN {$2::$3}
 ;
 
 sorts:
-  | sort {$1}
+    sort {$1}
   | sort sorts {$1 @ $2}
 ;
 
 term:
-  | identifier {}
+    identifier {}
   | literal {}
   | LPAREN identifier terms RPAREN {}
   | LPAREN EXISTS LPAREN sortedvars RPAREN term RPAREN {}
@@ -93,51 +93,51 @@ term:
 ;
 
 terms:
-  | term terms {}
+    term terms {}
   | /*epsilon*/ {}
 ;
 
 bfterm:
-  | identifier {}
+    identifier {}
   | literal {}
   | LPAREN identifier bfterms RPAREN {}
 ;
 
 bfterms:
-  | bfterm {}
+    bfterm {}
   | bfterm bfterms {}
 ;
 
 sortedvar:
-  | LPAREN SYMBOL sort RPAREN {}
+    LPAREN SYMBOL sort RPAREN {}
 ;
 
 sortedvars:
-  | sortedvar sortedvarstar {}
+    sortedvar sortedvarstar {}
 ;
 
 sortedvarstar:
-  | sortedvar sortedvarstar {}
+    sortedvar sortedvarstar {}
   | /*epsilon*/ {}
 ;
 
 varbinding:
-  | LPAREN SYMBOL term RPAREN {}
+    LPAREN SYMBOL term RPAREN {}
 ;
 
 varbindings:
-  | varbinding {}
+    varbinding {}
   | varbinding varbindings {}
 ;
 
 feature:
-  | GRAMMARS {}
+    GRAMMARS {}
   | FWDDECLS {}
   | RECURSION {}
 ;
 
 cmd:
-  | LPAREN CHECKSYNTH RPAREN {} 
+    LPAREN CHECKSYNTH RPAREN {} 
   | LPAREN CONSTRAINT term RPAREN {}
   | LPAREN DECLAREVAR SYMBOL sort RPAREN {}
   | LPAREN INVCONSTRAINT SYMBOL SYMBOL SYMBOL SYMBOL RPAREN {}
@@ -148,7 +148,7 @@ cmd:
 ;
 
 smtcmd:
-  | LPAREN DECLAREDATATYPE SYMBOL dtdec RPAREN {}
+    LPAREN DECLAREDATATYPE SYMBOL dtdec RPAREN {}
   | LPAREN DECLAREDATATYPES LPAREN sortdecldtdecnplus RPAREN RPAREN {}
   | LPAREN DECLARESORT SYMBOL NUMERAL RPAREN {}
   | LPAREN DEFINEFUN SYMBOL LPAREN sortedvarstar RPAREN sort term RPAREN {}
@@ -158,48 +158,48 @@ smtcmd:
 ;
 
 sortdecldtdecnplus:
-  | sorteddecl RPAREN LPAREN dtdec {}
+    sorteddecl RPAREN LPAREN dtdec {}
   | sorteddecl sortdecldtdecnplus dtdec {} 
 ;
 
 sorteddecl:
-  | LPAREN SYMBOL NUMERAL RPAREN {}
+    LPAREN SYMBOL NUMERAL RPAREN {}
 ;
 
 dtdec:
-  | LPAREN dtconsdecs RPAREN {}
+    LPAREN dtconsdecs RPAREN {}
 ;
 
 dtconsdec:
-  | LPAREN SYMBOL sortedvarstar RPAREN {}
+    LPAREN SYMBOL sortedvarstar RPAREN {}
 ;
 
 dtconsdecs:
-  | dtconsdec dtconsdecs {}
+    dtconsdec dtconsdecs {}
   | /*epsilon*/ {}
 ;
 
 grammerdef:
-  | sortedvar RPAREN LPAREN groupedrulelist {}
+    sortedvar RPAREN LPAREN groupedrulelist {}
   | sortedvar grammerdef groupedrulelist {}
 ;
 
 isgrammerdef:
-  | LPAREN grammerdef RPAREN {}
+    LPAREN grammerdef RPAREN {}
   | /*epsilon*/ {}
 ;
 
 groupedrulelist:
-  | LPAREN SYMBOL sort LPAREN gterms RPAREN RPAREN {}
+    LPAREN SYMBOL sort LPAREN gterms RPAREN RPAREN {}
 ;
 
 gterm:
-  | LPAREN CONSTANT sort RPAREN {}
+    LPAREN CONSTANT sort RPAREN {}
   | LPAREN VARIABLE sort RPAREN {}
   | bfterm {}
 ;
 
 gterms:
-  | gterm {}
+    gterm {}
   | gterm gterms {}
 ;
