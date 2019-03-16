@@ -39,6 +39,7 @@ let word = ['a'-'z' 'A'-'Z' '_' '+' '-' '*' '&' '|' '!' '~' '<' '>' '=' '/' '%' 
 
 rule start = parse
   | blank { start lexbuf }
+  | ";" { comment lexbuf }
   | "(" {LPAREN}
   | ")" {RPAREN}
   | ":" {COLON}
@@ -59,3 +60,8 @@ rule start = parse
           }
   | eof {EOF}
   | _ {raise LexicalError}
+
+and comment = parse
+  | '\n' { start lexbuf }
+  | eof {EOF}
+  | _ { comment lexbuf }

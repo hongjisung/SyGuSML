@@ -29,6 +29,14 @@ let test_result =
   test_parse 0 [
     ("(check-synth)",
      [CheckSynth]);
+    ("(check-synth) ; Comment test~~",
+     [CheckSynth]);
+    ("(check-synth
+      ; Comment!!!
+      )",
+     [CheckSynth]);
+    (";(check-synth)",
+     []);
     ("(set-logic LIA)
       (synth-fun f ((x Int) (y Int)) Int
         ((I Int) (Ic List))
