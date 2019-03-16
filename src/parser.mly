@@ -86,15 +86,15 @@ sorts:
 term:
   | identifier {}
   | literal {}
-  | LPAREN identifier terms RPAREN {} 
-  | LPAREN EXISTS sortedvars term RPAREN {}
-  | LPAREN FORALL sortedvars term RPAREN {}
-  | LPAREN LET varbindings term RPAREN {}
+  | LPAREN identifier terms RPAREN {}
+  | LPAREN EXISTS LPAREN sortedvars RPAREN term RPAREN {}
+  | LPAREN FORALL LPAREN sortedvars RPAREN term RPAREN {}
+  | LPAREN LET LPAREN varbindings RPAREN term RPAREN {}
 ;
 
 terms:
-  | term  {}
   | term terms {}
+  | /*epsilon*/ {}
 ;
 
 bfterm:
@@ -113,12 +113,11 @@ sortedvar:
 ;
 
 sortedvars:
-  | sortedvar {}
-  | sortedvar sortedvars {}
+  | sortedvar sortedvarstar {}
 ;
 
 sortedvarstar:
-  | sortedvars {}
+  | sortedvar sortedvarstar {}
   | /*epsilon*/ {}
 ;
 
@@ -176,8 +175,8 @@ dtconsdec:
 ;
 
 dtconsdecs:
-  | dtconsdec {}
   | dtconsdec dtconsdecs {}
+  | /*epsilon*/ {}
 ;
 
 grammerdef:
