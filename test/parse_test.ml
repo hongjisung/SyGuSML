@@ -39,7 +39,7 @@ let test_result =
      []);
     ("(set-logic LIA)
       (synth-fun f ((x Int) (y Int)) Int
-        ((I Int) (Ic List))
+        ((I Int) (Ic Int))
         ((I Int (0 1 x y
                 (+ I I)
                 (* Ic I)))
