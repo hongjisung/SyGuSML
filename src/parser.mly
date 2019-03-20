@@ -52,37 +52,37 @@ sygus:
 ;
 
 literal:
-    NUMERAL {($1)}
-  | DECIMAL {($1)}
-  | BOOLCONST {($1)}
-  | HEXCONST {($1)}
-  | BINCONST {($1)}
-  | STRINGCONST {($1)}
+    NUMERAL { Numeral }
+  | DECIMAL { Decimal }
+  | BOOLCONST { BoolConst }
+  | HEXCONST { HexConst }
+  | BINCONST { BinConst }
+  | STRINGCONST { StringConst }
 ;
 
 identifier:
-    SYMBOL {($1)}
-  | LPAREN UNDERBAR SYMBOL indexes RPAREN {($3)}
+    SYMBOL { SymbolIdentifier }
+  | LPAREN UNDERBAR SYMBOL indexes RPAREN { UnderbarIdentifier }
 ;
 
 indexes:
-    index {[$1]}
-  | index indexes {$1::$2}
+    index { [$1] }
+  | index indexes { $1::$2 }
 ;
 
 index:
-    NUMERAL {($1)}
-  | SYMBOL {($1)}
+    NUMERAL { NumeralIndex }
+  | SYMBOL { SymbolIndex }
 ;
 
 sort:
-    identifier {[$1]}
-  | LPAREN identifier sorts RPAREN {$2::$3}
+    identifier { Sort }
+  | LPAREN identifier sorts RPAREN { SortWithSorts }
 ;
 
 sorts:
-    sort {$1}
-  | sort sorts {$1 @ $2}
+    sort { [$1] }
+  | sort sorts { $1::$2 }
 ;
 
 term:
@@ -100,42 +100,43 @@ terms:
 ;
 
 bfterm:
-    identifier {}
-  | literal {}
-  | LPAREN identifier bfterms RPAREN {}
+    identifier { BfIdentifier }
+  | literal { BfLiteral }
+  | LPAREN identifier bfterms RPAREN { BfIdentifierTerms }
 ;
 
 bfterms:
-    bfterm {}
-  | bfterm bfterms {}
+    bfterm { [$1] }
+  | bfterm bfterms { $1::$2 }
 ;
 
 sortedvar:
-    LPAREN SYMBOL sort RPAREN {}
+    LPAREN SYMBOL sort RPAREN { SortedVar }
 ;
 
 sortedvars:
-    sortedvar sortedvarstar {}
+    sortedvar { [$1] }
+  | sortedvar sortedvars { $1::$2 }
 ;
 
 sortedvarstar:
-    sortedvar sortedvarstar {}
-  | /*epsilon*/ {}
+    sortedvar sortedvarstar { $1::$2 }
+  | /*epsilon*/ { [] }
 ;
 
 varbinding:
-    LPAREN SYMBOL term RPAREN {}
+    LPAREN SYMBOL term RPAREN { VarBinding }
 ;
 
 varbindings:
-    varbinding {}
-  | varbinding varbindings {}
+    varbinding { [$1] }
+  | varbinding varbindings { $1::$2 }
 ;
 
 feature:
-    GRAMMARS {}
-  | FWDDECLS {}
-  | RECURSION {}
+    GRAMMARS { Grammers }
+  | FWDDECLS { FwdDecls }
+  | RECURSION { Recursion }
 ;
 
 cmd:
@@ -151,7 +152,7 @@ cmd:
 
 smtcmd:
     LPAREN DECLAREDATATYPE SYMBOL dtdec RPAREN { DeclareDatatype }
-  | LPAREN DECLAREDATATYPES LPAREN sortdecldtdecnplus RPAREN RPAREN { DeclareDatatypes }
+  | LPAREN DECLAREDATATYPES LPAREN sortdecls RPAREN LPAREN dtdecs RPAREN RPAREN { DeclareDatatypes }
   | LPAREN DECLARESORT SYMBOL NUMERAL RPAREN { DeclareSort }
   | LPAREN DEFINEFUN SYMBOL LPAREN sortedvarstar RPAREN sort term RPAREN { DefineFun }
   | LPAREN DEFINESORT SYMBOL sort RPAREN { DefineSort }
@@ -159,49 +160,57 @@ smtcmd:
   | LPAREN SETOPTION COLON SYMBOL literal RPAREN { SetOption }
 ;
 
-sortdecldtdecnplus:
-    sorteddecl RPAREN LPAREN dtdec {}
-  | sorteddecl sortdecldtdecnplus dtdec {} 
+sortdecl:
+    LPAREN SYMBOL NUMERAL RPAREN { SortDeclaration }
 ;
 
-sorteddecl:
-    LPAREN SYMBOL NUMERAL RPAREN {}
+sortdecls:
+    sortdecl { [$1] }
+  | sortdecl sortdecls { $1::$2 }
 ;
 
 dtdec:
-    LPAREN dtconsdecs RPAREN {}
+    LPAREN dtconsdecs RPAREN { DTDec }
+;
+
+dtdecs:
+    dtdec { [$1] }
+  | dtdec dtdecs { $1::$2 }
 ;
 
 dtconsdec:
-    LPAREN SYMBOL sortedvarstar RPAREN {}
+    LPAREN SYMBOL sortedvarstar RPAREN { DTConsDec }
 ;
 
 dtconsdecs:
-    dtconsdec dtconsdecs {}
-  | /*epsilon*/ {}
+    dtconsdec { [$1] }
+  | dtconsdec dtconsdecs { $1::$2 }
 ;
 
 grammerdef:
-    sortedvar RPAREN LPAREN groupedrulelist {}
-  | sortedvar grammerdef groupedrulelist {}
+    LPAREN sortedvars RPAREN LPAREN groupedrulelists RPAREN { GrammerDef }
 ;
 
 isgrammerdef:
-    LPAREN grammerdef RPAREN {}
-  | /*epsilon*/ {}
+    grammerdef { Some($1) }
+  | /*epsilon*/ { None }
 ;
 
 groupedrulelist:
-    LPAREN SYMBOL sort LPAREN gterms RPAREN RPAREN {}
+    LPAREN SYMBOL sort LPAREN gterms RPAREN RPAREN { GroupedRuleList }
 ;
 
+groupedrulelists:
+    groupedrulelist { [$1] }
+  | groupedrulelist groupedrulelists { $1::$2 }
+
 gterm:
-    LPAREN CONSTANT sort RPAREN {}
-  | LPAREN VARIABLE sort RPAREN {}
-  | bfterm {}
+    LPAREN CONSTANT sort RPAREN { GTConstant }
+  | LPAREN VARIABLE sort RPAREN { GTVariable }
+  | bfterm { GTBfTerm }
 ;
 
 gterms:
-    gterm {}
-  | gterm gterms {}
+    gterm { [$1] }
+  | gterm gterms { $1::$2 }
 ;
