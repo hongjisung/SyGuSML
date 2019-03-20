@@ -1,4 +1,5 @@
 %{
+  open Ast
 %}
 
 %token <string> NUMERAL
@@ -42,10 +43,11 @@
 
 %start sygus
 %type <Ast.cmd list> sygus
+
 %%
 
 sygus:
-    cmd sygus {[CheckSynth]}
+    cmd sygus {$1::$2}
   | EOF {[]}
 ;
 
@@ -137,24 +139,24 @@ feature:
 ;
 
 cmd:
-    LPAREN CHECKSYNTH RPAREN {} 
-  | LPAREN CONSTRAINT term RPAREN {}
-  | LPAREN DECLAREVAR SYMBOL sort RPAREN {}
-  | LPAREN INVCONSTRAINT SYMBOL SYMBOL SYMBOL SYMBOL RPAREN {}
-  | LPAREN SETFEATURE COLON feature BOOLCONST RPAREN {}
-  | LPAREN SYNTHFUN SYMBOL LPAREN sortedvarstar RPAREN sort isgrammerdef RPAREN {}
-  | LPAREN SYNTHINV SYMBOL LPAREN sortedvarstar RPAREN isgrammerdef RPAREN {}
-  | smtcmd {}
+    LPAREN CHECKSYNTH RPAREN { CheckSynth }
+  | LPAREN CONSTRAINT term RPAREN { Constraint }
+  | LPAREN DECLAREVAR SYMBOL sort RPAREN { DeclareVar }
+  | LPAREN INVCONSTRAINT SYMBOL SYMBOL SYMBOL SYMBOL RPAREN { InvConstraint }
+  | LPAREN SETFEATURE COLON feature BOOLCONST RPAREN { SetFeature }
+  | LPAREN SYNTHFUN SYMBOL LPAREN sortedvarstar RPAREN sort isgrammerdef RPAREN { SynthFun }
+  | LPAREN SYNTHINV SYMBOL LPAREN sortedvarstar RPAREN isgrammerdef RPAREN { SynthInv }
+  | smtcmd { SmtCmd ($1) }
 ;
 
 smtcmd:
-    LPAREN DECLAREDATATYPE SYMBOL dtdec RPAREN {}
-  | LPAREN DECLAREDATATYPES LPAREN sortdecldtdecnplus RPAREN RPAREN {}
-  | LPAREN DECLARESORT SYMBOL NUMERAL RPAREN {}
-  | LPAREN DEFINEFUN SYMBOL LPAREN sortedvarstar RPAREN sort term RPAREN {}
-  | LPAREN DEFINESORT SYMBOL sort RPAREN {}
-  | LPAREN SETLOGIC SYMBOL RPAREN {}
-  | LPAREN SETOPTION COLON SYMBOL literal RPAREN {}
+    LPAREN DECLAREDATATYPE SYMBOL dtdec RPAREN { DeclareDatatype }
+  | LPAREN DECLAREDATATYPES LPAREN sortdecldtdecnplus RPAREN RPAREN { DeclareDatatypes }
+  | LPAREN DECLARESORT SYMBOL NUMERAL RPAREN { DeclareSort }
+  | LPAREN DEFINEFUN SYMBOL LPAREN sortedvarstar RPAREN sort term RPAREN { DefineFun }
+  | LPAREN DEFINESORT SYMBOL sort RPAREN { DefineSort }
+  | LPAREN SETLOGIC SYMBOL RPAREN { SetLogic }
+  | LPAREN SETOPTION COLON SYMBOL literal RPAREN { SetOption }
 ;
 
 sortdecldtdecnplus:

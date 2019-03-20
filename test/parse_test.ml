@@ -48,7 +48,14 @@ let test_result =
       (declare-var y Int)
       (constraint (= (f x y) (* 2 (+ x y))))
       (check-synth)",
-     [CheckSynth]);
+     [
+       SmtCmd(SetLogic);
+       SynthFun;
+       DeclareVar;
+       DeclareVar;
+       Constraint;
+       CheckSynth
+     ]);
     ("(set-logic DTLIA)
       (declare-datatypes ((List 0)) (((nil) (cons (head Int) (tail (List Int))))))
       (synth-fun f ((x List)) Int
@@ -67,7 +74,15 @@ let test_result =
       (constraint (= (f nil) 0))
       (check-synth)
       ",
-     [CheckSynth]);
+     [
+       SmtCmd(SetLogic);
+       SmtCmd(DeclareDatatypes);
+       SynthFun;
+       Constraint;
+       Constraint;
+       Constraint;
+       CheckSynth
+     ]);
     ("(set-logic BV)
       (synth-fun f ((x (_ BitVec 32))) (_ BitVec 32)
         ((BV32 (_ BitVec 32)) (BV16 (_ BitVec 16)))
@@ -88,7 +103,14 @@ let test_result =
       (constraint (= (f #xFFFF008E) #x008E0000))
       (constraint (= (f #x00000000) #x00000000))
       (check-synth)",
-     [CheckSynth]);
+     [
+       SmtCmd(SetLogic);
+       SynthFun;
+       Constraint;
+       Constraint;
+       Constraint;
+       CheckSynth
+     ]);
     ("(set-logic LIA)
       (set-feature :fwd-decls true)
       (set-feature :recursion true)
@@ -108,7 +130,19 @@ let test_result =
       (constraint (= (h y) (- (g y) (f y))))
       (check-synth)
       ",
-     [CheckSynth]);
+     [
+       SmtCmd(SetLogic);
+       SetFeature;
+       SetFeature;
+       SmtCmd(DefineFun);
+       SynthFun;
+       SmtCmd(DefineFun);
+       SynthFun;
+       SynthFun;
+       DeclareVar;
+       Constraint;
+       CheckSynth
+     ]);
     ("(set-logic PBE_SLIA)
       (synth-fun f ((fname String) (lname String)) String
         ((ntString String) (ntInt Int))
@@ -130,7 +164,15 @@ let test_result =
       (constraint (= (f \"Mariya\" \"Sergienko\") \"Mariya Sergienko\"))
       (check-synth)
       ",
-     [CheckSynth]);
+     [
+       SmtCmd(SetLogic);
+       SynthFun;
+       Constraint;
+       Constraint;
+       Constraint;
+       Constraint;
+       CheckSynth
+     ]);
     ("(set-logic INV_LIA)
       (synth-inv inv-f ((x Int) (y Int)))
       (define-fun pre-f ((x Int) (y Int)) Bool
@@ -139,7 +181,17 @@ let test_result =
         (and (= xp (+ x 2)) (= yp (+ y 1))))
       (define-fun post-f ((x Int) (y Int)) Bool (< y x))
       (inv-constraint inv-f pre-f trans-f post-f)
-      (check-synth)", [CheckSynth]);
+      (check-synth)
+      ",
+     [
+       SmtCmd(SetLogic);
+       SynthInv;
+       SmtCmd(DefineFun);
+       SmtCmd(DefineFun);
+       SmtCmd(DefineFun);
+       InvConstraint;
+       CheckSynth
+     ]);
     ("",
      []);
   ]
