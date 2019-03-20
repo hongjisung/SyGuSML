@@ -53,7 +53,7 @@ let test_result =
        SynthFun;
        DeclareVar;
        DeclareVar;
-       Constraint;
+       Constraint(IdentifierTerms);
        CheckSynth
      ]);
     ("(set-logic DTLIA)
@@ -78,9 +78,9 @@ let test_result =
        SmtCmd(SetLogic);
        SmtCmd(DeclareDatatypes);
        SynthFun;
-       Constraint;
-       Constraint;
-       Constraint;
+       Constraint(IdentifierTerms);
+       Constraint(IdentifierTerms);
+       Constraint(IdentifierTerms);
        CheckSynth
      ]);
     ("(set-logic BV)
@@ -106,9 +106,9 @@ let test_result =
      [
        SmtCmd(SetLogic);
        SynthFun;
-       Constraint;
-       Constraint;
-       Constraint;
+       Constraint(IdentifierTerms);
+       Constraint(IdentifierTerms);
+       Constraint(IdentifierTerms);
        CheckSynth
      ]);
     ("(set-logic LIA)
@@ -140,7 +140,7 @@ let test_result =
        SynthFun;
        SynthFun;
        DeclareVar;
-       Constraint;
+       Constraint(IdentifierTerms);
        CheckSynth
      ]);
     ("(set-logic PBE_SLIA)
@@ -167,10 +167,10 @@ let test_result =
      [
        SmtCmd(SetLogic);
        SynthFun;
-       Constraint;
-       Constraint;
-       Constraint;
-       Constraint;
+       Constraint(IdentifierTerms);
+       Constraint(IdentifierTerms);
+       Constraint(IdentifierTerms);
+       Constraint(IdentifierTerms);
        CheckSynth
      ]);
     ("(set-logic INV_LIA)

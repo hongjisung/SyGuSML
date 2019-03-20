@@ -1,6 +1,6 @@
 type cmd =
   | CheckSynth
-  | Constraint
+  | Constraint of term
   | DeclareVar
   | InvConstraint
   | SetFeature
@@ -17,3 +17,10 @@ and smt_cmd =
   | SetLogic
   | SetOption
 
+and term =
+  | Identifier
+  | Literal
+  | IdentifierTerms
+  | Exists
+  | Forall
+  | Let

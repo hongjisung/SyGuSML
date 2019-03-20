@@ -86,17 +86,17 @@ sorts:
 ;
 
 term:
-    identifier {}
-  | literal {}
-  | LPAREN identifier terms RPAREN {}
-  | LPAREN EXISTS LPAREN sortedvars RPAREN term RPAREN {}
-  | LPAREN FORALL LPAREN sortedvars RPAREN term RPAREN {}
-  | LPAREN LET LPAREN varbindings RPAREN term RPAREN {}
+    identifier { Identifier }
+  | literal { Literal }
+  | LPAREN identifier terms RPAREN { IdentifierTerms }
+  | LPAREN EXISTS LPAREN sortedvars RPAREN term RPAREN { Exists }
+  | LPAREN FORALL LPAREN sortedvars RPAREN term RPAREN { Forall }
+  | LPAREN LET LPAREN varbindings RPAREN term RPAREN { Let }
 ;
 
 terms:
-    term terms {}
-  | /*epsilon*/ {}
+    term terms { $1::$2 }
+  | /*epsilon*/ { [] }
 ;
 
 bfterm:
@@ -140,7 +140,7 @@ feature:
 
 cmd:
     LPAREN CHECKSYNTH RPAREN { CheckSynth }
-  | LPAREN CONSTRAINT term RPAREN { Constraint }
+  | LPAREN CONSTRAINT term RPAREN { Constraint ($3) }
   | LPAREN DECLAREVAR SYMBOL sort RPAREN { DeclareVar }
   | LPAREN INVCONSTRAINT SYMBOL SYMBOL SYMBOL SYMBOL RPAREN { InvConstraint }
   | LPAREN SETFEATURE COLON feature BOOLCONST RPAREN { SetFeature }
