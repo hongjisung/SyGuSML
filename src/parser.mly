@@ -61,8 +61,8 @@ literal:
 ;
 
 identifier:
-    symbol { SymbolIdentifier }
-  | LPAREN UNDERBAR symbol indexes RPAREN { UnderbarIdentifier }
+    symbol { SymbolIdentifier($1) }
+  | LPAREN UNDERBAR symbol indexes RPAREN { UnderbarIdentifier($3,$4) }
 ;
 
 indexes:
@@ -86,12 +86,12 @@ sorts:
 ;
 
 term:
-    identifier { Identifier }
-  | literal { Literal }
-  | LPAREN identifier terms RPAREN { IdentifierTerms }
-  | LPAREN EXISTS LPAREN sortedvars RPAREN term RPAREN { Exists }
-  | LPAREN FORALL LPAREN sortedvars RPAREN term RPAREN { Forall }
-  | LPAREN LET LPAREN varbindings RPAREN term RPAREN { Let }
+    identifier { Identifier($1) }
+  | literal { Literal($1) }
+  | LPAREN identifier terms RPAREN { IdentifierTerms($2,$3) }
+  | LPAREN EXISTS LPAREN sortedvars RPAREN term RPAREN { Exists($4,$6) }
+  | LPAREN FORALL LPAREN sortedvars RPAREN term RPAREN { Forall($4,$6) }
+  | LPAREN LET LPAREN varbindings RPAREN term RPAREN { Let($4,$6) }
 ;
 
 terms:

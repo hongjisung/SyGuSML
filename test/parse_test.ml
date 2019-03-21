@@ -63,7 +63,33 @@ let test_result =
        );
        DeclareVar(Symbol("x"),Sort);
        DeclareVar(Symbol("y"),Sort);
-       Constraint(IdentifierTerms);
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Identifier(SymbolIdentifier(Symbol("x")));
+                 Identifier(SymbolIdentifier(Symbol("y")));
+               ]
+             );
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("*")),
+               [
+                 Literal(Numeral("2"));
+                 IdentifierTerms(
+                   SymbolIdentifier(Symbol("+")),
+                   [
+                     Identifier(SymbolIdentifier(Symbol("x")));
+                     Identifier(SymbolIdentifier(Symbol("y")))
+                   ]
+                 );
+               ]
+             );
+           ]
+         )
+       );
        CheckSynth
      ]);
     (* Case 6 *)
@@ -94,9 +120,60 @@ let test_result =
          Sort,
          Some(GrammerDef)
        );
-       Constraint(IdentifierTerms);
-       Constraint(IdentifierTerms);
-       Constraint(IdentifierTerms);
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 IdentifierTerms(
+                   SymbolIdentifier(Symbol("cons")),
+                   [
+                     Literal(Numeral("4"));
+                     Identifier(SymbolIdentifier(Symbol("nil")))
+                   ]
+                 );
+               ]
+             );
+             Literal(Numeral("5"))
+           ]
+         )
+       );
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 IdentifierTerms(
+                   SymbolIdentifier(Symbol("cons")),
+                   [
+                     Literal(Numeral("0"));
+                     Identifier(SymbolIdentifier(Symbol("nil")))
+                   ]
+                 );
+               ]
+             );
+             Literal(Numeral("1"))
+           ]
+         )
+       );
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Identifier(SymbolIdentifier(Symbol("nil")))
+               ]
+             );
+             Literal(Numeral("0"))
+           ]
+         )
+       );
        CheckSynth
      ]);
     (* Case 7 *)
@@ -128,9 +205,48 @@ let test_result =
          Sort,
          Some(GrammerDef)
        );
-       Constraint(IdentifierTerms);
-       Constraint(IdentifierTerms);
-       Constraint(IdentifierTerms);
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Literal(HexConst("#x0782ECAD"))
+               ]
+             );
+             Literal(HexConst("#xECAD0000"))
+           ]
+         )
+       );
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Literal(HexConst("#xFFFF008E"))
+               ]
+             );
+             Literal(HexConst("#x008E0000"))
+           ]
+         )
+       );
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Literal(HexConst("#x00000000"))
+               ]
+             );
+             Literal(HexConst("#x00000000"))
+           ]
+         )
+       );
        CheckSynth
      ]);
     (* Case 8 *)
@@ -178,7 +294,36 @@ let test_result =
          Some(GrammerDef)
        );
        DeclareVar(Symbol("y"),Sort);
-       Constraint(IdentifierTerms);
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("h")),
+               [
+                 Identifier(SymbolIdentifier(Symbol("y")))
+               ]
+             );
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("-")),
+               [
+                 IdentifierTerms(
+                   SymbolIdentifier(Symbol("g")),
+                   [
+                     Identifier(SymbolIdentifier(Symbol("y")))
+                   ]
+                 );
+                 IdentifierTerms(
+                   SymbolIdentifier(Symbol("f")),
+                   [
+                     Identifier(SymbolIdentifier(Symbol("y")))
+                   ]
+                 );
+               ]
+             );
+           ]
+         )
+       );
        CheckSynth
      ]);
     (* Case 9 *)
@@ -211,10 +356,66 @@ let test_result =
          Sort,
          Some(GrammerDef)
        );
-       Constraint(IdentifierTerms);
-       Constraint(IdentifierTerms);
-       Constraint(IdentifierTerms);
-       Constraint(IdentifierTerms);
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Literal(StringConst("\"Nancy\""));
+                 Literal(StringConst("\"FreeHafer\""));
+               ]
+             );
+             Literal(StringConst("\"Nancy FreeHafer\""));
+           ]
+         )
+       );
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Literal(StringConst("\"Andrew\""));
+                 Literal(StringConst("\"Cencici\""));
+               ]
+             );
+             Literal(StringConst("\"Andrew Cencici\""));
+           ]
+         )
+       );
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Literal(StringConst("\"Jan\""));
+                 Literal(StringConst("\"Kotas\""));
+               ]
+             );
+             Literal(StringConst("\"Jan Kotas\""));
+           ]
+         )
+       );
+       Constraint(
+         IdentifierTerms(
+           SymbolIdentifier(Symbol("=")),
+           [
+             IdentifierTerms(
+               SymbolIdentifier(Symbol("f")),
+               [
+                 Literal(StringConst("\"Mariya\""));
+                 Literal(StringConst("\"Sergienko\""));
+               ]
+             );
+             Literal(StringConst("\"Mariya Sergienko\""));
+           ]
+         )
+       );
        CheckSynth
      ]);
     (* Case 10 *)

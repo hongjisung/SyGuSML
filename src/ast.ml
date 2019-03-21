@@ -18,12 +18,12 @@ and smt_cmd =
   | SetOption
 
 and term =
-  | Identifier
-  | Literal
-  | IdentifierTerms
-  | Exists
-  | Forall
-  | Let
+  | Identifier of identifier
+  | Literal of literal
+  | IdentifierTerms of identifier * term list
+  | Exists of sorted_var list * term
+  | Forall of sorted_var list * term
+  | Let of var_binding list * term
 
 and bf_term =
   | BfIdentifier
@@ -37,8 +37,8 @@ and var_binding =
   | VarBinding
 
 and identifier =
-  | SymbolIdentifier
-  | UnderbarIdentifier
+  | SymbolIdentifier of symbol
+  | UnderbarIdentifier of symbol * index list
 
 and symbol =
   | Symbol of string
