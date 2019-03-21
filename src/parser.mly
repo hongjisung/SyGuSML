@@ -52,17 +52,17 @@ sygus:
 ;
 
 literal:
-    NUMERAL { Numeral }
-  | DECIMAL { Decimal }
-  | BOOLCONST { BoolConst }
-  | HEXCONST { HexConst }
-  | BINCONST { BinConst }
-  | STRINGCONST { StringConst }
+    NUMERAL { Numeral($1) }
+  | DECIMAL { Decimal($1) }
+  | BOOLCONST { BoolConst($1) }
+  | HEXCONST { HexConst($1) }
+  | BINCONST { BinConst($1) }
+  | STRINGCONST { StringConst($1) }
 ;
 
 identifier:
-    SYMBOL { SymbolIdentifier }
-  | LPAREN UNDERBAR SYMBOL indexes RPAREN { UnderbarIdentifier }
+    symbol { SymbolIdentifier }
+  | LPAREN UNDERBAR symbol indexes RPAREN { UnderbarIdentifier }
 ;
 
 indexes:
@@ -72,7 +72,7 @@ indexes:
 
 index:
     NUMERAL { NumeralIndex }
-  | SYMBOL { SymbolIndex }
+  | symbol { SymbolIndex }
 ;
 
 sort:
@@ -111,7 +111,7 @@ bfterms:
 ;
 
 sortedvar:
-    LPAREN SYMBOL sort RPAREN { SortedVar }
+    LPAREN symbol sort RPAREN { SortedVar }
 ;
 
 sortedvars:
@@ -125,7 +125,7 @@ sortedvarstar:
 ;
 
 varbinding:
-    LPAREN SYMBOL term RPAREN { VarBinding }
+    LPAREN symbol term RPAREN { VarBinding }
 ;
 
 varbindings:
@@ -141,27 +141,27 @@ feature:
 
 cmd:
     LPAREN CHECKSYNTH RPAREN { CheckSynth }
-  | LPAREN CONSTRAINT term RPAREN { Constraint ($3) }
-  | LPAREN DECLAREVAR SYMBOL sort RPAREN { DeclareVar }
-  | LPAREN INVCONSTRAINT SYMBOL SYMBOL SYMBOL SYMBOL RPAREN { InvConstraint }
-  | LPAREN SETFEATURE COLON feature BOOLCONST RPAREN { SetFeature }
-  | LPAREN SYNTHFUN SYMBOL LPAREN sortedvarstar RPAREN sort isgrammerdef RPAREN { SynthFun }
-  | LPAREN SYNTHINV SYMBOL LPAREN sortedvarstar RPAREN isgrammerdef RPAREN { SynthInv }
-  | smtcmd { SmtCmd ($1) }
+  | LPAREN CONSTRAINT term RPAREN { Constraint($3) }
+  | LPAREN DECLAREVAR symbol sort RPAREN { DeclareVar($3,$4) }
+  | LPAREN INVCONSTRAINT symbol symbol symbol symbol RPAREN { InvConstraint($3,$4,$5,$6) }
+  | LPAREN SETFEATURE COLON feature literal RPAREN { SetFeature($4,$5) }
+  | LPAREN SYNTHFUN symbol LPAREN sortedvarstar RPAREN sort isgrammerdef RPAREN { SynthFun($3,$5,$7,$8) }
+  | LPAREN SYNTHINV symbol LPAREN sortedvarstar RPAREN isgrammerdef RPAREN { SynthInv($3,$5,$7) }
+  | smtcmd { SmtCmd($1) }
 ;
 
 smtcmd:
-    LPAREN DECLAREDATATYPE SYMBOL dtdec RPAREN { DeclareDatatype }
+    LPAREN DECLAREDATATYPE symbol dtdec RPAREN { DeclareDatatype }
   | LPAREN DECLAREDATATYPES LPAREN sortdecls RPAREN LPAREN dtdecs RPAREN RPAREN { DeclareDatatypes }
-  | LPAREN DECLARESORT SYMBOL NUMERAL RPAREN { DeclareSort }
-  | LPAREN DEFINEFUN SYMBOL LPAREN sortedvarstar RPAREN sort term RPAREN { DefineFun }
-  | LPAREN DEFINESORT SYMBOL sort RPAREN { DefineSort }
-  | LPAREN SETLOGIC SYMBOL RPAREN { SetLogic }
-  | LPAREN SETOPTION COLON SYMBOL literal RPAREN { SetOption }
+  | LPAREN DECLARESORT symbol NUMERAL RPAREN { DeclareSort }
+  | LPAREN DEFINEFUN symbol LPAREN sortedvarstar RPAREN sort term RPAREN { DefineFun }
+  | LPAREN DEFINESORT symbol sort RPAREN { DefineSort }
+  | LPAREN SETLOGIC symbol RPAREN { SetLogic }
+  | LPAREN SETOPTION COLON symbol literal RPAREN { SetOption }
 ;
 
 sortdecl:
-    LPAREN SYMBOL NUMERAL RPAREN { SortDeclaration }
+    LPAREN symbol NUMERAL RPAREN { SortDeclaration }
 ;
 
 sortdecls:
@@ -179,7 +179,7 @@ dtdecs:
 ;
 
 dtconsdec:
-    LPAREN SYMBOL sortedvarstar RPAREN { DTConsDec }
+    LPAREN symbol sortedvarstar RPAREN { DTConsDec }
 ;
 
 dtconsdecs:
@@ -197,7 +197,7 @@ isgrammerdef:
 ;
 
 groupedrulelist:
-    LPAREN SYMBOL sort LPAREN gterms RPAREN RPAREN { GroupedRuleList }
+    LPAREN symbol sort LPAREN gterms RPAREN RPAREN { GroupedRuleList }
 ;
 
 groupedrulelists:
@@ -214,3 +214,6 @@ gterms:
     gterm { [$1] }
   | gterm gterms { $1::$2 }
 ;
+
+symbol:
+    SYMBOL { Symbol($1) }

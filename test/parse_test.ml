@@ -27,16 +27,21 @@ let rec test_parse num test_cases =
 
 let test_result = 
   test_parse 0 [
+    (* Case 1 *)
     ("(check-synth)",
      [CheckSynth]);
+    (* Case 2 *)
     ("(check-synth) ; Comment test~~",
      [CheckSynth]);
+    (* Case 3 *)
     ("(check-synth
       ; Comment!!!
       )",
      [CheckSynth]);
+    (* Case 4 *)
     (";(check-synth)",
      []);
+    (* Case 5 *)
     ("(set-logic LIA)
       (synth-fun f ((x Int) (y Int)) Int
         ((I Int) (Ic Int))
@@ -50,12 +55,18 @@ let test_result =
       (check-synth)",
      [
        SmtCmd(SetLogic);
-       SynthFun;
-       DeclareVar;
-       DeclareVar;
+       SynthFun(
+         Symbol("f"),
+         [SortedVar; SortedVar],
+         Sort,
+         Some(GrammerDef)
+       );
+       DeclareVar(Symbol("x"),Sort);
+       DeclareVar(Symbol("y"),Sort);
        Constraint(IdentifierTerms);
        CheckSynth
      ]);
+    (* Case 6 *)
     ("(set-logic DTLIA)
       (declare-datatypes ((List 0)) (((nil) (cons (head Int) (tail (List Int))))))
       (synth-fun f ((x List)) Int
@@ -77,12 +88,18 @@ let test_result =
      [
        SmtCmd(SetLogic);
        SmtCmd(DeclareDatatypes);
-       SynthFun;
+       SynthFun(
+         Symbol("f"),
+         [SortedVar],
+         Sort,
+         Some(GrammerDef)
+       );
        Constraint(IdentifierTerms);
        Constraint(IdentifierTerms);
        Constraint(IdentifierTerms);
        CheckSynth
      ]);
+    (* Case 7 *)
     ("(set-logic BV)
       (synth-fun f ((x (_ BitVec 32))) (_ BitVec 32)
         ((BV32 (_ BitVec 32)) (BV16 (_ BitVec 16)))
@@ -105,12 +122,18 @@ let test_result =
       (check-synth)",
      [
        SmtCmd(SetLogic);
-       SynthFun;
+       SynthFun(
+         Symbol("f"),
+         [SortedVar],
+         Sort,
+         Some(GrammerDef)
+       );
        Constraint(IdentifierTerms);
        Constraint(IdentifierTerms);
        Constraint(IdentifierTerms);
        CheckSynth
      ]);
+    (* Case 8 *)
     ("(set-logic LIA)
       (set-feature :fwd-decls true)
       (set-feature :recursion true)
@@ -132,17 +155,33 @@ let test_result =
       ",
      [
        SmtCmd(SetLogic);
-       SetFeature;
-       SetFeature;
+       SetFeature(FwdDecls,BoolConst("true"));
+       SetFeature(Recursion,BoolConst("true"));
        SmtCmd(DefineFun);
-       SynthFun;
+       SynthFun(
+         Symbol("f"),
+         [SortedVar],
+         Sort,
+         Some(GrammerDef)
+       );
        SmtCmd(DefineFun);
-       SynthFun;
-       SynthFun;
-       DeclareVar;
+       SynthFun(
+         Symbol("g"),
+         [SortedVar],
+         Sort,
+         Some(GrammerDef)
+       );
+       SynthFun(
+         Symbol("h"),
+         [SortedVar],
+         Sort,
+         Some(GrammerDef)
+       );
+       DeclareVar(Symbol("y"),Sort);
        Constraint(IdentifierTerms);
        CheckSynth
      ]);
+    (* Case 9 *)
     ("(set-logic PBE_SLIA)
       (synth-fun f ((fname String) (lname String)) String
         ((ntString String) (ntInt Int))
@@ -166,13 +205,19 @@ let test_result =
       ",
      [
        SmtCmd(SetLogic);
-       SynthFun;
+       SynthFun(
+         Symbol("f"),
+         [SortedVar; SortedVar],
+         Sort,
+         Some(GrammerDef)
+       );
        Constraint(IdentifierTerms);
        Constraint(IdentifierTerms);
        Constraint(IdentifierTerms);
        Constraint(IdentifierTerms);
        CheckSynth
      ]);
+    (* Case 10 *)
     ("(set-logic INV_LIA)
       (synth-inv inv-f ((x Int) (y Int)))
       (define-fun pre-f ((x Int) (y Int)) Bool
@@ -185,13 +230,23 @@ let test_result =
       ",
      [
        SmtCmd(SetLogic);
-       SynthInv;
+       SynthInv(
+         Symbol("inv-f"),
+         [SortedVar; SortedVar],
+         None
+       );
        SmtCmd(DefineFun);
        SmtCmd(DefineFun);
        SmtCmd(DefineFun);
-       InvConstraint;
+       InvConstraint(
+         Symbol("inv-f"),
+         Symbol("pre-f"),
+         Symbol("trans-f"),
+         Symbol("post-f")
+       );
        CheckSynth
      ]);
+    (* Case 11 *)
     ("",
      []);
   ]

@@ -1,11 +1,11 @@
 type cmd =
   | CheckSynth
   | Constraint of term
-  | DeclareVar
-  | InvConstraint
-  | SetFeature
-  | SynthFun
-  | SynthInv
+  | DeclareVar of symbol * sort
+  | InvConstraint of symbol * symbol * symbol * symbol
+  | SetFeature of feature * literal
+  | SynthFun of symbol * sorted_var list * sort * grammer_def option
+  | SynthInv of symbol * sorted_var list * grammer_def option
   | SmtCmd of smt_cmd
 
 and smt_cmd =
@@ -77,9 +77,9 @@ and gterm =
   | GTBfTerm
 
 and literal =
-  | Numeral
-  | Decimal
-  | BoolConst
-  | HexConst
-  | BinConst
-  | StringConst
+  | Numeral of string
+  | Decimal of string
+  | BoolConst of string
+  | HexConst of string
+  | BinConst of string
+  | StringConst of string
