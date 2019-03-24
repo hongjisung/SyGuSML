@@ -3,19 +3,19 @@ type cmd =
   | Constraint of term
   | DeclareVar of symbol * sort
   | InvConstraint of symbol * symbol * symbol * symbol
-  | SetFeature of feature * literal
+  | SetFeature of feature * boolconst
   | SynthFun of symbol * sorted_var list * sort * grammer_def option
   | SynthInv of symbol * sorted_var list * grammer_def option
   | SmtCmd of smt_cmd
 
 and smt_cmd =
-  | DeclareDatatype
-  | DeclareDatatypes
-  | DeclareSort
-  | DefineFun
-  | DefineSort
-  | SetLogic
-  | SetOption
+  | DeclareDatatype of symbol * dt_dec
+  | DeclareDatatypes of (sort_decl * dt_dec) list
+  | DeclareSort of symbol * numeral
+  | DefineFun of symbol * sorted_var list * sort * term
+  | DefineSort of symbol * sort
+  | SetLogic of symbol
+  | SetOption of symbol * literal
 
 and term =
   | Identifier of identifier
@@ -68,7 +68,7 @@ and dt_cond_dec =
 and grammer_def =
   | GrammerDef
 
-and groupedrulelist =
+and grouped_rule_list =
   | GroupedRuleList
 
 and gterm =
@@ -77,9 +77,12 @@ and gterm =
   | GTBfTerm
 
 and literal =
-  | Numeral of string
+  | Numeral of numeral
   | Decimal of string
-  | BoolConst of string
+  | BoolConst of boolconst
   | HexConst of string
   | BinConst of string
   | StringConst of string
+
+and numeral = string
+and boolconst = string

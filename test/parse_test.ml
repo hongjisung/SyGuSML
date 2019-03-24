@@ -54,7 +54,7 @@ let test_result =
       (constraint (= (f x y) (* 2 (+ x y))))
       (check-synth)",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("LIA")));
        SynthFun(
          Symbol("f"),
          [SortedVar; SortedVar],
@@ -112,8 +112,14 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
-       SmtCmd(DeclareDatatypes);
+       SmtCmd(SetLogic(Symbol("DTLIA")));
+       SmtCmd(
+         DeclareDatatypes(
+           [
+             (SortDeclaration, DTDec)
+           ]
+         )
+       );
        SynthFun(
          Symbol("f"),
          [SortedVar],
@@ -198,7 +204,7 @@ let test_result =
       (constraint (= (f #x00000000) #x00000000))
       (check-synth)",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("BV")));
        SynthFun(
          Symbol("f"),
          [SortedVar],
@@ -270,17 +276,44 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
-       SetFeature(FwdDecls,BoolConst("true"));
-       SetFeature(Recursion,BoolConst("true"));
-       SmtCmd(DefineFun);
+       SmtCmd(SetLogic(Symbol("LIA")));
+       SetFeature(FwdDecls,"true");
+       SetFeature(Recursion,"true");
+       SmtCmd(DefineFun(
+           Symbol("x_plus_one"),
+           [SortedVar],
+           Sort,
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("+")),
+             [
+               Identifier(SymbolIdentifier(Symbol("x")));
+               Literal(Numeral("1"))
+             ]
+           );
+         ));
        SynthFun(
          Symbol("f"),
          [SortedVar],
          Sort,
          Some(GrammerDef)
        );
-       SmtCmd(DefineFun);
+       SmtCmd(DefineFun(
+           Symbol("fx_plus_one"),
+           [SortedVar],
+           Sort,
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("+")),
+             [
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("f")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("x")))
+                 ]
+               );
+               Literal(Numeral("1"))
+             ]
+           );
+         ));
        SynthFun(
          Symbol("g"),
          [SortedVar],
@@ -349,7 +382,7 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("PBE_SLIA")));
        SynthFun(
          Symbol("f"),
          [SortedVar; SortedVar],
@@ -430,15 +463,101 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("INV_LIA")));
        SynthInv(
          Symbol("inv-f"),
          [SortedVar; SortedVar],
          None
        );
-       SmtCmd(DefineFun);
-       SmtCmd(DefineFun);
-       SmtCmd(DefineFun);
+       SmtCmd(
+         DefineFun(
+           Symbol("pre-f"),
+           [SortedVar; SortedVar],
+           Sort,
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("and")),
+             [
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol(">=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("x")));
+                   Literal(Numeral("5"))
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("<=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("x")));
+                   Literal(Numeral("9"))
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol(">=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("y")));
+                   Literal(Numeral("1"))
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("<=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("y")));
+                   Literal(Numeral("3"))
+                 ]
+               )
+             ]
+           )
+         ));
+       SmtCmd(
+         DefineFun(
+           Symbol("trans-f"),
+           [SortedVar; SortedVar; SortedVar; SortedVar],
+           Sort,
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("and")),
+             [
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("xp")));
+                   IdentifierTerms(
+                     SymbolIdentifier(Symbol("+")),
+                     [
+                       Identifier(SymbolIdentifier(Symbol("x")));
+                       Literal(Numeral("2"))
+                     ]
+                   )
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("yp")));
+                   IdentifierTerms(
+                     SymbolIdentifier(Symbol("+")),
+                     [
+                       Identifier(SymbolIdentifier(Symbol("y")));
+                       Literal(Numeral("1"))
+                     ]
+                   )
+                 ]
+               )
+             ]
+           )
+         ));
+       SmtCmd(
+         DefineFun(
+           Symbol("post-f"),
+           [SortedVar; SortedVar],
+           Sort,
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("<")),
+             [
+               Identifier(SymbolIdentifier(Symbol("y")));
+               Identifier(SymbolIdentifier(Symbol("x")))
+             ]
+           )
+         ));
        InvConstraint(
          Symbol("inv-f"),
          Symbol("pre-f"),
