@@ -111,7 +111,7 @@ bfterms:
 ;
 
 sortedvar:
-    LPAREN symbol sort RPAREN { SortedVar }
+    LPAREN symbol sort RPAREN { SortedVar($2,$3) }
 ;
 
 sortedvars:
@@ -125,7 +125,7 @@ sortedvarstar:
 ;
 
 varbinding:
-    LPAREN symbol term RPAREN { VarBinding }
+    LPAREN symbol term RPAREN { VarBinding($2,$3) }
 ;
 
 varbindings:

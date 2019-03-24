@@ -57,7 +57,10 @@ let test_result =
        SmtCmd(SetLogic(Symbol("LIA")));
        SynthFun(
          Symbol("f"),
-         [SortedVar; SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+           SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
@@ -122,7 +125,9 @@ let test_result =
        );
        SynthFun(
          Symbol("f"),
-         [SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("List"))))
+         ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
@@ -207,7 +212,9 @@ let test_result =
        SmtCmd(SetLogic(Symbol("BV")));
        SynthFun(
          Symbol("f"),
-         [SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex])))
+         ],
          Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex])),
          Some(GrammerDef)
        );
@@ -281,7 +288,9 @@ let test_result =
        SetFeature(Recursion,"true");
        SmtCmd(DefineFun(
            Symbol("x_plus_one"),
-           [SortedVar],
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
            Sort(SymbolIdentifier(Symbol("Int"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("+")),
@@ -293,13 +302,17 @@ let test_result =
          ));
        SynthFun(
          Symbol("f"),
-         [SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
        SmtCmd(DefineFun(
            Symbol("fx_plus_one"),
-           [SortedVar],
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
            Sort(SymbolIdentifier(Symbol("Int"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("+")),
@@ -316,13 +329,17 @@ let test_result =
          ));
        SynthFun(
          Symbol("g"),
-         [SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
        SynthFun(
          Symbol("h"),
-         [SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
@@ -385,7 +402,10 @@ let test_result =
        SmtCmd(SetLogic(Symbol("PBE_SLIA")));
        SynthFun(
          Symbol("f"),
-         [SortedVar; SortedVar],
+         [
+           SortedVar(Symbol("fname"), Sort(SymbolIdentifier(Symbol("String"))));
+           SortedVar(Symbol("lname"), Sort(SymbolIdentifier(Symbol("String"))))
+         ],
          Sort(SymbolIdentifier(Symbol("String"))),
          Some(GrammerDef)
        );
@@ -466,13 +486,19 @@ let test_result =
        SmtCmd(SetLogic(Symbol("INV_LIA")));
        SynthInv(
          Symbol("inv-f"),
-         [SortedVar; SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+           SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
          None
        );
        SmtCmd(
          DefineFun(
            Symbol("pre-f"),
-           [SortedVar; SortedVar],
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
            Sort(SymbolIdentifier(Symbol("Bool"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("and")),
@@ -511,7 +537,12 @@ let test_result =
        SmtCmd(
          DefineFun(
            Symbol("trans-f"),
-           [SortedVar; SortedVar; SortedVar; SortedVar],
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("xp"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("yp"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
            Sort(SymbolIdentifier(Symbol("Bool"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("and")),
@@ -548,7 +579,10 @@ let test_result =
        SmtCmd(
          DefineFun(
            Symbol("post-f"),
-           [SortedVar; SortedVar],
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
            Sort(SymbolIdentifier(Symbol("Bool"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("<")),

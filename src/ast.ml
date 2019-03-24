@@ -31,10 +31,10 @@ and bf_term =
   | BfIdentifierTerms
 
 and sorted_var =
-  | SortedVar
+  | SortedVar of symbol * sort
 
 and var_binding =
-  | VarBinding
+  | VarBinding of symbol * term
 
 and identifier =
   | SymbolIdentifier of symbol
