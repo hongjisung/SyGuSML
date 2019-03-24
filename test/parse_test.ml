@@ -58,11 +58,11 @@ let test_result =
        SynthFun(
          Symbol("f"),
          [SortedVar; SortedVar],
-         Sort,
+         Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
-       DeclareVar(Symbol("x"),Sort);
-       DeclareVar(Symbol("y"),Sort);
+       DeclareVar(Symbol("x"),Sort(SymbolIdentifier(Symbol("Int"))));
+       DeclareVar(Symbol("y"),Sort(SymbolIdentifier(Symbol("Int"))));
        Constraint(
          IdentifierTerms(
            SymbolIdentifier(Symbol("=")),
@@ -123,7 +123,7 @@ let test_result =
        SynthFun(
          Symbol("f"),
          [SortedVar],
-         Sort,
+         Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
        Constraint(
@@ -208,7 +208,7 @@ let test_result =
        SynthFun(
          Symbol("f"),
          [SortedVar],
-         Sort,
+         Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex])),
          Some(GrammerDef)
        );
        Constraint(
@@ -282,7 +282,7 @@ let test_result =
        SmtCmd(DefineFun(
            Symbol("x_plus_one"),
            [SortedVar],
-           Sort,
+           Sort(SymbolIdentifier(Symbol("Int"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("+")),
              [
@@ -294,13 +294,13 @@ let test_result =
        SynthFun(
          Symbol("f"),
          [SortedVar],
-         Sort,
+         Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
        SmtCmd(DefineFun(
            Symbol("fx_plus_one"),
            [SortedVar],
-           Sort,
+           Sort(SymbolIdentifier(Symbol("Int"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("+")),
              [
@@ -317,16 +317,16 @@ let test_result =
        SynthFun(
          Symbol("g"),
          [SortedVar],
-         Sort,
+         Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
        SynthFun(
          Symbol("h"),
          [SortedVar],
-         Sort,
+         Sort(SymbolIdentifier(Symbol("Int"))),
          Some(GrammerDef)
        );
-       DeclareVar(Symbol("y"),Sort);
+       DeclareVar(Symbol("y"),Sort(SymbolIdentifier(Symbol("Int"))));
        Constraint(
          IdentifierTerms(
            SymbolIdentifier(Symbol("=")),
@@ -386,7 +386,7 @@ let test_result =
        SynthFun(
          Symbol("f"),
          [SortedVar; SortedVar],
-         Sort,
+         Sort(SymbolIdentifier(Symbol("String"))),
          Some(GrammerDef)
        );
        Constraint(
@@ -473,7 +473,7 @@ let test_result =
          DefineFun(
            Symbol("pre-f"),
            [SortedVar; SortedVar],
-           Sort,
+           Sort(SymbolIdentifier(Symbol("Bool"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("and")),
              [
@@ -512,7 +512,7 @@ let test_result =
          DefineFun(
            Symbol("trans-f"),
            [SortedVar; SortedVar; SortedVar; SortedVar],
-           Sort,
+           Sort(SymbolIdentifier(Symbol("Bool"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("and")),
              [
@@ -549,7 +549,7 @@ let test_result =
          DefineFun(
            Symbol("post-f"),
            [SortedVar; SortedVar],
-           Sort,
+           Sort(SymbolIdentifier(Symbol("Bool"))),
            IdentifierTerms(
              SymbolIdentifier(Symbol("<")),
              [

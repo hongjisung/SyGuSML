@@ -76,8 +76,8 @@ index:
 ;
 
 sort:
-    identifier { Sort }
-  | LPAREN identifier sorts RPAREN { SortWithSorts }
+    identifier { Sort($1) }
+  | LPAREN identifier sorts RPAREN { SortWithSorts($2,$3) }
 ;
 
 sorts:

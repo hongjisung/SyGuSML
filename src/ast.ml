@@ -48,8 +48,8 @@ and index =
   | SymbolIndex
 
 and sort =
-  | Sort
-  | SortWithSorts
+  | Sort of identifier
+  | SortWithSorts of identifier * sort list
 
 and feature =
   | Grammers
