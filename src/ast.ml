@@ -72,9 +72,9 @@ and grouped_rule_list =
   | GroupedRuleList of symbol * sort * gterm list
 
 and gterm =
-  | GTConstant
-  | GTVariable
-  | GTBfTerm
+  | GTConstant of sort
+  | GTVariable of sort
+  | GTBfTerm of bf_term
 
 and literal =
   | Numeral of numeral

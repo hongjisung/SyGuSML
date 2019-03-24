@@ -70,12 +70,28 @@ let test_result =
                    Symbol("I"),
                    Sort(SymbolIdentifier(Symbol("Int"))),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("y"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("*")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("Ic")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     )
                    ]
                  )
                );
@@ -85,11 +101,25 @@ let test_result =
                    Symbol("Ic"),
                    Sort(SymbolIdentifier(Symbol("Int"))),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfLiteral(Numeral("2")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfLiteral(Numeral("1"))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfLiteral(Numeral("2"))
+                         ]
+                       )
+                     )
                    ]
                  )
                )
@@ -186,11 +216,35 @@ let test_result =
                    Symbol("I"),
                    Sort(SymbolIdentifier(Symbol("Int"))),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("head")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("ite")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("B")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     )
                    ]
                  )
                );
@@ -200,10 +254,25 @@ let test_result =
                    Symbol("L"),
                    Sort(SymbolIdentifier(Symbol("List"))),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("nil"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("cons")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("tail")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     )
                    ]
                  )
                );
@@ -213,10 +282,40 @@ let test_result =
                    Symbol("B"),
                    Sort(SymbolIdentifier(Symbol("Bool"))),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(Symbol("is"), [SymbolIndex(Symbol("nil"))]),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(Symbol("is"), [SymbolIndex(Symbol("cons"))]),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("=")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol(">=")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     )
                    ]
                  )
                )
@@ -316,14 +415,45 @@ let test_result =
                    Symbol("BV32"),
                    Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfLiteral(HexConst("#x00000000")));
+                     GTBfTerm(BfLiteral(HexConst("#x00000001")));
+                     GTBfTerm(BfLiteral(HexConst("#xFFFFFFFF")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvand")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvor")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvnot")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("concat")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
                    ]
                  )
                );
@@ -333,14 +463,63 @@ let test_result =
                    Symbol("BV16"),
                    Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("16")])),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfLiteral(HexConst("#x0000")));
+                     GTBfTerm(BfLiteral(HexConst("#x0001")));
+                     GTBfTerm(BfLiteral(HexConst("#xFFFF")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvand")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvor")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvnot")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(
+                           Symbol("extract"),
+                           [
+                             NumeralIndex("31");
+                             NumeralIndex("16");
+                           ]
+                         ),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(
+                           Symbol("extract"),
+                           [
+                             NumeralIndex("15");
+                             NumeralIndex("0");
+                           ]
+                         ),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
                    ]
                  )
                )
@@ -442,7 +621,19 @@ let test_result =
                  GroupedRuleList(
                    Symbol("I"),
                    Sort(SymbolIdentifier(Symbol("Int"))),
-                   [GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm]
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("x_plus_one")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
                  )
                )
              ])
@@ -480,7 +671,19 @@ let test_result =
                  GroupedRuleList(
                    Symbol("I"),
                    Sort(SymbolIdentifier(Symbol("Int"))),
-                   [GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm]
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("fx_plus_one")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
                  )
                )
              ])
@@ -499,7 +702,47 @@ let test_result =
                  GroupedRuleList(
                    Symbol("I"),
                    Sort(SymbolIdentifier(Symbol("Int"))),
-                   [GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm]
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfLiteral(Numeral("1"));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("h")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("ite")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("B")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
                  )
                );
                (
@@ -507,7 +750,26 @@ let test_result =
                  GroupedRuleList(
                    Symbol("B"),
                    Sort(SymbolIdentifier(Symbol("Bool"))),
-                   [GTBfTerm; GTBfTerm]
+                   [
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("=")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol(">")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
                  )
                )
              ])
@@ -585,14 +847,55 @@ let test_result =
                    Symbol("ntString"),
                    Sort(SymbolIdentifier(Symbol("String"))),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("fname"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("lname"))));
+                     GTBfTerm(BfLiteral(StringConst("\" \"")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.++")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.replace")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.at")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("int.to.str")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.substr")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
                    ]
                  )
                );
@@ -602,14 +905,53 @@ let test_result =
                    Symbol("ntInt"),
                    Sort(SymbolIdentifier(Symbol("Int"))),
                    [
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm;
-                     GTBfTerm
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfLiteral(Numeral("2")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.len")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.to.int")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.indexof")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
                    ]
                  )
                )

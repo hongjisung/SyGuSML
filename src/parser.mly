@@ -205,9 +205,9 @@ groupedrulelists:
   | groupedrulelist groupedrulelists { $1::$2 }
 
 gterm:
-    LPAREN CONSTANT sort RPAREN { GTConstant }
-  | LPAREN VARIABLE sort RPAREN { GTVariable }
-  | bfterm { GTBfTerm }
+    LPAREN CONSTANT sort RPAREN { GTConstant($3) }
+  | LPAREN VARIABLE sort RPAREN { GTVariable($3) }
+  | bfterm { GTBfTerm($1) }
 ;
 
 gterms:
