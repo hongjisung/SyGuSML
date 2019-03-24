@@ -188,7 +188,7 @@ dtconsdecs:
 ;
 
 grammerdef:
-    LPAREN sortedvars RPAREN LPAREN groupedrulelists RPAREN { GrammerDef }
+    LPAREN sortedvars RPAREN LPAREN groupedrulelists RPAREN { GrammerDef(List.combine $2 $5) }
 ;
 
 isgrammerdef:
@@ -197,7 +197,7 @@ isgrammerdef:
 ;
 
 groupedrulelist:
-    LPAREN symbol sort LPAREN gterms RPAREN RPAREN { GroupedRuleList }
+    LPAREN symbol sort LPAREN gterms RPAREN RPAREN { GroupedRuleList($2,$3,$5) }
 ;
 
 groupedrulelists:

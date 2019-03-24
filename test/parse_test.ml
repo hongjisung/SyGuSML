@@ -62,7 +62,39 @@ let test_result =
            SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
-         Some(GrammerDef)
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"),Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("Ic"),Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("Ic"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               )
+             ])
+         )
        );
        DeclareVar(Symbol("x"),Sort(SymbolIdentifier(Symbol("Int"))));
        DeclareVar(Symbol("y"),Sort(SymbolIdentifier(Symbol("Int"))));
@@ -146,7 +178,50 @@ let test_result =
            SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("List"))))
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
-         Some(GrammerDef)
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("L"), Sort(SymbolIdentifier(Symbol("List")))),
+                 GroupedRuleList(
+                   Symbol("L"),
+                   Sort(SymbolIdentifier(Symbol("List"))),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("B"), Sort(SymbolIdentifier(Symbol("Bool")))),
+                 GroupedRuleList(
+                   Symbol("B"),
+                   Sort(SymbolIdentifier(Symbol("Bool"))),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               )
+             ])
+         )
        );
        Constraint(
          IdentifierTerms(
@@ -215,7 +290,7 @@ let test_result =
                               (bvnot BV32)
                               (concat BV16 BV16)
                               ))
-        (BV16 (_ BivVec 16) (#x0000 #x0001 #xFFFF
+        (BV16 (_ BitVec 16) (#x0000 #x0001 #xFFFF
                               (bvand BV16 BV16)
                               (bvor BV16 BV16)
                               (bvnot BV16)
@@ -233,7 +308,44 @@ let test_result =
            SortedVar(Symbol("x"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])))
          ],
          Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])),
-         Some(GrammerDef)
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("BV32"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")]))),
+                 GroupedRuleList(
+                   Symbol("BV32"),
+                   Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("BV16"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("16")]))),
+                 GroupedRuleList(
+                   Symbol("BV16"),
+                   Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("16")])),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               )
+             ])
+         )
        );
        Constraint(
          IdentifierTerms(
@@ -323,7 +435,18 @@ let test_result =
            SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
-         Some(GrammerDef)
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm]
+                 )
+               )
+             ])
+         )
        );
        SmtCmd(DefineFun(
            Symbol("fx_plus_one"),
@@ -350,7 +473,18 @@ let test_result =
            SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
-         Some(GrammerDef)
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm]
+                 )
+               )
+             ])
+         )
        );
        SynthFun(
          Symbol("h"),
@@ -358,7 +492,26 @@ let test_result =
            SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
-         Some(GrammerDef)
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm; GTBfTerm]
+                 )
+               );
+               (
+                 SortedVar(Symbol("B"), Sort(SymbolIdentifier(Symbol("Bool")))),
+                 GroupedRuleList(
+                   Symbol("B"),
+                   Sort(SymbolIdentifier(Symbol("Bool"))),
+                   [GTBfTerm; GTBfTerm]
+                 )
+               )
+             ])
+         )
        );
        DeclareVar(Symbol("y"),Sort(SymbolIdentifier(Symbol("Int"))));
        Constraint(
@@ -424,7 +577,44 @@ let test_result =
            SortedVar(Symbol("lname"), Sort(SymbolIdentifier(Symbol("String"))))
          ],
          Sort(SymbolIdentifier(Symbol("String"))),
-         Some(GrammerDef)
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("ntString"), Sort(SymbolIdentifier(Symbol("String")))),
+                 GroupedRuleList(
+                   Symbol("ntString"),
+                   Sort(SymbolIdentifier(Symbol("String"))),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("ntInt"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("ntInt"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm;
+                     GTBfTerm
+                   ]
+                 )
+               )
+             ])
+         )
        );
        Constraint(
          IdentifierTerms(

@@ -66,10 +66,10 @@ and dt_cond_dec =
   | DTConsDec of symbol * sorted_var list
 
 and grammer_def =
-  | GrammerDef
+  | GrammerDef of (sorted_var * grouped_rule_list) list
 
 and grouped_rule_list =
-  | GroupedRuleList
+  | GroupedRuleList of symbol * sort * gterm list
 
 and gterm =
   | GTConstant
