@@ -26,9 +26,9 @@ and term =
   | Let of var_binding list * term
 
 and bf_term =
-  | BfIdentifier
-  | BfLiteral
-  | BfIdentifierTerms
+  | BfIdentifier of identifier
+  | BfLiteral of literal
+  | BfIdentifierTerms of identifier * bf_term list
 
 and sorted_var =
   | SortedVar of symbol * sort
@@ -44,8 +44,8 @@ and symbol =
   | Symbol of string
 
 and index =
-  | NumeralIndex
-  | SymbolIndex
+  | NumeralIndex of numeral
+  | SymbolIndex of symbol
 
 and sort =
   | Sort of identifier
@@ -57,13 +57,13 @@ and feature =
   | Recursion
 
 and sort_decl =
-  | SortDeclaration
+  | SortDeclaration of symbol * numeral
 
 and dt_dec =
-  | DTDec
+  | DTDec of dt_cond_dec list
 
 and dt_cond_dec =
-  | DTConsDec
+  | DTConsDec of symbol * sorted_var list
 
 and grammer_def =
   | GrammerDef

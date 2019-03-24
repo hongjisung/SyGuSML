@@ -119,7 +119,24 @@ let test_result =
        SmtCmd(
          DeclareDatatypes(
            [
-             (SortDeclaration, DTDec)
+             (
+               SortDeclaration(Symbol("List"), "0"),
+               DTDec(
+                 [
+                   DTConsDec(Symbol("nil"), []);
+                   DTConsDec(Symbol("cons"),
+                             [
+                               SortedVar(Symbol("head"), Sort(SymbolIdentifier(Symbol("Int"))));
+                               SortedVar(Symbol("tail"),
+                                         SortWithSorts(
+                                           SymbolIdentifier(Symbol("List")),
+                                           [Sort(SymbolIdentifier(Symbol("Int")))]
+                                         )
+                                        )
+                             ])
+                 ]
+               )
+             )
            ]
          )
        );
@@ -213,9 +230,9 @@ let test_result =
        SynthFun(
          Symbol("f"),
          [
-           SortedVar(Symbol("x"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex])))
+           SortedVar(Symbol("x"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])))
          ],
-         Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex])),
+         Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])),
          Some(GrammerDef)
        );
        Constraint(

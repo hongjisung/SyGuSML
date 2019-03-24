@@ -71,8 +71,8 @@ indexes:
 ;
 
 index:
-    NUMERAL { NumeralIndex }
-  | symbol { SymbolIndex }
+    NUMERAL { NumeralIndex($1) }
+  | symbol { SymbolIndex($1) }
 ;
 
 sort:
@@ -100,9 +100,9 @@ terms:
 ;
 
 bfterm:
-    identifier { BfIdentifier }
-  | literal { BfLiteral }
-  | LPAREN identifier bfterms RPAREN { BfIdentifierTerms }
+    identifier { BfIdentifier($1) }
+  | literal { BfLiteral($1) }
+  | LPAREN identifier bfterms RPAREN { BfIdentifierTerms($2,$3) }
 ;
 
 bfterms:
@@ -161,7 +161,7 @@ smtcmd:
 ;
 
 sortdecl:
-    LPAREN symbol NUMERAL RPAREN { SortDeclaration }
+    LPAREN symbol NUMERAL RPAREN { SortDeclaration($2,$3) }
 ;
 
 sortdecls:
@@ -170,7 +170,7 @@ sortdecls:
 ;
 
 dtdec:
-    LPAREN dtconsdecs RPAREN { DTDec }
+    LPAREN dtconsdecs RPAREN { DTDec($2) }
 ;
 
 dtdecs:
@@ -179,7 +179,7 @@ dtdecs:
 ;
 
 dtconsdec:
-    LPAREN symbol sortedvarstar RPAREN { DTConsDec }
+    LPAREN symbol sortedvarstar RPAREN { DTConsDec($2,$3) }
 ;
 
 dtconsdecs:
