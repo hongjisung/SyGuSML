@@ -32,6 +32,12 @@ example 1
 
 example 2  
 ```
+(declare-datatypes () ((List nil (cons (head Int) (tail List)))))
+(define-fun f ((x List)) Int (ite ((_ is nil) x) 0 (+ 1 (head x))))
+(assert (= (f (cons 4 nil)) 5))
+(assert (= (f (cons 0 nil)) 1))
+(assert (= (f nil) 0))
+(check-sat)
 ```
 
 example 3
