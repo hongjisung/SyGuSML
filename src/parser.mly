@@ -134,7 +134,7 @@ varbindings:
 ;
 
 feature:
-    GRAMMARS { Grammers }
+    GRAMMARS { Grammars }
   | FWDDECLS { FwdDecls }
   | RECURSION { Recursion }
 ;
@@ -145,8 +145,8 @@ cmd:
   | LPAREN DECLAREVAR symbol sort RPAREN { DeclareVar($3,$4) }
   | LPAREN INVCONSTRAINT symbol symbol symbol symbol RPAREN { InvConstraint($3,$4,$5,$6) }
   | LPAREN SETFEATURE COLON feature BOOLCONST RPAREN { SetFeature($4,$5) }
-  | LPAREN SYNTHFUN symbol LPAREN sortedvarstar RPAREN sort isgrammerdef RPAREN { SynthFun($3,$5,$7,$8) }
-  | LPAREN SYNTHINV symbol LPAREN sortedvarstar RPAREN isgrammerdef RPAREN { SynthInv($3,$5,$7) }
+  | LPAREN SYNTHFUN symbol LPAREN sortedvarstar RPAREN sort isgrammardef RPAREN { SynthFun($3,$5,$7,$8) }
+  | LPAREN SYNTHINV symbol LPAREN sortedvarstar RPAREN isgrammardef RPAREN { SynthInv($3,$5,$7) }
   | smtcmd { SmtCmd($1) }
 ;
 
@@ -187,12 +187,12 @@ dtconsdecs:
   | dtconsdec dtconsdecs { $1::$2 }
 ;
 
-grammerdef:
-    LPAREN sortedvars RPAREN LPAREN groupedrulelists RPAREN { GrammerDef(List.combine $2 $5) }
+grammardef:
+    LPAREN sortedvars RPAREN LPAREN groupedrulelists RPAREN { GrammarDef(List.combine $2 $5) }
 ;
 
-isgrammerdef:
-    grammerdef { Some($1) }
+isgrammardef:
+    grammardef { Some($1) }
   | /*epsilon*/ { None }
 ;
 

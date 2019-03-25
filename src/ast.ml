@@ -4,8 +4,8 @@ type cmd =
   | DeclareVar of symbol * sort
   | InvConstraint of symbol * symbol * symbol * symbol
   | SetFeature of feature * boolconst
-  | SynthFun of symbol * sorted_var list * sort * grammer_def option
-  | SynthInv of symbol * sorted_var list * grammer_def option
+  | SynthFun of symbol * sorted_var list * sort * grammar_def option
+  | SynthInv of symbol * sorted_var list * grammar_def option
   | SmtCmd of smt_cmd
 
 and smt_cmd =
@@ -52,7 +52,7 @@ and sort =
   | SortWithSorts of identifier * sort list
 
 and feature =
-  | Grammers
+  | Grammars
   | FwdDecls
   | Recursion
 
@@ -65,8 +65,8 @@ and dt_dec =
 and dt_cond_dec =
   | DTConsDec of symbol * sorted_var list
 
-and grammer_def =
-  | GrammerDef of (sorted_var * grouped_rule_list) list
+and grammar_def =
+  | GrammarDef of (sorted_var * grouped_rule_list) list
 
 and grouped_rule_list =
   | GroupedRuleList of symbol * sort * gterm list
