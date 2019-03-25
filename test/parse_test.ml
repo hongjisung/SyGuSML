@@ -54,15 +54,80 @@ let test_result =
       (constraint (= (f x y) (* 2 (+ x y))))
       (check-synth)",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("LIA")));
        SynthFun(
          Symbol("f"),
-         [SortedVar; SortedVar],
-         Sort,
-         Some(GrammerDef)
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+           SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
+         Sort(SymbolIdentifier(Symbol("Int"))),
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"),Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("y"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("*")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("Ic")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     )
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("Ic"),Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("Ic"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfLiteral(Numeral("2")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfLiteral(Numeral("1"))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfLiteral(Numeral("2"))
+                         ]
+                       )
+                     )
+                   ]
+                 )
+               )
+             ])
+         )
        );
-       DeclareVar(Symbol("x"),Sort);
-       DeclareVar(Symbol("y"),Sort);
+       DeclareVar(Symbol("x"),Sort(SymbolIdentifier(Symbol("Int"))));
+       DeclareVar(Symbol("y"),Sort(SymbolIdentifier(Symbol("Int"))));
        Constraint(
          IdentifierTerms(
            SymbolIdentifier(Symbol("=")),
@@ -112,13 +177,150 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
-       SmtCmd(DeclareDatatypes);
+       SmtCmd(SetLogic(Symbol("DTLIA")));
+       SmtCmd(
+         DeclareDatatypes(
+           [
+             (
+               SortDeclaration(Symbol("List"), "0"),
+               DTDec(
+                 [
+                   DTConsDec(Symbol("nil"), []);
+                   DTConsDec(Symbol("cons"),
+                             [
+                               SortedVar(Symbol("head"), Sort(SymbolIdentifier(Symbol("Int"))));
+                               SortedVar(Symbol("tail"),
+                                         SortWithSorts(
+                                           SymbolIdentifier(Symbol("List")),
+                                           [Sort(SymbolIdentifier(Symbol("Int")))]
+                                         )
+                                        )
+                             ])
+                 ]
+               )
+             )
+           ]
+         )
+       );
        SynthFun(
          Symbol("f"),
-         [SortedVar],
-         Sort,
-         Some(GrammerDef)
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("List"))))
+         ],
+         Sort(SymbolIdentifier(Symbol("Int"))),
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("head")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("ite")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("B")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     )
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("L"), Sort(SymbolIdentifier(Symbol("List")))),
+                 GroupedRuleList(
+                   Symbol("L"),
+                   Sort(SymbolIdentifier(Symbol("List"))),
+                   [
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("nil"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("cons")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("tail")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     )
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("B"), Sort(SymbolIdentifier(Symbol("Bool")))),
+                 GroupedRuleList(
+                   Symbol("B"),
+                   Sort(SymbolIdentifier(Symbol("Bool"))),
+                   [
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(Symbol("is"), [SymbolIndex(Symbol("nil"))]),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(Symbol("is"), [SymbolIndex(Symbol("cons"))]),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("L")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("=")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol(">=")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     )
+                   ]
+                 )
+               )
+             ])
+         )
        );
        Constraint(
          IdentifierTerms(
@@ -187,7 +389,7 @@ let test_result =
                               (bvnot BV32)
                               (concat BV16 BV16)
                               ))
-        (BV16 (_ BivVec 16) (#x0000 #x0001 #xFFFF
+        (BV16 (_ BitVec 16) (#x0000 #x0001 #xFFFF
                               (bvand BV16 BV16)
                               (bvor BV16 BV16)
                               (bvnot BV16)
@@ -198,12 +400,131 @@ let test_result =
       (constraint (= (f #x00000000) #x00000000))
       (check-synth)",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("BV")));
        SynthFun(
          Symbol("f"),
-         [SortedVar],
-         Sort,
-         Some(GrammerDef)
+         [
+           SortedVar(Symbol("x"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])))
+         ],
+         Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])),
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("BV32"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")]))),
+                 GroupedRuleList(
+                   Symbol("BV32"),
+                   Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])),
+                   [
+                     GTBfTerm(BfLiteral(HexConst("#x00000000")));
+                     GTBfTerm(BfLiteral(HexConst("#x00000001")));
+                     GTBfTerm(BfLiteral(HexConst("#xFFFFFFFF")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvand")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvor")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvnot")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("concat")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("BV16"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("16")]))),
+                 GroupedRuleList(
+                   Symbol("BV16"),
+                   Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("16")])),
+                   [
+                     GTBfTerm(BfLiteral(HexConst("#x0000")));
+                     GTBfTerm(BfLiteral(HexConst("#x0001")));
+                     GTBfTerm(BfLiteral(HexConst("#xFFFF")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvand")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvor")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")));
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("bvnot")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV16")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(
+                           Symbol("extract"),
+                           [
+                             NumeralIndex("31");
+                             NumeralIndex("16");
+                           ]
+                         ),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         UnderbarIdentifier(
+                           Symbol("extract"),
+                           [
+                             NumeralIndex("15");
+                             NumeralIndex("0");
+                           ]
+                         ),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("BV32")))
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               )
+             ])
+         )
        );
        Constraint(
          IdentifierTerms(
@@ -270,30 +591,191 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
-       SetFeature(FwdDecls,BoolConst("true"));
-       SetFeature(Recursion,BoolConst("true"));
-       SmtCmd(DefineFun);
+       SmtCmd(SetLogic(Symbol("LIA")));
+       SetFeature(FwdDecls,"true");
+       SetFeature(Recursion,"true");
+       SmtCmd(DefineFun(
+           Symbol("x_plus_one"),
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
+           Sort(SymbolIdentifier(Symbol("Int"))),
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("+")),
+             [
+               Identifier(SymbolIdentifier(Symbol("x")));
+               Literal(Numeral("1"))
+             ]
+           );
+         ));
        SynthFun(
          Symbol("f"),
-         [SortedVar],
-         Sort,
-         Some(GrammerDef)
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
+         Sort(SymbolIdentifier(Symbol("Int"))),
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("x_plus_one")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               )
+             ])
+         )
        );
-       SmtCmd(DefineFun);
+       SmtCmd(DefineFun(
+           Symbol("fx_plus_one"),
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
+           Sort(SymbolIdentifier(Symbol("Int"))),
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("+")),
+             [
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("f")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("x")))
+                 ]
+               );
+               Literal(Numeral("1"))
+             ]
+           );
+         ));
        SynthFun(
          Symbol("g"),
-         [SortedVar],
-         Sort,
-         Some(GrammerDef)
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
+         Sort(SymbolIdentifier(Symbol("Int"))),
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("fx_plus_one")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               )
+             ])
+         )
        );
        SynthFun(
          Symbol("h"),
-         [SortedVar],
-         Sort,
-         Some(GrammerDef)
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
+         Sort(SymbolIdentifier(Symbol("Int"))),
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfLiteral(Numeral("1"));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("h")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("ite")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("B")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("B"), Sort(SymbolIdentifier(Symbol("Bool")))),
+                 GroupedRuleList(
+                   Symbol("B"),
+                   Sort(SymbolIdentifier(Symbol("Bool"))),
+                   [
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("=")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol(">")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               )
+             ])
+         )
        );
-       DeclareVar(Symbol("y"),Sort);
+       DeclareVar(Symbol("y"),Sort(SymbolIdentifier(Symbol("Int"))));
        Constraint(
          IdentifierTerms(
            SymbolIdentifier(Symbol("=")),
@@ -349,12 +831,132 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("PBE_SLIA")));
        SynthFun(
          Symbol("f"),
-         [SortedVar; SortedVar],
-         Sort,
-         Some(GrammerDef)
+         [
+           SortedVar(Symbol("fname"), Sort(SymbolIdentifier(Symbol("String"))));
+           SortedVar(Symbol("lname"), Sort(SymbolIdentifier(Symbol("String"))))
+         ],
+         Sort(SymbolIdentifier(Symbol("String"))),
+         Some(
+           GrammerDef([
+               (
+                 SortedVar(Symbol("ntString"), Sort(SymbolIdentifier(Symbol("String")))),
+                 GroupedRuleList(
+                   Symbol("ntString"),
+                   Sort(SymbolIdentifier(Symbol("String"))),
+                   [
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("fname"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("lname"))));
+                     GTBfTerm(BfLiteral(StringConst("\" \"")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.++")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.replace")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.at")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("int.to.str")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.substr")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("ntInt"), Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("ntInt"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfLiteral(Numeral("2")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.len")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.to.int")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("str.indexof")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntString")));
+                           BfIdentifier(SymbolIdentifier(Symbol("ntInt")));
+                         ]
+                       )
+                     );
+                   ]
+                 )
+               )
+             ])
+         )
        );
        Constraint(
          IdentifierTerms(
@@ -430,15 +1032,115 @@ let test_result =
       (check-synth)
       ",
      [
-       SmtCmd(SetLogic);
+       SmtCmd(SetLogic(Symbol("INV_LIA")));
        SynthInv(
          Symbol("inv-f"),
-         [SortedVar; SortedVar],
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+           SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
          None
        );
-       SmtCmd(DefineFun);
-       SmtCmd(DefineFun);
-       SmtCmd(DefineFun);
+       SmtCmd(
+         DefineFun(
+           Symbol("pre-f"),
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
+           Sort(SymbolIdentifier(Symbol("Bool"))),
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("and")),
+             [
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol(">=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("x")));
+                   Literal(Numeral("5"))
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("<=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("x")));
+                   Literal(Numeral("9"))
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol(">=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("y")));
+                   Literal(Numeral("1"))
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("<=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("y")));
+                   Literal(Numeral("3"))
+                 ]
+               )
+             ]
+           )
+         ));
+       SmtCmd(
+         DefineFun(
+           Symbol("trans-f"),
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("xp"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("yp"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
+           Sort(SymbolIdentifier(Symbol("Bool"))),
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("and")),
+             [
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("xp")));
+                   IdentifierTerms(
+                     SymbolIdentifier(Symbol("+")),
+                     [
+                       Identifier(SymbolIdentifier(Symbol("x")));
+                       Literal(Numeral("2"))
+                     ]
+                   )
+                 ]
+               );
+               IdentifierTerms(
+                 SymbolIdentifier(Symbol("=")),
+                 [
+                   Identifier(SymbolIdentifier(Symbol("yp")));
+                   IdentifierTerms(
+                     SymbolIdentifier(Symbol("+")),
+                     [
+                       Identifier(SymbolIdentifier(Symbol("y")));
+                       Literal(Numeral("1"))
+                     ]
+                   )
+                 ]
+               )
+             ]
+           )
+         ));
+       SmtCmd(
+         DefineFun(
+           Symbol("post-f"),
+           [
+             SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+             SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+           ],
+           Sort(SymbolIdentifier(Symbol("Bool"))),
+           IdentifierTerms(
+             SymbolIdentifier(Symbol("<")),
+             [
+               Identifier(SymbolIdentifier(Symbol("y")));
+               Identifier(SymbolIdentifier(Symbol("x")))
+             ]
+           )
+         ));
        InvConstraint(
          Symbol("inv-f"),
          Symbol("pre-f"),

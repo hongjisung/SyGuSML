@@ -3,19 +3,19 @@ type cmd =
   | Constraint of term
   | DeclareVar of symbol * sort
   | InvConstraint of symbol * symbol * symbol * symbol
-  | SetFeature of feature * literal
+  | SetFeature of feature * boolconst
   | SynthFun of symbol * sorted_var list * sort * grammer_def option
   | SynthInv of symbol * sorted_var list * grammer_def option
   | SmtCmd of smt_cmd
 
 and smt_cmd =
-  | DeclareDatatype
-  | DeclareDatatypes
-  | DeclareSort
-  | DefineFun
-  | DefineSort
-  | SetLogic
-  | SetOption
+  | DeclareDatatype of symbol * dt_dec
+  | DeclareDatatypes of (sort_decl * dt_dec) list
+  | DeclareSort of symbol * numeral
+  | DefineFun of symbol * sorted_var list * sort * term
+  | DefineSort of symbol * sort
+  | SetLogic of symbol
+  | SetOption of symbol * literal
 
 and term =
   | Identifier of identifier
@@ -26,15 +26,15 @@ and term =
   | Let of var_binding list * term
 
 and bf_term =
-  | BfIdentifier
-  | BfLiteral
-  | BfIdentifierTerms
+  | BfIdentifier of identifier
+  | BfLiteral of literal
+  | BfIdentifierTerms of identifier * bf_term list
 
 and sorted_var =
-  | SortedVar
+  | SortedVar of symbol * sort
 
 and var_binding =
-  | VarBinding
+  | VarBinding of symbol * term
 
 and identifier =
   | SymbolIdentifier of symbol
@@ -44,12 +44,12 @@ and symbol =
   | Symbol of string
 
 and index =
-  | NumeralIndex
-  | SymbolIndex
+  | NumeralIndex of numeral
+  | SymbolIndex of symbol
 
 and sort =
-  | Sort
-  | SortWithSorts
+  | Sort of identifier
+  | SortWithSorts of identifier * sort list
 
 and feature =
   | Grammers
@@ -57,29 +57,32 @@ and feature =
   | Recursion
 
 and sort_decl =
-  | SortDeclaration
+  | SortDeclaration of symbol * numeral
 
 and dt_dec =
-  | DTDec
+  | DTDec of dt_cond_dec list
 
 and dt_cond_dec =
-  | DTConsDec
+  | DTConsDec of symbol * sorted_var list
 
 and grammer_def =
-  | GrammerDef
+  | GrammerDef of (sorted_var * grouped_rule_list) list
 
-and groupedrulelist =
-  | GroupedRuleList
+and grouped_rule_list =
+  | GroupedRuleList of symbol * sort * gterm list
 
 and gterm =
-  | GTConstant
-  | GTVariable
-  | GTBfTerm
+  | GTConstant of sort
+  | GTVariable of sort
+  | GTBfTerm of bf_term
 
 and literal =
-  | Numeral of string
+  | Numeral of numeral
   | Decimal of string
-  | BoolConst of string
+  | BoolConst of boolconst
   | HexConst of string
   | BinConst of string
   | StringConst of string
+
+and numeral = string
+and boolconst = string
