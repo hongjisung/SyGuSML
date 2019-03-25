@@ -5,7 +5,7 @@
 
 exception Testfail;;
 
-let _ =
+(* let _ =
 	Printf.printf "Running Z3 version %s\n" Z3.Version.to_string ;
 	Printf.printf "Z3 full version string: %s\n" Z3.Version.full_version ;
   let cfg = [] in 
@@ -41,5 +41,43 @@ let _ =
             Printf.printf "Model: \n%s\n" (Z3.Model.to_string model);
             Printf.printf "Solver: \n%s\n" (Z3.Solver.to_string solver);
         )
-    ); 
+    );  *)
+
+Printf.printf "Running Z3 version %s\n" Z3.Version.to_string ;;
+Printf.printf "Z3 full version string: %s\n" Z3.Version.full_version ;;
+
+let cfg = [];;
+let ctx = Z3.mk_context cfg;;
+let test = Z3.SMT.parse_smtlib2_string ctx 
+  "(define-fun f ((x Int) (y Int)) Int (+ (* 2 x) (* 2 y)))
+  (declare-const x Int)
+  (declare-const y Int)
+  (assert (= (f x y) (* 2 (+ x y))))"
+  [] [] [] []
+  ;;
+
+let _ =
+  let solver  = Z3.Solver.mk_solver ctx None in
+  let inex = Z3.AST.ASTVector.to_expr_list test in
+    Z3.Solver.add solver inex;
+    match Z3.Solver.check solver [] with
+    | UNSATISFIABLE -> (
+      print_endline "unsat";
+      Printf.printf "Solver: \n%s\n" (Z3.Solver.to_string solver);
+    )
+    | UNKNOWN -> print_endline "unknown"
+    | SATISFIABLE -> (
+      print_endline "sat";
+      let model = Z3.Solver.get_model solver in 
+        match model with
+        | None -> raise (Testfail)
+        | Some (model) -> (
+            Printf.printf "Model: \n%s\n" (Z3.Model.to_string model);
+            Printf.printf "Solver: \n%s\n" (Z3.Solver.to_string solver);
+        )
+    );
+
+
+
+
     
