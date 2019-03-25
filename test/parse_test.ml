@@ -63,7 +63,7 @@ let test_result =
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(
-           GrammerDef([
+           GrammarDef([
                (
                  SortedVar(Symbol("I"),Sort(SymbolIdentifier(Symbol("Int")))),
                  GroupedRuleList(
@@ -209,7 +209,7 @@ let test_result =
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(
-           GrammerDef([
+           GrammarDef([
                (
                  SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
                  GroupedRuleList(
@@ -408,7 +408,7 @@ let test_result =
          ],
          Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")])),
          Some(
-           GrammerDef([
+           GrammarDef([
                (
                  SortedVar(Symbol("BV32"), Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("32")]))),
                  GroupedRuleList(
@@ -615,7 +615,7 @@ let test_result =
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(
-           GrammerDef([
+           GrammarDef([
                (
                  SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
                  GroupedRuleList(
@@ -665,7 +665,7 @@ let test_result =
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(
-           GrammerDef([
+           GrammarDef([
                (
                  SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
                  GroupedRuleList(
@@ -696,7 +696,7 @@ let test_result =
          ],
          Sort(SymbolIdentifier(Symbol("Int"))),
          Some(
-           GrammerDef([
+           GrammarDef([
                (
                  SortedVar(Symbol("I"), Sort(SymbolIdentifier(Symbol("Int")))),
                  GroupedRuleList(
@@ -840,7 +840,7 @@ let test_result =
          ],
          Sort(SymbolIdentifier(Symbol("String"))),
          Some(
-           GrammerDef([
+           GrammarDef([
                (
                  SortedVar(Symbol("ntString"), Sort(SymbolIdentifier(Symbol("String")))),
                  GroupedRuleList(
