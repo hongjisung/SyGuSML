@@ -17,7 +17,7 @@ Instead of check sat, check unsat for not expr.
 Because solver find result for special case of variable.
 *)
 open Ast
-let examples = ["/newdisk/synKU/benchmarks/example1"]
+let examples = ["/newdisk/synKU/benchmarks/handmade"]
 
 let rec solveExamples examples=
   match examples with
@@ -25,7 +25,7 @@ let rec solveExamples examples=
   | h::t ->
     let example = Readfile.readfile h in
     let parsetree = ChangeToParseTree.changeToParseTree example in 
-    
+      GetSynFuncGrammars.getSynFuncGrammars parsetree
 
 let _ =
   solveExamples examples;;
