@@ -1,7 +1,7 @@
 .PHONY : all test clean install-deps
 
 all:
-	ocamlbuild -use-ocamlfind -use-menhir -r -I src/ main.native
+	ocamlbuild -use-ocamlfind -use-menhir -package z3 -tags thread -r -I src/ main.native
 
 test: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -Is src/,test/ parse_test.native --
