@@ -41,12 +41,19 @@ signature
 *)
 
 open Ast
+exception SygusError
 exception SetLogicError
 exception SetFeatureError
 
 type signature = 
   | SortSignature of sort
   | SymbolSignature of symbol
+
+let rec symbolListToSigature symli =
+  match symli with
+  | [] -> []
+  | h::t ->
+    SymbolSignature(Symbol(h)) :: (symbolListToSigature t)
 
 let getStringFromSignature sign = 
   match sign with
@@ -186,10 +193,10 @@ let rec isBVinSignature li =
 
 (*
 SYNTHFUN, SYNTHINV  S ()
- S is already in signature, reject this.
+  if S is already in signature, reject this.
 
 DECLAREVAR S o
-  S is already in signature, reject this.
+  if S is already in signature, reject this.
 
 DECLAREDATATYPE S D = DECLAREDATATYPES ((S 0)) (D)
 DECLAREDATATYPES ((S1 a1) ...) (D1 ...)
@@ -208,24 +215,55 @@ DEFINESORT S ()
 SETOPTION S L
   if S in signature, reject
 *)
+let getSymbolOfsortdecl sortdecl =
+  match sortdecl with
+  | SortDeclaration (symbol, numeral) ->
+    match symbol with
+    | Symbol str -> str
+
+let rec getSymbolOfsortedvarlist sortedvarlist = 
+  match sortedvarlist with
+  | [] -> []
+  | h::t ->
+    match h with
+    | SortedVar(Symbol(str), sort) ->
+      str::(getSymbolOfsortedvarlist t)
+
+let rec getSymbolOfdtconddeclist dtconddeclist =
+  match dtconddeclist with
+  | [] -> []
+  | h::t ->
+    match h with
+    | DTConsDec(Symbol(str), sortedvarlist) ->
+      str :: (getSymbolOfsortedvarlist sortedvarlist) @ (getSymbolOfdtconddeclist t)
+
+let rec getSymbolOfDataTypes dtlist =
+  match dtlist with
+  | [] -> []
+  | h::t ->
+    match h with
+    | (sortdecl, DTDec(dtconddeclist)) ->
+      (getSymbolOfsortdecl sortdecl) :: (getSymbolOfdtconddeclist dtconddeclist) @ (getSymbolOfDataTypes t)
+
 
 (* FLOW LOGIC
 1. read SETLOGIC -> setting basic signature and grammar
-2. a) meet SYNTHFUN, SYNTHINV -> make SynthFun list
+2. a) meet SYNTHFUN -> make SynthFun list
+           *SYNTHINV -> convert to SYNTHFUN
    b) meet other with
       *CHECKSYNTH -> ignore
       *CONSTRAINT -> ignore
-      DECLAREVAR -> add symbol sort to signature
+      *DECLAREVAR -> add symbol sort to signature
       *INVCONSTRAINT -> ignore
       *SETFEATURE -> setting feature
       
-      DECLAREDATATYPE -> add new sort to signature
-      DECLAREDATATYPES -> add new sorts to signature
-      DECLARESORT -> add new sort to signature
-      DEFINEFUN -> add new sort to signature (does this need?)
-      DEFINESORT -> add new sort to signature
+      *DECLAREDATATYPE -> convert to DECLAREDATATYPES
+      *DECLAREDATATYPES -> add new sorts to signature
+      *DECLARESORT -> add new sort to signature
+      *DEFINEFUN -> add new sort to signature (does this need?)
+      *DEFINESORT -> add new sort to signature
       *SETLOGIC -> set basic logic 
-      SETOPTION -> set literal to S, if unrecognized, ignore
+      *SETOPTION -> set literal to S, if unrecognized, ignore
                   (add this to signature with option)
 *)
 let getSynFuncGrammars parsetree =
@@ -239,6 +277,21 @@ let getSynFuncGrammars parsetree =
     | [] -> []
     | h::t ->
       match h with
+      | CheckSynth -> analysisCmd t
+      | Constraint _-> analysisCmd t
+      | DeclareVar (symbol, sort) ->
+        let siglist = getSignatureStringList !signature in 
+        (
+          match symbol with
+          | Symbol str ->
+            if (ListMethods.containElement siglist str)
+            then analysisCmd t
+            else (
+              signature := SymbolSignature(symbol)::!signature;
+              analysisCmd t
+            )
+        )
+      | InvConstraint _ -> analysisCmd t
       | SetFeature (f, b) -> (
         (match f, b with
         | Grammars, "true" -> featureGrammars := true
@@ -251,11 +304,69 @@ let getSynFuncGrammars parsetree =
         );
         analysisCmd t
       )
-      | CheckSynth -> analysisCmd t
-      | Constraint _-> analysisCmd t
-      | InvConstraint _ -> analysisCmd t
+      | SynthFun (symbol, sortedvarlist, sort, grammardefopt) ->
+        let siglist = getSignatureStringList !signature in 
+        (
+          match symbol with
+          | Symbol str ->
+            if (ListMethods.containElement siglist str)
+            then analysisCmd t
+            else (
+              signature := SymbolSignature(symbol)::!signature;
+              analysisCmd t
+            )
+        )
+      | SynthInv (symbol, sortedvarlist, grammardefopt) ->         
+        analysisCmd (SynthFun(symbol, sortedvarlist, Sort(SymbolIdentifier(Symbol("Bool"))), grammardefopt)::t)
       | SmtCmd smt_cmd -> (
         match smt_cmd with
+        | DeclareDatatype (symbol, dtdec) -> 
+          analysisCmd (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t)
+        | DeclareDatatypes dtlist -> 
+          let siglist = getSignatureStringList !signature in 
+          let symbollist = getSymbolOfDataTypes dtlist in 
+          if (ListMethods.containAnyElement siglist symbollist)
+          then analysisCmd t
+          else (
+            signature := (symbolListToSigature symbollist) @ !signature;
+            analysisCmd t
+          )
+        | DeclareSort (symbol, numeral)  -> 
+          let siglist = getSignatureStringList !signature in 
+          (
+            match symbol with
+            | Symbol str ->
+              if (ListMethods.containElement siglist str)
+              then analysisCmd t
+              else (
+                signature := SymbolSignature(symbol)::!signature;
+                analysisCmd t
+              )
+          )
+        | DefineFun (symbol, sortedvarlist, sort, term) ->
+          let siglist = getSignatureStringList !signature in 
+          (
+            match symbol with
+            | Symbol str ->
+              if (ListMethods.containElement siglist str)
+              then analysisCmd t
+              else (
+                signature := SymbolSignature(symbol)::!signature;
+                analysisCmd t
+              )
+          )
+        | DefineSort (symbol, sort) -> 
+          let siglist = getSignatureStringList !signature in 
+          (
+            match symbol with
+            | Symbol str ->
+              if (ListMethods.containElement siglist str)
+              then analysisCmd t
+              else (
+                signature := SymbolSignature(symbol)::!signature;
+                analysisCmd t
+              )
+          )
         | SetLogic symbol -> (
             match symbol with
             | Symbol str -> (
@@ -265,7 +376,19 @@ let getSynFuncGrammars parsetree =
               )
             | _ -> raise SetLogicError
         )
-        | _ -> []
+        | SetOption (symbol, literal) ->
+          let siglist = getSignatureStringList !signature in 
+          (
+            match symbol with
+            | Symbol str ->
+              if (ListMethods.containElement siglist str)
+              then analysisCmd t
+              else (
+                signature := SymbolSignature(symbol)::!signature;
+                analysisCmd t
+              )
+          )
+        | _ -> raise SygusError
       )
       | _ -> [] 
       in 
