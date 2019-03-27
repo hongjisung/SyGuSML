@@ -2,7 +2,7 @@
 (declare-datatypes ((List 0)) (((nil) (cons (head Int) (tail (List Int))))))
 (synth-fun f ((x Int) (y Int)) Int
   ((I Int) (Ic Int))
-  ((I Int (0 1 x y
+  ((I Int (0 1 (Varaiable x)
           (+ I I)
           (* Ic I)))
   (Ic Int (0 1 2 (- 1) (- 2)))))
