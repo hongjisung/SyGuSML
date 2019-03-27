@@ -55,25 +55,27 @@ let rec symbolListToSigature symli =
   | h::t ->
     SymbolSignature(Symbol(h)) :: (symbolListToSigature t)
 
+let getStringFromSort sort =
+  match sort with
+  | Sort identifier -> (
+    match identifier with
+    | SymbolIdentifier symbol ->
+      (match symbol with Symbol s -> s )
+    | UnderbarIdentifier (symbol, indexlist) ->
+      (match symbol with Symbol s -> s)
+  )
+  | SortWithSorts (identifier, sortlist) -> (
+    match identifier with
+    | SymbolIdentifier symbol ->
+      (match symbol with Symbol s -> s )
+    | UnderbarIdentifier (symbol, indexlist) ->
+      (match symbol with Symbol s -> s )
+  )
+
 let getStringFromSignature sign = 
   match sign with
-  | SortSignature sort -> (
-    match sort with
-    | Sort identifier -> (
-      match identifier with
-      | SymbolIdentifier symbol ->
-        (match symbol with Symbol s -> s )
-      | UnderbarIdentifier (symbol, indexlist) ->
-        (match symbol with Symbol s -> s)
-    )
-    | SortWithSorts (identifier, sortlist) -> (
-      match identifier with
-      | SymbolIdentifier symbol ->
-        (match symbol with Symbol s -> s )
-      | UnderbarIdentifier (symbol, indexlist) ->
-        (match symbol with Symbol s -> s )
-    )
-  )
+  | SortSignature sort -> 
+    getStringFromSort sort
   | SymbolSignature symbol ->
     match symbol with Symbol s -> s
 
@@ -237,6 +239,7 @@ let rec getSymbolOfdtconddeclist dtconddeclist =
     | DTConsDec(Symbol(str), sortedvarlist) ->
       str :: (getSymbolOfsortedvarlist sortedvarlist) @ (getSymbolOfdtconddeclist t)
 
+(* get symbols from DECLAREDATATYPES*)
 let rec getSymbolOfDataTypes dtlist =
   match dtlist with
   | [] -> []
@@ -245,6 +248,64 @@ let rec getSymbolOfDataTypes dtlist =
     | (sortdecl, DTDec(dtconddeclist)) ->
       (getSymbolOfsortdecl sortdecl) :: (getSymbolOfdtconddeclist dtconddeclist) @ (getSymbolOfDataTypes t)
 
+(* get parameter per sort *)
+let getParameterPerSort sortedvarlist =
+  let hash = Hashtbl.create 31 in
+  let rec addParamToHash sortedvarlist = (
+    match sortedvarlist with
+    | [] -> ()
+    | h::t ->
+      ( 
+        match h with
+        | SortedVar(Symbol(sym), sort) ->
+          let sortname = getStringFromSort sort in
+          try
+            let li = Hashtbl.find hash sortname in 
+            Hashtbl.add hash sortname (sym::li)
+          with _ -> Hashtbl.add hash sortname [sym]
+      );
+      addParamToHash t
+  ) in 
+  addParamToHash sortedvarlist;
+  hash
+
+(* check this has grammar *)
+let doesSynHasGrammar grammardefopt =
+  match grammardefopt with
+  | None -> false
+  | Some gammardef -> true
+
+let rec makeGTBfTermVarlist varlist =
+  match varlist with
+  | [] -> []
+  | h::t ->
+    GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x")))) :: (makeGTBfTermVarlist t)
+
+let rec checkgtermlist gtermlist paramhash =
+  match gtermlist with
+  | [] -> []
+  | h::t ->
+    match h with 
+    | GTConstant sort -> h::(checkgtermlist t paramhash)
+    | GTBfTerm bf_term -> h::(checkgtermlist t paramhash)
+    | GTVariable sort ->
+      let sortname = getStringFromSort sort in 
+      let varlist = Hashtbl.find paramhash sortname in
+      (makeGTBfTermVarlist varlist) @ (checkgtermlist t paramhash)
+
+let rec checkGrammarlist grammarlist paramhash =
+  match grammarlist with
+  | [] -> []
+  | h::t ->
+    match h with
+    | (sortedvar, GroupedRuleList(symbol, sort, gtermlist)) ->
+      (sortedvar, GroupedRuleList(symbol, sort, checkgtermlist gtermlist paramhash))::(checkGrammarlist t paramhash)
+
+(* change Variable sort to parameters of that sort in syn-func *)
+let changeVarsortToParam grammardef paramhash =
+  match grammardef with
+  | GrammarDef grammarlist ->
+    GrammarDef(checkGrammarlist grammarlist paramhash)
 
 (* FLOW LOGIC
 1. read SETLOGIC -> setting basic signature and grammar
@@ -266,6 +327,79 @@ let rec getSymbolOfDataTypes dtlist =
       *SETOPTION -> set literal to S, if unrecognized, ignore
                   (add this to signature with option)
 *)
+
+let synfuntest = [SynthFun(
+         Symbol("f"),
+         [
+           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
+           SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
+         ],
+         Sort(SymbolIdentifier(Symbol("Int"))),
+         Some(
+           GrammarDef([
+               (
+                 SortedVar(Symbol("I"),Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("I"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("y"))));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("+")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("I")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("*")),
+                         [
+                           BfIdentifier(SymbolIdentifier(Symbol("Ic")));
+                           BfIdentifier(SymbolIdentifier(Symbol("I")))
+                         ]
+                       )
+                     )
+                   ]
+                 )
+               );
+               (
+                 SortedVar(Symbol("Ic"),Sort(SymbolIdentifier(Symbol("Int")))),
+                 GroupedRuleList(
+                   Symbol("Ic"),
+                   Sort(SymbolIdentifier(Symbol("Int"))),
+                   [
+                     GTBfTerm(BfLiteral(Numeral("0")));
+                     GTBfTerm(BfLiteral(Numeral("1")));
+                     GTBfTerm(BfLiteral(Numeral("2")));
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfLiteral(Numeral("1"))
+                         ]
+                       )
+                     );
+                     GTBfTerm(
+                       BfIdentifierTerms(
+                         SymbolIdentifier(Symbol("-")),
+                         [
+                           BfLiteral(Numeral("2"))
+                         ]
+                       )
+                     )
+                   ]
+                 )
+               )
+             ])
+         )
+       )]
+
 let getSynFuncGrammars parsetree =
   let signature = ref [] in
   let logiclist = ref [] in
@@ -313,7 +447,28 @@ let getSynFuncGrammars parsetree =
             then analysisCmd t
             else (
               signature := SymbolSignature(symbol)::!signature;
-              analysisCmd t
+              (* get parameter per sort *)
+              let paramhash = (getParameterPerSort sortedvarlist) in
+              PrintMethods.printStringList (Hashtbl.find paramhash "Int");
+              print_newline ();
+              (* check this has grammar *)
+              let isgrammar = doesSynHasGrammar grammardefopt in
+              let grammar = ref (GrammarDef([])) in
+              (* no grammars then add basic grammars based on logiclist
+                 and extract that syn-func grammar*)
+              if not isgrammar then Printf.printf("false\n")
+              (* else extract that syn-func grammar*)
+              else (
+                Printf.printf("true\n\n");
+                match grammardefopt with
+                | None -> ()
+                | Some grammardef ->
+                  grammar := grammardef 
+              );
+              (* change Variable sort to parameters of that sort in syn-func *)
+              grammar := changeVarsortToParam !grammar paramhash;
+              (* add it to list and go next cmd*)
+              SynthFun(symbol, sortedvarlist, sort, Some(!grammar))::(analysisCmd t)
             )
         )
       | SynthInv (symbol, sortedvarlist, grammardefopt) ->         
@@ -398,6 +553,7 @@ let getSynFuncGrammars parsetree =
     Printf.printf "%b\n" (isBVinSignature !signature);
     print_endline "";
     PrintMethods.printStringList (getSignatureStringList !signature);
+    Printf.printf "\n%b\n" (synfunlist = synfuntest);
     synfunlist
 
 
