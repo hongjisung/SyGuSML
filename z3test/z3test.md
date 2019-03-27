@@ -32,6 +32,8 @@ example 1
 
 example 2  
 how to convert (_ is C) grammar to Z3
+  
+z3 tutorial rise4fun
 ```
 (declare-datatypes () ((LList nil (cons (head Int) (tail LList)))))
 
@@ -40,6 +42,16 @@ how to convert (_ is C) grammar to Z3
 (assert (= (f (cons 0 nil)) 1))
 (assert (= (f nil) 0))
 (check-sat)
+```
+
+ocaml Z3.SMT
+```
+(declare-datatypes () ((List nil (cons (head Int) (tail List)))))
+  (define-fun f ((x List)) Int (ite ((_ is nil) x) 0 (+ 1 (head x))))
+  (assert (= (f (cons 4 nil)) 5))
+  (assert (= (f (cons 0 nil)) 1))
+  (assert (= (f nil) 0))
+  (check-sat)
 ```
 
 example 3

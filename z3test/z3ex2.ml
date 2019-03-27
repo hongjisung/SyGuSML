@@ -10,9 +10,9 @@ let cfg = [];;
 let ctx = Z3.mk_context cfg;;
 
 let test = Z3.SMT.parse_smtlib2_string ctx 
-  "(declare-datatypes () ((LList nil (cons (head Int) (tail LList)))))
-  (define-fun f ((x LList)) Int (ite (= x nil) 0 (+ 1 (head x))))
-  (assert (= (f (cons 4 nil)) 5))
+  "(declare-datatypes () ((List nil (cons (head Int) (tail List)))))
+  (define-fun f ((x List)) Int (ite ((_ is nil) x) 0 (+ 1 (head x))))
+  (assert (= (f (cons 4 nil)) 4))
   (assert (= (f (cons 0 nil)) 1))
   (assert (= (f nil) 0))
   (check-sat)"
