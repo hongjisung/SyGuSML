@@ -7,7 +7,7 @@ test: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -Is src/,test/ parse_test.native --
 
 solvertest: clean
-	ocamlbuild -use-ocamlfind -use-menhir -r -Is src/,src/method solver.native --
+	ocamlbuild -use-ocamlfind -use-menhir -r -Is src/,src/method,src/synlogic solver.native --
 
 install-deps:
 	opam install -y ocamlbuild menhir
