@@ -261,7 +261,7 @@ let getParameterPerSort sortedvarlist =
           let sortname = getStringFromSort sort in
           try
             let li = Hashtbl.find hash sortname in 
-            Hashtbl.add hash sortname (sym::li)
+            Hashtbl.add hash sortname ( sym::li )
           with _ -> Hashtbl.add hash sortname [sym]
       );
       addParamToHash t
@@ -279,7 +279,7 @@ let rec makeGTBfTermVarlist varlist =
   match varlist with
   | [] -> []
   | h::t ->
-    GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x")))) :: (makeGTBfTermVarlist t)
+    GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol(h)))) :: (makeGTBfTermVarlist t)
 
 let rec checkgtermlist gtermlist paramhash =
   match gtermlist with
@@ -289,6 +289,7 @@ let rec checkgtermlist gtermlist paramhash =
     | GTConstant sort -> h::(checkgtermlist t paramhash)
     | GTBfTerm bf_term -> h::(checkgtermlist t paramhash)
     | GTVariable sort ->
+      Printf.printf "Variable change\n\n";
       let sortname = getStringFromSort sort in 
       let varlist = Hashtbl.find paramhash sortname in
       (makeGTBfTermVarlist varlist) @ (checkgtermlist t paramhash)
@@ -307,28 +308,8 @@ let changeVarsortToParam grammardef paramhash =
   | GrammarDef grammarlist ->
     GrammarDef(checkGrammarlist grammarlist paramhash)
 
-(* FLOW LOGIC
-1. read SETLOGIC -> setting basic signature and grammar
-2. a) meet SYNTHFUN -> make SynthFun list
-           *SYNTHINV -> convert to SYNTHFUN
-   b) meet other with
-      *CHECKSYNTH -> ignore
-      *CONSTRAINT -> ignore
-      *DECLAREVAR -> add symbol sort to signature
-      *INVCONSTRAINT -> ignore
-      *SETFEATURE -> setting feature
-      
-      *DECLAREDATATYPE -> convert to DECLAREDATATYPES
-      *DECLAREDATATYPES -> add new sorts to signature
-      *DECLARESORT -> add new sort to signature
-      *DEFINEFUN -> add new sort to signature (does this need?)
-      *DEFINESORT -> add new sort to signature
-      *SETLOGIC -> set basic logic 
-      *SETOPTION -> set literal to S, if unrecognized, ignore
-                  (add this to signature with option)
-*)
-
-let synfuntest = [SynthFun(
+let synfuntest = [
+         SynthFun(
          Symbol("f"),
          [
            SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
@@ -345,8 +326,8 @@ let synfuntest = [SynthFun(
                    [
                      GTBfTerm(BfLiteral(Numeral("0")));
                      GTBfTerm(BfLiteral(Numeral("1")));
-                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
                      GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("y"))));
+                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
                      GTBfTerm(
                        BfIdentifierTerms(
                          SymbolIdentifier(Symbol("+")),
@@ -400,6 +381,26 @@ let synfuntest = [SynthFun(
          )
        )]
 
+(* FLOW LOGIC
+1. read SETLOGIC -> setting basic signature and grammar
+2. a) meet SYNTHFUN -> make SynthFun list
+           *SYNTHINV -> convert to SYNTHFUN
+   b) meet other with
+      *CHECKSYNTH -> ignore
+      *CONSTRAINT -> ignore
+      *DECLAREVAR -> add symbol sort to signature
+      *INVCONSTRAINT -> ignore
+      *SETFEATURE -> setting feature
+      
+      *DECLAREDATATYPE -> convert to DECLAREDATATYPES
+      *DECLAREDATATYPES -> add new sorts to signature
+      *DECLARESORT -> add new sort to signature
+      *DEFINEFUN -> add new sort to signature (does this need?)
+      *DEFINESORT -> add new sort to signature
+      *SETLOGIC -> set basic logic 
+      *SETOPTION -> set literal to S, if unrecognized, ignore
+                  (add this to signature with option)
+*)
 let getSynFuncGrammars parsetree =
   let signature = ref [] in
   let logiclist = ref [] in
@@ -439,6 +440,7 @@ let getSynFuncGrammars parsetree =
         analysisCmd t
       )
       | SynthFun (symbol, sortedvarlist, sort, grammardefopt) ->
+        Printf.printf "synfuncheck: %b\n\n" ([h] = synfuntest);
         let siglist = getSignatureStringList !signature in 
         (
           match symbol with
@@ -456,7 +458,10 @@ let getSynFuncGrammars parsetree =
               let grammar = ref (GrammarDef([])) in
               (* no grammars then add basic grammars based on logiclist
                  and extract that syn-func grammar*)
-              if not isgrammar then Printf.printf("false\n")
+              if not isgrammar then (
+                Printf.printf("false\n")
+                (* make basic grammar here *)
+              )
               (* else extract that syn-func grammar*)
               else (
                 Printf.printf("true\n\n");
