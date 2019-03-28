@@ -1,5 +1,4 @@
-(set-logic PBE_SBVLIA)
-(declare-datatypes ((List 0)) (((nil) (cons (head Int) (tail (List Int))))))
+(set-logic LIA)
 (synth-fun f ((x Int) (y Int)) Int
   ((I Int) (Ic Int))
   ((I Int (0 1 (Variable Int)
