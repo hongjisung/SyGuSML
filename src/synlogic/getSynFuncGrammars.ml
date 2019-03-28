@@ -41,13 +41,10 @@ signature
 *)
 
 open Ast
+open SetSynFuncType
 exception SygusError
 exception SetLogicError
 exception SetFeatureError
-
-type signature = 
-  | SortSignature of sort
-  | SymbolSignature of symbol
 
 let rec symbolListToSigature symli =
   match symli with
@@ -289,7 +286,7 @@ let rec checkgtermlist gtermlist paramhash =
     | GTConstant sort -> h::(checkgtermlist t paramhash)
     | GTBfTerm bf_term -> h::(checkgtermlist t paramhash)
     | GTVariable sort ->
-      Printf.printf "Variable change\n\n";
+      (* Printf.printf "Variable change\n\n"; *)
       let sortname = getStringFromSort sort in 
       let varlist = Hashtbl.find paramhash sortname in
       (makeGTBfTermVarlist varlist) @ (checkgtermlist t paramhash)
@@ -308,80 +305,9 @@ let changeVarsortToParam grammardef paramhash =
   | GrammarDef grammarlist ->
     GrammarDef(checkGrammarlist grammarlist paramhash)
 
-let synfuntest = [
-         SynthFun(
-         Symbol("f"),
-         [
-           SortedVar(Symbol("x"), Sort(SymbolIdentifier(Symbol("Int"))));
-           SortedVar(Symbol("y"), Sort(SymbolIdentifier(Symbol("Int"))))
-         ],
-         Sort(SymbolIdentifier(Symbol("Int"))),
-         Some(
-           GrammarDef([
-               (
-                 SortedVar(Symbol("I"),Sort(SymbolIdentifier(Symbol("Int")))),
-                 GroupedRuleList(
-                   Symbol("I"),
-                   Sort(SymbolIdentifier(Symbol("Int"))),
-                   [
-                     GTBfTerm(BfLiteral(Numeral("0")));
-                     GTBfTerm(BfLiteral(Numeral("1")));
-                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("y"))));
-                     GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))));
-                     GTBfTerm(
-                       BfIdentifierTerms(
-                         SymbolIdentifier(Symbol("+")),
-                         [
-                           BfIdentifier(SymbolIdentifier(Symbol("I")));
-                           BfIdentifier(SymbolIdentifier(Symbol("I")))
-                         ]
-                       )
-                     );
-                     GTBfTerm(
-                       BfIdentifierTerms(
-                         SymbolIdentifier(Symbol("*")),
-                         [
-                           BfIdentifier(SymbolIdentifier(Symbol("Ic")));
-                           BfIdentifier(SymbolIdentifier(Symbol("I")))
-                         ]
-                       )
-                     )
-                   ]
-                 )
-               );
-               (
-                 SortedVar(Symbol("Ic"),Sort(SymbolIdentifier(Symbol("Int")))),
-                 GroupedRuleList(
-                   Symbol("Ic"),
-                   Sort(SymbolIdentifier(Symbol("Int"))),
-                   [
-                     GTBfTerm(BfLiteral(Numeral("0")));
-                     GTBfTerm(BfLiteral(Numeral("1")));
-                     GTBfTerm(BfLiteral(Numeral("2")));
-                     GTBfTerm(
-                       BfIdentifierTerms(
-                         SymbolIdentifier(Symbol("-")),
-                         [
-                           BfLiteral(Numeral("1"))
-                         ]
-                       )
-                     );
-                     GTBfTerm(
-                       BfIdentifierTerms(
-                         SymbolIdentifier(Symbol("-")),
-                         [
-                           BfLiteral(Numeral("2"))
-                         ]
-                       )
-                     )
-                   ]
-                 )
-               )
-             ])
-         )
-       )]
-
 (* FLOW LOGIC
+consider all signature, funcname signature(featureFwdDecls, featureRecursion)
+
 1. read SETLOGIC -> setting basic signature and grammar
 2. a) meet SYNTHFUN -> make SynthFun list
            *SYNTHINV -> convert to SYNTHFUN
@@ -395,7 +321,7 @@ let synfuntest = [
       *DECLAREDATATYPE -> convert to DECLAREDATATYPES
       *DECLAREDATATYPES -> add new sorts to signature
       *DECLARESORT -> add new sort to signature
-      *DEFINEFUN -> add new sort to signature (does this need?)
+      *DEFINEFUN -> add new sort to signature (does this need?), 
       *DEFINESORT -> add new sort to signature
       *SETLOGIC -> set basic logic 
       *SETOPTION -> set literal to S, if unrecognized, ignore
@@ -403,6 +329,8 @@ let synfuntest = [
 *)
 let getSynFuncGrammars parsetree =
   let signature = ref [] in
+  (* just for feature setting, not yet implement *)
+  let funsignature = ref [] in
   let logiclist = ref [] in
   let featureGrammars = ref true in
   let featureFwdDecls = ref false in 
@@ -440,7 +368,6 @@ let getSynFuncGrammars parsetree =
         analysisCmd t
       )
       | SynthFun (symbol, sortedvarlist, sort, grammardefopt) ->
-        Printf.printf "synfuncheck: %b\n\n" ([h] = synfuntest);
         let siglist = getSignatureStringList !signature in 
         (
           match symbol with
@@ -451,26 +378,27 @@ let getSynFuncGrammars parsetree =
               signature := SymbolSignature(symbol)::!signature;
               (* get parameter per sort *)
               let paramhash = (getParameterPerSort sortedvarlist) in
-              PrintMethods.printStringList (Hashtbl.find paramhash "Int");
-              print_newline ();
+              (* PrintMethods.printStringList (Hashtbl.find paramhash "Int");
+              print_newline (); *)
               (* check this has grammar *)
               let isgrammar = doesSynHasGrammar grammardefopt in
               let grammar = ref (GrammarDef([])) in
               (* no grammars then add basic grammars based on logiclist
                  and extract that syn-func grammar*)
               if not isgrammar then (
-                Printf.printf("false\n")
+                (* Printf.printf("false\n") *)
                 (* make basic grammar here *)
               )
               (* else extract that syn-func grammar*)
               else (
-                Printf.printf("true\n\n");
+                (* Printf.printf("true\n\n"); *)
                 match grammardefopt with
                 | None -> ()
                 | Some grammardef ->
                   grammar := grammardef 
               );
               (* change Variable sort to parameters of that sort in syn-func *)
+              (* didn't check when featureFwdDecls, featureRecursion is true *)
               grammar := changeVarsortToParam !grammar paramhash;
               (* add it to list and go next cmd*)
               SynthFun(symbol, sortedvarlist, sort, Some(!grammar))::(analysisCmd t)
@@ -553,12 +481,12 @@ let getSynFuncGrammars parsetree =
       | _ -> [] 
       in 
   let synfunlist = analysisCmd parsetree in
-    PrintMethods.printStringList !logiclist;
+    (* PrintMethods.printStringList !logiclist;
     print_endline "";
     Printf.printf "%b\n" (isBVinSignature !signature);
     print_endline "";
-    PrintMethods.printStringList (getSignatureStringList !signature);
-    Printf.printf "\n%b\n" (synfunlist = synfuntest);
+    PrintMethods.printStringList (getSignatureStringList !signature); *)
+    Printf.printf "\nSynFuncGrammars test: %b\n\n" (synfunlist = HandmadeOutput.synfuntest);
     synfunlist
 
 
