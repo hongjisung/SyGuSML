@@ -59,7 +59,7 @@ let solve ast =
     | _ -> [], []
   in
 
-  let rec make_vars_map ctx sorts names =
+  let rec make_vars_map ctx sorts names var_index =
     let rec make_vars ctx sorts var_index =
       match sorts with
       | sort::rest_sorts ->
@@ -70,15 +70,15 @@ let solve ast =
     let var_map = Hashtbl.create 31 in
     let names_and_vars = List.combine names vars in
     List.iter (function (name, var) -> Hashtbl.add var_map name var) names_and_vars;
-    vars, var_map
+    vars, var_map, var_index
   in
 
-  let make_quantifier_params_from_smtcmd ctx smtcmd sorts names body_list funs vars =
+  let make_quantifier_params_from_smtcmd ctx smtcmd sorts names body_list funs vars var_index =
     match smtcmd with
     | DefineFun(symbol,sorted_vars,sort,term) ->
       let fun_name = make_symbol ctx symbol in
       let input_sorts, input_names = split_sorted_var ctx sorted_vars in
-      let input_vars, input_var_map = make_vars_map ctx input_sorts input_names in
+      let input_vars, input_var_map, new_var_index = make_vars_map ctx input_sorts input_names var_index in
       let output_sort = make_sort ctx sort in
       let fun_decl = FuncDecl.mk_func_decl ctx fun_name input_sorts output_sort in
       (* let fun_apply = FuncDecl.apply fun_decl input_vars in *)
@@ -92,26 +92,27 @@ let solve ast =
        names,
        (body_list@[Quantifier.expr_of_quantifier fun_quantifier]),
        funs,
-       vars)
+       vars,
+       new_var_index)
     | _ -> raise UnimplementedSmtCmd
   in
 
-  let rec make_quantifier_params ctx ast sorts names body_list funs vars =
+  let rec make_quantifier_params ctx ast sorts names body_list funs vars var_index =
     match ast with
     | cmd::rest ->(
         match cmd with
         | DeclareVar(symbol,sort) ->
           let var_name = make_symbol ctx symbol in
           let var_sort = make_sort ctx sort in
-          Hashtbl.add vars var_name (Quantifier.mk_bound ctx (List.length sorts) var_sort);
-          make_quantifier_params ctx rest (sorts@[var_sort]) (names@[var_name]) body_list funs vars
+          Hashtbl.add vars var_name (Quantifier.mk_bound ctx var_index var_sort);
+          make_quantifier_params ctx rest (sorts@[var_sort]) (names@[var_name]) body_list funs vars (var_index+1)
         | Constraint(term) ->
           let expr = make_expr ctx term funs vars in
-          make_quantifier_params ctx rest sorts names (expr::body_list) funs vars;
+          make_quantifier_params ctx rest sorts names (expr::body_list) funs vars var_index;
         | SmtCmd(smtcmd) ->
-          let new_sorts, new_names, new_body_list, new_funs, new_vars
-            = make_quantifier_params_from_smtcmd ctx smtcmd sorts names body_list funs vars in
-          make_quantifier_params ctx rest new_sorts new_names new_body_list new_funs new_vars
+          let new_sorts, new_names, new_body_list, new_funs, new_vars, new_var_index
+            = make_quantifier_params_from_smtcmd ctx smtcmd sorts names body_list funs vars var_index in
+          make_quantifier_params ctx rest new_sorts new_names new_body_list new_funs new_vars new_var_index
         | _ -> raise Unimplemented
       )
     | _ -> (sorts, names, body_list)
@@ -119,7 +120,7 @@ let solve ast =
 
   let cfg = [] in
   let ctx = (Z3.mk_context cfg) in
-  let sorts, names, body_list = make_quantifier_params ctx ast [] [] [] (Hashtbl.create 31) (Hashtbl.create 31) in
+  let sorts, names, body_list = make_quantifier_params ctx ast [] [] [] (Hashtbl.create 31) (Hashtbl.create 31) 0 in
   let body = Boolean.mk_and ctx body_list in
   let quantifier = Quantifier.mk_forall ctx sorts names body (Some 1) [] [] None None in
   let solver = Z3.Solver.mk_solver ctx None in
