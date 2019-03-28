@@ -84,7 +84,7 @@ let rec solveExamples examples=
             (* add basic term and start enumerate *)
             Queue.add term searchQueue;
 
-            (* try *)
+            try
               while not (Queue.is_empty searchQueue) do
                 (* pop one element *)
                 let testterm = Queue.pop searchQueue in
@@ -144,10 +144,9 @@ let rec solveExamples examples=
                   else ()
                 ); *)
               done
-            (* with
+            with
               _ -> 
-              Printf.printf "error while loop\n\n";
-              () *)
+              ()
         );
 
         (* print_endline "SynFuncListIngredient check";
