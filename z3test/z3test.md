@@ -25,9 +25,6 @@ example 1
 (declare-var y Int)
 (assert (= (f x y) (* 2 (+ x y))))
 (check-sat)
-(get-model)
-(eval (f 1 2))
-(eval (f 1 1))
 ```
 
 example 2  

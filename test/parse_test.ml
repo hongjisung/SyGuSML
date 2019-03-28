@@ -90,7 +90,7 @@ let test_result =
                            BfIdentifier(SymbolIdentifier(Symbol("Ic")));
                            BfIdentifier(SymbolIdentifier(Symbol("I")))
                          ]
-                       )
+                   GTBfTerm(BfIdentifier(SymbolIdentifier(Symbol("x"))))    )
                      )
                    ]
                  )
