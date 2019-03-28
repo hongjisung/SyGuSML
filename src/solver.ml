@@ -23,7 +23,7 @@ open Ast
 open SetSynFuncType
 exception LoopOut
 
-let examples = ["/newdisk/synKU/benchmarks/handmade"]
+let examples = ["/newdisk/synKU/benchmarks/example6"]
 
 let rec solveExamples examples=
   match examples with
@@ -87,19 +87,25 @@ let rec solveExamples examples=
             try
               while not (Queue.is_empty searchQueue) do
                 (* pop one element *)
+                
                 let testterm = Queue.pop searchQueue in
                 queuecountref := 1 + (!queuecountref);
 
                 (* check testterm has non-terminal *)
-                if (CheckTermHasNonTerminal.checkTermHasNonTerminal testterm !nontermlistref)
+                let countnonterm = (CheckTermHasNonTerminal.countTermHasNonTerminal testterm !nontermlistref) in 
+                if countnonterm < 7
                 
                 (* if has, find next fun list with testterm and add to Queue *)
                 then (
+                  (* Printf.printf ("%d: ") (Queue.length searchQueue);
+                  print_endline (AstToZ3string.termToString testterm); *)
                   let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in 
                   let rec pushQueue nextfunlist =
                     match nextfunlist with
                     | [] -> ()
                     | h::t ->
+                      (* Printf.printf ("%d: ") (Queue.length searchQueue);
+                      print_endline (AstToZ3string.termToString h); *)
                       Queue.add h searchQueue;
                       pushQueue t
                   in
@@ -129,6 +135,7 @@ let rec solveExamples examples=
                   (* 7. change it to z3 string *)
                   let newstring = ChangeToZ3string.changeToZ3string newparsetree in
                   (* 8. test it with z3 *)
+                  print_endline (newstring);
                   let z3solver = Z3testing.z3testing newstring in
                   (* 9. if satisfiable return that else go next search *)
                     if z3solver then ( 
@@ -145,8 +152,10 @@ let rec solveExamples examples=
                 ); *)
               done
             with
-              _ -> 
-              ()
+              LoopOut -> ()
+            | Stack_overflow -> 
+              Printf.printf "\nStack_overflow error \n" ;
+              Printf.printf "queue length: %d\n\n" (Queue.length searchQueue);    
         );
 
         (* print_endline "SynFuncListIngredient check";
