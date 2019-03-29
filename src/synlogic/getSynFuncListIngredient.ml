@@ -79,10 +79,12 @@ let rec addGrammarlistToHash grammarlist hash =
 let getSynFuncIngredient synfun =
   let hashref = ref (Hashtbl.create 31) in
   match synfun with
-  | SynthFun (funcname, sortedvarlist, sort, grammardefopt) ->
+  (* not consider all case how to treat SortWithSorts *)
+  | SynthFun (funcname, sortedvarlist, Sort(outputiden), grammardefopt) ->
     hashref := addSortedvarlistToHash sortedvarlist !hashref;
-    let outputSort = GetSynFuncGrammars.getStringFromSort sort in
-    let output = Identifier(SymbolIdentifier(Symbol(outputSort))) in
+    let sort = Sort(outputiden) in
+    (* let outputSort = GetSynFuncGrammars.getStringFromSort sort in *)
+    let output = Identifier(outputiden) in
     match grammardefopt with
     | None -> FuncIngredient(funcname, sortedvarlist, sort, output, !hashref)
     | Some GrammarDef(grammarlist) ->

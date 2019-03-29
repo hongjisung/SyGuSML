@@ -3,5 +3,6 @@ let rec printStringList li =
   | [] -> ()
   | h::t ->
     print_endline(h);
+    print_newline ();
     printStringList t
     
