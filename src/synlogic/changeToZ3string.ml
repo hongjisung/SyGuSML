@@ -1,5 +1,5 @@
 open Ast
-open AstToZ3string
+open AstToSygusString
 
 (*
   b) meet other with
@@ -8,7 +8,7 @@ open AstToZ3string
       *DECLAREVAR -> 
       *INVCONSTRAINT -> ignore
       *SETFEATURE ->
-      
+
       *DECLAREDATATYPE ->
       *DECLAREDATATYPES ->
       *DECLARESORT ->
@@ -20,26 +20,26 @@ open AstToZ3string
       *SETOPTION -> 
 *)
 let rec analysisCmd parsetree  = 
-    (* Printf.printf "change to z3 string: %d\n" (List.length parsetree); *)
-    match parsetree with
-    | [] -> []
-    | h::t ->
-      match h with
-      | CheckSynth -> 
-        "(check-sat)"::(analysisCmd t)
-      | Constraint term ->
-        (* let str = "" in *)
-        let str = String.concat " " ("(assert"::(termToString term)::[")"]) in
-        str::(analysisCmd t)
-      | DeclareVar (symbol, sort) -> 
-        let str = String.concat " " ("(declare-const"::(symbolToString symbol)::(sortToString sort)::[")"]) in
-        str::(analysisCmd t)
-      | InvConstraint _ -> (analysisCmd t)
-      | SetFeature (f, b) -> (analysisCmd t)
-      | SynthFun (symbol, sortedvarlist, sort, grammardefopt) -> (analysisCmd t)
-      | SynthInv (symbol, sortedvarlist, grammardefopt) ->         
-        analysisCmd (SynthFun(symbol, sortedvarlist, Sort(SymbolIdentifier(Symbol("Bool"))), grammardefopt)::t)
-      | SmtCmd smt_cmd -> (
+  (* Printf.printf "change to z3 string: %d\n" (List.length parsetree); *)
+  match parsetree with
+  | [] -> []
+  | h::t ->
+    match h with
+    | CheckSynth -> 
+      "(check-sat)"::(analysisCmd t)
+    | Constraint term ->
+      (* let str = "" in *)
+      let str = String.concat " " ("(assert"::(termToString term)::[")"]) in
+      str::(analysisCmd t)
+    | DeclareVar (symbol, sort) -> 
+      let str = String.concat " " ("(declare-const"::(symbolToString symbol)::(sortToString sort)::[")"]) in
+      str::(analysisCmd t)
+    | InvConstraint _ -> (analysisCmd t)
+    | SetFeature (f, b) -> (analysisCmd t)
+    | SynthFun (symbol, sortedvarlist, sort, grammardefopt) -> (analysisCmd t)
+    | SynthInv (symbol, sortedvarlist, grammardefopt) ->         
+      analysisCmd (SynthFun(symbol, sortedvarlist, Sort(SymbolIdentifier(Symbol("Bool"))), grammardefopt)::t)
+    | SmtCmd smt_cmd -> (
         match smt_cmd with
         | DeclareDatatype (symbol, dtdec) -> 
           analysisCmd (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t)
@@ -54,13 +54,12 @@ let rec analysisCmd parsetree  =
           (smtcmdToString smt_cmd)::(analysisCmd t)
         | SetOption (symbol, literal) ->  
           (smtcmdToString smt_cmd)::(analysisCmd t)
-        ) 
+      ) 
 (* now, only one function *)
 let changeToZ3string parsetree =
   let newstringlist = analysisCmd parsetree in
   let newstring = (String.concat "\n" newstringlist) in
-    (* print_endline "change to z3 string: ";
-    print_endline (newstring);
-    print_newline (); *)
-    newstring
-    
+  (* print_endline "change to z3 string: ";
+     print_endline (newstring);
+     print_newline (); *)
+  newstring
