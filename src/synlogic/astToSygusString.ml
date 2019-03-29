@@ -95,16 +95,14 @@ and grouped_rule_list =
 ** and boolconst = string
 *)
 
-let numeralToString numeral = numeral
-let boolconstToString boolconst = boolconst
-let literalToString literal = 
+let literalToString literal =
   match literal with
-  | Numeral  numeral -> numeralToString numeral
-  | Decimal  string -> string
-  | BoolConst  boolconst -> boolconstToString boolconst
-  | HexConst  string -> string
-  | BinConst  string -> string
-  | StringConst  string -> string
+  | Numeral s -> s
+  | Decimal s -> s
+  | BoolConst s -> s
+  | HexConst s -> s
+  | BinConst s -> s
+  | StringConst s -> s
 
 let featureToString feature =
   match feature with
@@ -116,68 +114,74 @@ let symbolToString symbol =
   match symbol with
   | Symbol str -> str
 
-let indexToString index = 
+let indexToString index =
   match index with
-  | NumeralIndex numeral -> numeralToString numeral
+  | NumeralIndex s -> s
   | SymbolIndex symbol -> symbolToString symbol
 
-let rec indexlistToStringlist indexlist = 
-  match indexlist with
-  | [] -> []
-  | h::t -> (indexToString h)::(indexlistToStringlist t)
+let rec indexlistToString indexlist =
+  let rec indexlistToStringList indexlist =
+    match indexlist with
+    | [] -> []
+    | h::t -> (indexToString h)::(indexlistToStringList t)
+  in String.concat " " (indexlistToStringList indexlist)
 
 let identifierToString identifier =
   match identifier with
   | SymbolIdentifier symbol -> symbolToString symbol
   | UnderbarIdentifier (symbol, indexlist) ->
-    String.concat " " (["(_"; symbolToString symbol] @ (indexlistToStringlist indexlist) @ [")"])
+    String.concat "" ["(_ "; symbolToString symbol; " "; (indexlistToString indexlist); ")"]
 
-let rec sortToString sort = 
+let rec sortToString sort =
   match sort with
-  | Sort identifier -> identifierToString identifier 
+  | Sort identifier -> identifierToString identifier
   | SortWithSorts (identifier, sortlist) ->
     let rec sortlistToStringlist  sortlist =
       match sortlist with
       | [] -> []
       | h::t -> (sortToString h)::(sortlistToStringlist t)
     in
-    String.concat " " (["("; identifierToString identifier] @ (sortlistToStringlist sortlist) @ [")"])
+    let sortlistString = String.concat " " (sortlistToStringlist sortlist) in
+    String.concat "" ["("; identifierToString identifier; " "; sortlistString; ")"]
 
-let sortdeclToString sortdecl = 
+let sortdeclToString sortdecl =
   match sortdecl with
-  | SortDeclaration ( symbol, numeral) ->
-    String.concat " " ["("; symbolToString symbol; numeralToString numeral;")"]
+  | SortDeclaration (symbol, numeral) ->
+    String.concat "" ["("; symbolToString symbol; " "; numeral; ")"]
 
 let sortedvarToString sortedvar =
   match sortedvar with
   | SortedVar (symbol, sort) ->
-    String.concat " " ["("; symbolToString symbol; sortToString sort; ")"]
+    String.concat "" ["("; symbolToString symbol; " "; sortToString sort; ")"]
 
-let rec sortedvarlistToStringlist sortedvarlist = 
-  match sortedvarlist with
-  | [] -> []
-  | h::t -> (sortedvarToString h)::(sortedvarlistToStringlist t)
+let sortedvarlistToString sortedvarlist =
+  let rec sortedvarlistToStringlist sortedvarlist =
+    match sortedvarlist with
+    | [] -> []
+    | h::t -> (sortedvarToString h)::(sortedvarlistToStringlist t)
+  in
+  String.concat " " (sortedvarlistToStringlist sortedvarlist)
 
-let dtconddecToString dtconddec = 
+let dtconddecToString dtconddec =
   match dtconddec with
   | DTConsDec (symbol, sortedvarlist) ->
-    String.concat " " (["("; symbolToString symbol] @ (sortedvarlistToStringlist sortedvarlist) @ [")"])
-
-let rec dtconddeclistToStringlist dtconddeclist = 
-  match dtconddeclist with
-  | [] -> []
-  | h::t -> (dtconddecToString h)::(dtconddeclistToStringlist t)
+    String.concat "" ["("; symbolToString symbol; " "; sortedvarlistToString sortedvarlist; ")"]
 
 let dtdecToString dtdec =
+  let rec dtconddeclistToStringlist dtconddeclist =
+    match dtconddeclist with
+    | [] -> []
+    | h::t -> (dtconddecToString h)::(dtconddeclistToStringlist t)
+  in
   match dtdec with
   | DTDec dtconddeclist ->
     String.concat " " (dtconddeclistToStringlist dtconddeclist)
 
-let rec termToString term = 
+let rec termToString term =
   match term with
-  | Identifier identifier -> 
+  | Identifier identifier ->
     identifierToString identifier
-  | Literal literal -> literalToString literal 
+  | Literal literal -> literalToString literal
   | IdentifierTerms (identifier, termlist) ->
     let rec termlistToStringlist termlist =
       match termlist with
@@ -185,26 +189,27 @@ let rec termToString term =
       | h::t ->
         (termToString h)::(termlistToStringlist t)
     in
-    String.concat " " (["("; identifierToString identifier] @ (termlistToStringlist termlist) @ [")"])
+    let termlistString = String.concat " " (termlistToStringlist termlist) in
+    String.concat "" ["("; identifierToString identifier; " "; termlistString; ")"]
   | Exists (sortedvarlist, term) ->
-    String.concat " " ("(exists ("::(sortedvarlistToStringlist sortedvarlist)@")"::(termToString term)::[")"])
+    String.concat "" ["(exists ("; (sortedvarlistToString sortedvarlist); ") "; (termToString term); ")"]
   | Forall (sortedvarlist,term) ->
-    String.concat " " ("(forall ("::(sortedvarlistToStringlist sortedvarlist)@")"::(termToString term)::[")"])
+    String.concat "" ["(forall ("; (sortedvarlistToString sortedvarlist); ") "; (termToString term); ")"]
   | Let (varbindinglist, term) ->
     let varbindingToString varbinding =
       match varbinding with
       | VarBinding (symbol, term) ->
         String.concat " " ["("; symbolToString symbol; termToString term; ")"]
     in
-    let rec varbindinglistToStringlist varbindinglist = 
+    let rec varbindinglistToStringlist varbindinglist =
       match varbindinglist with
       | [] -> []
       | h::t ->
         (varbindingToString h)::(varbindinglistToStringlist t)
     in
-    String.concat " " ("(let ("::(varbindinglistToStringlist varbindinglist)@")"::(termToString term)::[")"])
+    String.concat "" ["(let ("; (String.concat " " (varbindinglistToStringlist varbindinglist)); ")"; (termToString term); ")"]
 
-let rec bftermToString bfterm = 
+let rec bftermToString bfterm =
   match bfterm with
   | BfIdentifier identifier -> identifierToString identifier
   | BfLiteral literal -> literalToString literal
@@ -215,45 +220,52 @@ let rec bftermToString bfterm =
       | h::t ->
         (bftermToString h)::(bftermlistToStringlist t)
     in
-    String.concat " " ("("::(identifierToString identifier)::(bftermlistToStringlist bftermlist)@[")"])
+    String.concat "" ["( "; (identifierToString identifier); " "; (String.concat " " (bftermlistToStringlist bftermlist)); ")"]
 
 let gtermToString gterm =
   match gterm with
-  | GTConstant sort -> String.concat " " ("(Constant"::(sortToString sort)::[")"])
-  | GTVariable sort -> String.concat " " ("(Variable"::(sortToString sort)::[")"])
+  | GTConstant sort -> String.concat "" ["(Constant "; (sortToString sort); ")"]
+  | GTVariable sort -> String.concat "" ["(Variable "; (sortToString sort); ")"]
   | GTBfTerm bfterm -> bftermToString bfterm
 
-let smtcmdToString smtcmd = 
+let smtcmdToString smtcmd =
   match smtcmd with
   | DeclareDatatype (symbol, dtdec) ->
     String.concat " " ("(declare-datatype"::(symbolToString symbol)::(dtdecToString dtdec)::[")"])
   | DeclareDatatypes declaredatatypeslist ->
-    let rec toString lst sort_decls dt_decs =
+    let rec toString lst =
       match lst with
       | (sort_decl, dt_dec)::tl ->
-        toString tl (String.concat " " [sort_decls; (sortdeclToString sort_decl)]) (String.concat " " [dt_decs; (dtdecToString dt_dec)])
-      | [] -> sort_decls, dt_decs
+        let tl_sort_decls, tl_dt_decs = toString tl in
+        (sortdeclToString sort_decl)::tl_sort_decls, dtdecToString dt_dec::tl_dt_decs
+      | [] -> [], []
     in
-    let sort_decls_string, dt_decs_string = toString declaredatatypeslist "" "" in
-    String.concat " " ["(declare-datatypes ("; sort_decls_string; ")"; " ("; dt_decs_string; ")"; ")"]
+    let sort_decls_string_list, dt_decs_string_list = toString declaredatatypeslist in
+    let sort_decls_string = String.concat " " sort_decls_string_list in
+    let dt_decs_string = String.concat " " dt_decs_string_list in
+    String.concat "" ["(declare-datatypes ("; sort_decls_string; ") ("; dt_decs_string; "))"]
   | DeclareSort (symbol, numeral) ->
-    String.concat " " ("(declare-sort"::(symbolToString symbol)::(numeralToString numeral)::[")"])
+    String.concat "" ["(declare-sort "; (symbolToString symbol); " "; numeral; ")"]
   | DefineFun (symbol, sortedvarlist, sort, term) ->
-    String.concat " " ("(define-fun"::(symbolToString symbol)::"("::(sortedvarlistToStringlist sortedvarlist)@")"::(sortToString sort)::(termToString term)::[")"])
+    String.concat "" ["(define-fun "; (symbolToString symbol); " ("; (sortedvarlistToString sortedvarlist); ") "; (sortToString sort); " "; (termToString term); ")"]
   | DefineSort (symbol, sort) ->
-    String.concat " " ("(define-sort"::(symbolToString symbol)::(sortToString sort)::[")"])
+    String.concat "" ["(define-sort "; (symbolToString symbol); " "; (sortToString sort); ")"]
   | SetLogic symbol ->
-    String.concat " " ("(set-logic"::(symbolToString symbol)::[")"])
+    String.concat "" ["(set-logic "; (symbolToString symbol); ")"]
   | SetOption (symbol, literal) ->
-    String.concat " " ("(set-option :"::(symbolToString symbol)::(literalToString literal)::[")"])
+    String.concat "" ["(set-option : "; (symbolToString symbol); " "; (literalToString literal); ")"]
 
-let cmdToString cmd = 
+let cmdToString cmd =
   match cmd with
   | CheckSynth -> "(check-synth)\n"
-  | Constraint term -> String.concat " " ("(constraint"::(termToString term)::[")"])
-  | DeclareVar (symbol, sort) -> String.concat " " ("(declare-var"::(symbolToString symbol)::(sortToString sort)::[")"])
-  | InvConstraint (symbol1, symbol2, symbol3, symbol4) -> String.concat " " ("(inv-constraint"::(symbolToString symbol1)::(symbolToString symbol2)::(symbolToString symbol3)::(symbolToString symbol4)::[")"])
-  | SetFeature (feature, boolconst) -> String.concat " " ("(set-feature :"::(featureToString feature)::(boolconstToString boolconst)::[")"])
+  | Constraint term ->
+    String.concat "" ["(constraint "; (termToString term); ")"]
+  | DeclareVar (symbol, sort) ->
+    String.concat "" ["(declare-var "; (symbolToString symbol); " "; (sortToString sort); ")"]
+  | InvConstraint (symbol1, symbol2, symbol3, symbol4) ->
+    String.concat "" ["(inv-constraint "; (symbolToString symbol1); " "; (symbolToString symbol2); " "; (symbolToString symbol3); " "; (symbolToString symbol4); ")"]
+  | SetFeature (feature, boolconst) ->
+    String.concat "" ["(set-feature : "; (featureToString feature); boolconst; ")"]
   | SynthFun (symbol, sortedvarlist, sort, grammardefoption) -> "SYNTH-FUN"
   | SynthInv (symbol, sortedvarlist, grammardefoption) -> "SYNTH-INV"
   | SmtCmd smtcmd -> smtcmdToString smtcmd
