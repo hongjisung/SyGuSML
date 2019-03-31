@@ -120,7 +120,7 @@ let searchByBFS parsetree synfunIngredient =
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
                 let newparsetree = ChangeSynfunToDefFun.changeSynfunToDefFun parsetree defFun in
                 (* 7. change it to z3 string *)
-                let newstring = ChangeToZ3string.changeToZ3string newparsetree in
+                let newstring = astToZ3string.astToZ3string newparsetree in
                 (* 8. test it with z3 *)
                 let z3solver = Z3testing.z3testing newstring in 
                 (

@@ -56,7 +56,7 @@ let rec analysisCmd parsetree  =
           (smtcmdToString smt_cmd)::(analysisCmd t)
       ) 
 (* now, only one function *)
-let changeToZ3string parsetree =
+let astToZ3string parsetree =
   let newstringlist = analysisCmd parsetree in
   let newstring = (String.concat "\n" newstringlist) in
   (* print_endline "change to z3 string: ";
