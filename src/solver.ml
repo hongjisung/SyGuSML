@@ -27,30 +27,11 @@ let examples = ["./benchmarks/example1";
                 "./benchmarks/example3";
                 "./benchmarks/example6"]
 
-(* step 4 test *)
-let rec compIngre first = 
-  let second = HandmadeOutput.synfunIngredientTest in
-  match first, second with
-  | [], [] -> ()
-  | h::t, h2::t2 ->
-    (
-      match h, h2 with
-      | FuncIngredient(s, svl, sort, t, hash), FuncIngredient(s2, svl2, sort2, t2, hash2) ->
-        Printf.printf "  Compare symbol: %b\n" (s=s2);
-        Printf.printf "  Compare outterm: %b\n" (t=t2);
-        Printf.printf "  Compare hash Int: %b\n" ((Hashtbl.find hash (Identifier(SymbolIdentifier(Symbol("Int"))))) = (Hashtbl.find hash2 (Identifier(SymbolIdentifier(Symbol("Int"))))));
-        Printf.printf "  Compare hash I: %b\n" ((Hashtbl.find hash (Identifier(SymbolIdentifier(Symbol("I"))))) = (Hashtbl.find hash2 (Identifier(SymbolIdentifier(Symbol("I"))))));
-        Printf.printf "  Compare hash Ic: %b\n" ((Hashtbl.find hash (Identifier(SymbolIdentifier(Symbol("Ic"))))) = (Hashtbl.find hash2 (Identifier(SymbolIdentifier(Symbol("Ic"))))))
-    );
-    compIngre t
-  | _ -> ()
-
 let searchByBFS parsetree synfunIngredient =
   match synfunIngredient with
   | [] -> 
     print_endline "SynFuncListIngredient check";
     print_endline "No function";
-    compIngre synfunIngredient;
     ""
   | h::t -> 
     let searchQueue = Queue.create () in
@@ -157,7 +138,6 @@ let searchByBFS parsetree synfunIngredient =
     );
 
     (* print_endline "SynFuncListIngredient check";
-       compIngre synfunIngredient;
        print_newline (); *)
 
     Printf.printf "Queue Search Count : %d\n" (!queuecountref) ;
