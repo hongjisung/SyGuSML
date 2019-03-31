@@ -5,11 +5,7 @@
 2. change it to parse tree
 3. get syn-fun grammar from the tree
 4. get syn-fun ingredient hash from syn-fun grammar
-5. make fun with grammar by enumerate search
-6. make define-fun
-7. change it to z3 string (change synth-fun to declare-fun)
-8. test it with z3
-9. if satisfiable return that else go next search
+5. make fun with grammar by search algorithm
 
 $ eval $(opam env)
 $ export LD_LIBRARY_PATH=/newdisk/synKU/_opam/lib/z3
@@ -21,7 +17,6 @@ Because solver find result for special case of variable.
 *)
 open Ast
 open SetSynFuncType
-exception LoopOut
 
 let examples = ["./benchmarks/example1";
                 "./benchmarks/example3";
@@ -40,7 +35,7 @@ let rec solveExamples examples=
     let synfunlist = GetSynFuncGrammars.getSynFuncGrammars parsetree in 
     (* 4. get syn-fun ingredient hash from syn-fun grammar *)
     let synfunIngredient = GetSynFuncListIngredient.getSynFuncListIngredient synfunlist in
-    (* 5. make fun with grammar by enumerate search *)
+    (* 5. make fun with grammar by search algorithm *)
     (* first based on BFS *)
     (* now, only consider one function case *)
     (Search.searchByBFS parsetree synfunIngredient)::(solveExamples tex)

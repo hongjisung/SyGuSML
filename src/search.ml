@@ -2,6 +2,15 @@ open Ast
 open SetSynFuncType
 exception LoopOut
 
+(*
+The very simple algorithm for function synthsis
+
+6. make define-fun
+7. change ast to z3 string (change synth-fun to declare-fun)
+8. test z3string with z3
+9. if satisfiable return that else go next search
+*)
+
 let searchByBFS parsetree synfunIngredient =
   match synfunIngredient with
   | [] -> 
