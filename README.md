@@ -1,4 +1,6 @@
 # synKU
+A project for competition at https://sygus.org/
+To synthesize function with the sygus language standard version 2.0
 
 ## Run
 
