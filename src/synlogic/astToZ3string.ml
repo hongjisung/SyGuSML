@@ -52,7 +52,8 @@ let rec analysisCmd parsetree vars =
         match smt_cmd with
         | DeclareDatatype (symbol, dtdec) -> 
           analysisCmd (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t) vars
-        | DeclareDatatypes dtlist -> (analysisCmd t vars)
+        | DeclareDatatypes dtlist ->
+          (smtcmdToString smt_cmd)::(analysisCmd t vars)
         | DeclareSort (symbol, numeral)  -> 
           (smtcmdToString smt_cmd)::(analysisCmd t vars)
         | DefineFun (symbol, sortedvarlist, sort, term) -> 

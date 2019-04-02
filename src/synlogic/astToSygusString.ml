@@ -147,7 +147,8 @@ let rec sortToString sort =
 let sortdeclToString sortdecl =
   match sortdecl with
   | SortDeclaration (symbol, numeral) ->
-    String.concat "" ["("; symbolToString symbol; " "; numeral; ")"]
+    (* String.concat "" ["("; symbolToString symbol; " "; numeral; ")"] *)
+    symbolToString symbol
 
 let sortedvarToString sortedvar =
   match sortedvar with
@@ -165,7 +166,10 @@ let sortedvarlistToString sortedvarlist =
 let dtconddecToString dtconddec =
   match dtconddec with
   | DTConsDec (symbol, sortedvarlist) ->
-    String.concat "" ["("; symbolToString symbol; " "; sortedvarlistToString sortedvarlist; ")"]
+    if List.length sortedvarlist == 0 then
+      symbolToString symbol
+    else
+      String.concat "" ["("; symbolToString symbol; " "; sortedvarlistToString sortedvarlist; ")"]
 
 let dtdecToString dtdec =
   let rec dtconddeclistToStringlist dtconddeclist =
@@ -233,17 +237,23 @@ let smtcmdToString smtcmd =
   | DeclareDatatype (symbol, dtdec) ->
     String.concat " " ("(declare-datatype"::(symbolToString symbol)::(dtdecToString dtdec)::[")"])
   | DeclareDatatypes declaredatatypeslist ->
+    (* let rec toString lst =
+       match lst with
+       | (sort_decl, dt_dec)::tl ->
+        let tl_sort_decls, tl_dt_decs = toString tl in
+        (sortdeclToString sort_decl)::tl_sort_decls, dtdecToString dt_dec::tl_dt_decs
+       | [] -> [], []
+       in
+       let sort_decls_string_list, dt_decs_string_list = toString declaredatatypeslist in
+       let sort_decls_string = String.concat " " sort_decls_string_list in
+       let dt_decs_string = String.concat " " dt_decs_string_list in *)
     let rec toString lst =
       match lst with
       | (sort_decl, dt_dec)::tl ->
-        let tl_sort_decls, tl_dt_decs = toString tl in
-        (sortdeclToString sort_decl)::tl_sort_decls, dtdecToString dt_dec::tl_dt_decs
-      | [] -> [], []
+        String.concat " " ["("; sortdeclToString sort_decl; dtdecToString dt_dec; ")"; toString tl]
+      | [] -> ""
     in
-    let sort_decls_string_list, dt_decs_string_list = toString declaredatatypeslist in
-    let sort_decls_string = String.concat " " sort_decls_string_list in
-    let dt_decs_string = String.concat " " dt_decs_string_list in
-    String.concat "" ["(declare-datatypes ("; sort_decls_string; ") ("; dt_decs_string; "))"]
+    String.concat "" ["(declare-datatypes () ("; toString declaredatatypeslist; "))"]
   | DeclareSort (symbol, numeral) ->
     String.concat "" ["(declare-sort "; (symbolToString symbol); " "; numeral; ")"]
   | DefineFun (symbol, sortedvarlist, sort, term) ->

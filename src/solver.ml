@@ -19,6 +19,7 @@ open Ast
 open SetSynFuncType
 
 let examples = ["./benchmarks/example1";
+                "./benchmarks/example2.1";
                 "./benchmarks/example3";
                 "./benchmarks/example6"]
 
