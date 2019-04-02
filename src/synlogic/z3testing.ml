@@ -4,8 +4,8 @@ let cfg = [];;
 let ctx = Z3.mk_context cfg;;
 
 let z3testing testcode =
-  Printf.printf "Running Z3 version %s\n" Z3.Version.to_string ;
-  Printf.printf "Z3 full version string: %s\n" Z3.Version.full_version ;
+  (* Printf.printf "Running Z3 version %s\n" Z3.Version.to_string ;
+     Printf.printf "Z3 full version string: %s\n" Z3.Version.full_version ; *)
   let test = Z3.SMT.parse_smtlib2_string ctx testcode  [] [] [] [] in
   let solver  = Z3.Solver.mk_solver ctx None in
   let inex = Z3.AST.ASTVector.to_expr_list test in
