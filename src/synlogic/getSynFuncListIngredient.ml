@@ -55,15 +55,15 @@ let rec addGtermlistToHash gtermlist key hash =
     (* this should never appear *)
     | GTVariable sort -> raise GTVariableError
     | GTBfTerm bf_term ->(
-      let newterm = changeBftermToTerm bf_term in
-      (
-        try
-          let li = Hashtbl.find hash key in 
-          Hashtbl.add hash key (newterm::li)
-        with _ -> Hashtbl.add hash key [newterm]
-      );
-      addGtermlistToHash t key hash
-    )
+        let newterm = changeBftermToTerm bf_term in
+        (
+          try
+            let li = Hashtbl.find hash key in 
+            Hashtbl.add hash key (newterm::li)
+          with _ -> Hashtbl.add hash key [newterm]
+        );
+        addGtermlistToHash t key hash
+      )
 
 let rec addGrammarlistToHash grammarlist hash =
   let hashref = ref (hash) in

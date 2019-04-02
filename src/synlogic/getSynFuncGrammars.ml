@@ -1,33 +1,33 @@
 (* DESCRIPTION
-cmd list -> cmd list (only SynthFun)
-get the sygus language parse tree
-and return SynthFun list which must have grammar for it
+   cmd list -> cmd list (only SynthFun)
+   get the sygus language parse tree
+   and return SynthFun list which must have grammar for it
 
 
-does signature need to have the constructor or functions?
-when the grammar use constructor or function,
-  they are written in grammar directly.
-  so, don't need to know it.
+   does signature need to have the constructor or functions?
+   when the grammar use constructor or function,
+   they are written in grammar directly.
+   so, don't need to know it.
 
-how can we deal with Array logic 
-  (add sort Array of arity two, which has function symbol select and store)
+   how can we deal with Array logic 
+   (add sort Array of arity two, which has function symbol select and store)
 
-what can the VARAIABLE be changed to->
-  gterm can have VARIABLE sort
-  so, we should have the set of VARAIABLEs.
-  VARAIABLE SORT is from parameters whose sort is SORT.
-  When make the Grammar, we change VARIABLE sort to GTBfTerm list
+   what can the VARAIABLE be changed to->
+   gterm can have VARIABLE sort
+   so, we should have the set of VARAIABLEs.
+   VARAIABLE SORT is from parameters whose sort is SORT.
+   When make the Grammar, we change VARIABLE sort to GTBfTerm list
 
-Consider about the feature
-  Grammars false -> synth-fun cannot have user-defined grammar
-  FwdDecls true -> synth-fun grammar can use before declared synth-fun
-  Recursion true -> synth-fun grammar can use itself.
+   Consider about the feature
+   Grammars false -> synth-fun cannot have user-defined grammar
+   FwdDecls true -> synth-fun grammar can use before declared synth-fun
+   Recursion true -> synth-fun grammar can use itself.
 
-1. if synth-fun have grammar already
-  then return this
-2. if synth-fun doesn't have grammar
-  then the fun have grammar based on set-logic.
-  watch out this grammar has VARIABLE and CONSTANT
+   1. if synth-fun have grammar already
+   then return this
+   2. if synth-fun doesn't have grammar
+   then the fun have grammar based on set-logic.
+   watch out this grammar has VARIABLE and CONSTANT
 *)
 
 (* 
@@ -37,7 +37,7 @@ featureRecursion
 
 signature
   sort symbol list (varname, sortname) (function is also symbol and kind of sort "a*b->c")
-  
+
 *)
 
 open Ast
@@ -55,19 +55,19 @@ let rec symbolListToSigature symli =
 let getStringFromSort sort =
   match sort with
   | Sort identifier -> (
-    match identifier with
-    | SymbolIdentifier symbol ->
-      (match symbol with Symbol s -> s )
-    | UnderbarIdentifier (symbol, indexlist) ->
-      (match symbol with Symbol s -> s)
-  )
+      match identifier with
+      | SymbolIdentifier symbol ->
+        (match symbol with Symbol s -> s )
+      | UnderbarIdentifier (symbol, indexlist) ->
+        (match symbol with Symbol s -> s)
+    )
   | SortWithSorts (identifier, sortlist) -> (
-    match identifier with
-    | SymbolIdentifier symbol ->
-      (match symbol with Symbol s -> s )
-    | UnderbarIdentifier (symbol, indexlist) ->
-      (match symbol with Symbol s -> s )
-  )
+      match identifier with
+      | SymbolIdentifier symbol ->
+        (match symbol with Symbol s -> s )
+      | UnderbarIdentifier (symbol, indexlist) ->
+        (match symbol with Symbol s -> s )
+    )
 
 let getStringFromSignature sign = 
   match sign with
@@ -109,22 +109,22 @@ let rec getLogicList logic =
   | "PBE_" -> "PBE_" :: getLogicList (String.sub logic 4 (len - 4)) 
   | "INV_" -> "INV_" :: getLogicList (String.sub logic 4 (len - 4)) 
   | _ ->
-  match !sub1 with
-  | "S" -> "S" :: getLogicList (String.sub logic 1 (len - 1))
-  | "A" -> "A" :: getLogicList (String.sub logic 1 (len - 1))
-  | _ ->
-  match !sub2 with
-  | "BV" -> "BV" :: getLogicList (String.sub logic 2 (len - 2))
-  | "DT" -> "DT" :: getLogicList (String.sub logic 2 (len - 2))
-  | "UF" -> "UF" :: getLogicList (String.sub logic 2 (len - 2))
-  | _ ->
-  match logic with
-  | "" -> []
-  | "LIA" -> "LIA" :: getLogicList ""
-  | "NIA" -> "NIA" :: getLogicList ""
-  | "LRA" -> "LRA" :: getLogicList ""
-  | "NRA" -> "NRA" :: getLogicList ""
-  | _ -> raise SetLogicError
+    match !sub1 with
+    | "S" -> "S" :: getLogicList (String.sub logic 1 (len - 1))
+    | "A" -> "A" :: getLogicList (String.sub logic 1 (len - 1))
+    | _ ->
+      match !sub2 with
+      | "BV" -> "BV" :: getLogicList (String.sub logic 2 (len - 2))
+      | "DT" -> "DT" :: getLogicList (String.sub logic 2 (len - 2))
+      | "UF" -> "UF" :: getLogicList (String.sub logic 2 (len - 2))
+      | _ ->
+        match logic with
+        | "" -> []
+        | "LIA" -> "LIA" :: getLogicList ""
+        | "NIA" -> "NIA" :: getLogicList ""
+        | "LRA" -> "LRA" :: getLogicList ""
+        | "NRA" -> "NRA" :: getLogicList ""
+        | _ -> raise SetLogicError
 
 let rec settingLogicSignature logic =
   let len = String.length logic in
@@ -138,22 +138,22 @@ let rec settingLogicSignature logic =
   | "PBE_" 
   | "INV_" -> settingLogicSignature (String.sub logic 4 (len - 4)) 
   | _ ->
-  match !sub1 with
-  | "S" -> SortSignature(Sort(SymbolIdentifier(Symbol("String")))) :: settingLogicSignature (String.sub logic 1 (len - 1))
-  | "A" -> SortSignature(Sort(SymbolIdentifier(Symbol("Array")))) :: settingLogicSignature (String.sub logic 1 (len - 1))
-  | _ ->
-  match !sub2 with
-  | "BV" -> SortSignature(Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("0")]))) :: settingLogicSignature (String.sub logic 2 (len - 2))
-  | "DT" -> settingLogicSignature (String.sub logic 2 (len - 2))
-  | "UF" -> settingLogicSignature (String.sub logic 2 (len - 2))
-  | _ ->
-  match logic with
-  | "" -> [SortSignature(Sort(SymbolIdentifier(Symbol("Bool"))))]
-  | "LIA" 
-  | "NIA" -> SortSignature(Sort(SymbolIdentifier(Symbol("Int")))) :: settingLogicSignature ""
-  | "LRA"
-  | "NRA" -> SortSignature(Sort(SymbolIdentifier(Symbol("Real")))) :: settingLogicSignature ""
-  | _ -> raise SetLogicError
+    match !sub1 with
+    | "S" -> SortSignature(Sort(SymbolIdentifier(Symbol("String")))) :: settingLogicSignature (String.sub logic 1 (len - 1))
+    | "A" -> SortSignature(Sort(SymbolIdentifier(Symbol("Array")))) :: settingLogicSignature (String.sub logic 1 (len - 1))
+    | _ ->
+      match !sub2 with
+      | "BV" -> SortSignature(Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("0")]))) :: settingLogicSignature (String.sub logic 2 (len - 2))
+      | "DT" -> settingLogicSignature (String.sub logic 2 (len - 2))
+      | "UF" -> settingLogicSignature (String.sub logic 2 (len - 2))
+      | _ ->
+        match logic with
+        | "" -> [SortSignature(Sort(SymbolIdentifier(Symbol("Bool"))))]
+        | "LIA" 
+        | "NIA" -> SortSignature(Sort(SymbolIdentifier(Symbol("Int")))) :: settingLogicSignature ""
+        | "LRA"
+        | "NRA" -> SortSignature(Sort(SymbolIdentifier(Symbol("Real")))) :: settingLogicSignature ""
+        | _ -> raise SetLogicError
 
 (* 
 BV - add sort (_ BitVec n)  , n is non-negative integer. 
@@ -162,24 +162,24 @@ if other sort like this is about to enter signature, we need to reject this.
 let checkBVsort sign = 
   match sign with
   | SortSignature s -> (
-    match s with
-    | Sort next -> (
-      match next with
-      | UnderbarIdentifier (sb, li) -> (
-        match sb with
-        | Symbol "BitVec" -> (
-          match li with
-          | h::t -> (
-            match t with
-            | [] -> (
-              match h with
-              | NumeralIndex _ -> true
+      match s with
+      | Sort next -> (
+          match next with
+          | UnderbarIdentifier (sb, li) -> (
+              match sb with
+              | Symbol "BitVec" -> (
+                  match li with
+                  | h::t -> (
+                      match t with
+                      | [] -> (
+                          match h with
+                          | NumeralIndex _ -> true
+                          | _ -> false )
+                      | _ -> false )
+                  | _ -> false )
               | _ -> false )
-            | _ -> false )
           | _ -> false )
-        | _ -> false )
       | _ -> false )
-    | _ -> false )
   | _ -> false
 
 let rec isBVinSignature li =
@@ -306,10 +306,10 @@ let changeVarsortToParam grammardef paramhash =
     GrammarDef(checkGrammarlist grammarlist paramhash)
 
 (* FLOW LOGIC
-consider all signature, funcname signature(featureFwdDecls, featureRecursion)
+   consider all signature, funcname signature(featureFwdDecls, featureRecursion)
 
-1. read SETLOGIC -> setting basic signature and grammar
-2. a) meet SYNTHFUN -> make SynthFun list
+   1. read SETLOGIC -> setting basic signature and grammar
+   2. a) meet SYNTHFUN -> make SynthFun list
            *SYNTHINV -> convert to SYNTHFUN
    b) meet other with
       *CHECKSYNTH -> ignore
@@ -317,7 +317,7 @@ consider all signature, funcname signature(featureFwdDecls, featureRecursion)
       *DECLAREVAR -> add symbol sort to signature
       *INVCONSTRAINT -> ignore
       *SETFEATURE -> setting feature
-      
+
       *DECLAREDATATYPE -> convert to DECLAREDATATYPES
       *DECLAREDATATYPES -> add new sorts to signature
       *DECLARESORT -> add new sort to signature
@@ -356,17 +356,17 @@ let getSynFuncGrammars parsetree =
         )
       | InvConstraint _ -> analysisCmd t
       | SetFeature (f, b) -> (
-        (match f, b with
-        | Grammars, "true" -> featureGrammars := true
-        | Grammars, "false" -> featureGrammars := false
-        | FwdDecls, "true" -> featureFwdDecls := true
-        | FwdDecls, "false" -> featureFwdDecls := false
-        | Recursion, "true" -> featureRecursion := true
-        | FwdDecls, "false" -> featureFwdDecls := false
-        | _ -> raise SetFeatureError
-        );
-        analysisCmd t
-      )
+          (match f, b with
+           | Grammars, "true" -> featureGrammars := true
+           | Grammars, "false" -> featureGrammars := false
+           | FwdDecls, "true" -> featureFwdDecls := true
+           | FwdDecls, "false" -> featureFwdDecls := false
+           | Recursion, "true" -> featureRecursion := true
+           | FwdDecls, "false" -> featureFwdDecls := false
+           | _ -> raise SetFeatureError
+          );
+          analysisCmd t
+        )
       | SynthFun (symbol, sortedvarlist, sort, grammardefopt) ->
         let siglist = getSignatureStringList !signature in 
         (
@@ -379,7 +379,7 @@ let getSynFuncGrammars parsetree =
               (* get parameter per sort *)
               let paramhash = (getParameterPerSort sortedvarlist) in
               (* PrintMethods.printStringList (Hashtbl.find paramhash "Int");
-              print_newline (); *)
+                 print_newline (); *)
               (* check this has grammar *)
               let isgrammar = doesSynHasGrammar grammardefopt in
               let grammar = ref (GrammarDef([])) in
@@ -407,86 +407,86 @@ let getSynFuncGrammars parsetree =
       | SynthInv (symbol, sortedvarlist, grammardefopt) ->         
         analysisCmd (SynthFun(symbol, sortedvarlist, Sort(SymbolIdentifier(Symbol("Bool"))), grammardefopt)::t)
       | SmtCmd smt_cmd -> (
-        match smt_cmd with
-        | DeclareDatatype (symbol, dtdec) -> 
-          analysisCmd (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t)
-        | DeclareDatatypes dtlist -> 
-          let siglist = getSignatureStringList !signature in 
-          let symbollist = getSymbolOfDataTypes dtlist in 
-          if (ListMethods.containAnyElement siglist symbollist)
-          then analysisCmd t
-          else (
-            signature := (symbolListToSigature symbollist) @ !signature;
-            analysisCmd t
-          )
-        | DeclareSort (symbol, numeral)  -> 
-          let siglist = getSignatureStringList !signature in 
-          (
-            match symbol with
-            | Symbol str ->
-              if (ListMethods.containElement siglist str)
-              then analysisCmd t
-              else (
-                signature := SymbolSignature(symbol)::!signature;
-                analysisCmd t
-              )
-          )
-        | DefineFun (symbol, sortedvarlist, sort, term) ->
-          let siglist = getSignatureStringList !signature in 
-          (
-            match symbol with
-            | Symbol str ->
-              if (ListMethods.containElement siglist str)
-              then analysisCmd t
-              else (
-                signature := SymbolSignature(symbol)::!signature;
-                analysisCmd t
-              )
-          )
-        | DefineSort (symbol, sort) -> 
-          let siglist = getSignatureStringList !signature in 
-          (
-            match symbol with
-            | Symbol str ->
-              if (ListMethods.containElement siglist str)
-              then analysisCmd t
-              else (
-                signature := SymbolSignature(symbol)::!signature;
-                analysisCmd t
-              )
-          )
-        | SetLogic symbol -> (
-            match symbol with
-            | Symbol str -> (
-                signature := (settingLogicSignature str);
-                logiclist := (getLogicList str);
-                analysisCmd t
-              )
-            | _ -> raise SetLogicError
+          match smt_cmd with
+          | DeclareDatatype (symbol, dtdec) -> 
+            analysisCmd (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t)
+          | DeclareDatatypes dtlist -> 
+            let siglist = getSignatureStringList !signature in 
+            let symbollist = getSymbolOfDataTypes dtlist in 
+            if (ListMethods.containAnyElement siglist symbollist)
+            then analysisCmd t
+            else (
+              signature := (symbolListToSigature symbollist) @ !signature;
+              analysisCmd t
+            )
+          | DeclareSort (symbol, numeral)  -> 
+            let siglist = getSignatureStringList !signature in 
+            (
+              match symbol with
+              | Symbol str ->
+                if (ListMethods.containElement siglist str)
+                then analysisCmd t
+                else (
+                  signature := SymbolSignature(symbol)::!signature;
+                  analysisCmd t
+                )
+            )
+          | DefineFun (symbol, sortedvarlist, sort, term) ->
+            let siglist = getSignatureStringList !signature in 
+            (
+              match symbol with
+              | Symbol str ->
+                if (ListMethods.containElement siglist str)
+                then analysisCmd t
+                else (
+                  signature := SymbolSignature(symbol)::!signature;
+                  analysisCmd t
+                )
+            )
+          | DefineSort (symbol, sort) -> 
+            let siglist = getSignatureStringList !signature in 
+            (
+              match symbol with
+              | Symbol str ->
+                if (ListMethods.containElement siglist str)
+                then analysisCmd t
+                else (
+                  signature := SymbolSignature(symbol)::!signature;
+                  analysisCmd t
+                )
+            )
+          | SetLogic symbol -> (
+              match symbol with
+              | Symbol str -> (
+                  signature := (settingLogicSignature str);
+                  logiclist := (getLogicList str);
+                  analysisCmd t
+                )
+              | _ -> raise SetLogicError
+            )
+          | SetOption (symbol, literal) ->
+            let siglist = getSignatureStringList !signature in 
+            (
+              match symbol with
+              | Symbol str ->
+                if (ListMethods.containElement siglist str)
+                then analysisCmd t
+                else (
+                  signature := SymbolSignature(symbol)::!signature;
+                  analysisCmd t
+                )
+            )
+          | _ -> raise SygusError
         )
-        | SetOption (symbol, literal) ->
-          let siglist = getSignatureStringList !signature in 
-          (
-            match symbol with
-            | Symbol str ->
-              if (ListMethods.containElement siglist str)
-              then analysisCmd t
-              else (
-                signature := SymbolSignature(symbol)::!signature;
-                analysisCmd t
-              )
-          )
-        | _ -> raise SygusError
-      )
       | _ -> [] 
-      in 
+  in 
   let synfunlist = analysisCmd parsetree in
-    (* PrintMethods.printStringList !logiclist;
-    print_endline "";
-    Printf.printf "%b\n" (isBVinSignature !signature);
-    print_endline "";
-    PrintMethods.printStringList (getSignatureStringList !signature); *)
-    Printf.printf "\nSynFuncGrammars test: %b\n\n" (synfunlist = HandmadeOutput.synfuntest);
-    synfunlist
+  (* PrintMethods.printStringList !logiclist;
+     print_endline "";
+     Printf.printf "%b\n" (isBVinSignature !signature);
+     print_endline "";
+     PrintMethods.printStringList (getSignatureStringList !signature); *)
+  Printf.printf "\nSynFuncGrammars test: %b\n\n" (synfunlist = HandmadeOutput.synfuntest);
+  synfunlist
 
 
