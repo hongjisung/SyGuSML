@@ -18,10 +18,20 @@ Because solver find result for special case of variable.
 open Ast
 open SetSynFuncType
 
+(*
+solver error at example2
+*)
 let examples = ["./benchmarks/example1";
-                "./benchmarks/example2.1";
+                "./benchmarks/example2";
                 "./benchmarks/example3";
-                "./benchmarks/example6"]
+                "./benchmarks/example6";]
+(*
+Search algorithm is very inefficient now(searchByBFS),
+So to run example5, Remove Grammar 
+  (str.replace ntString ntString ntString)
+  (str.substr ntString ntInt ntInt)
+*)
+(* let examples = ["./benchmarks/example5"] *)
 
 let rec solveExamples examples=
   match examples with
