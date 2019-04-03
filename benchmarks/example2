@@ -1,5 +1,5 @@
-(set-logic DTLIA)
-(declare-datatypes ((List 0)) (((nil) (cons (head Int) (tail (List Int))))))
+;(set-logic DTLIA)
+(declare-datatypes ((List 0)) (((nil) (cons (head Int) (tail List)))))
 (synth-fun f ((x List)) Int
   ((I Int) (L List) (B Bool))
   ((I Int (0 1
