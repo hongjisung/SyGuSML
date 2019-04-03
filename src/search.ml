@@ -66,15 +66,15 @@ let searchByBFS parsetree synfunIngredient =
               (* Printf.printf ("%s  ") (AstToSygusString.termToString testterm);
                  Printf.printf ("next fun length: %d\n") (List.length nextfunlist); *)
 
-              if (not !queuestop) && (Queue.length searchQueue) < 10000 then (
+              if (not !queuestop) && (Queue.length searchQueue) < 50000 then (
                 (* Printf.printf "queue length: %d\n" (Queue.length searchQueue);
                    Printf.printf "new fun length: %d\n" (List.length nextfunlist); *)
                 pushQueue nextfunlist;
                 queuedepth := 1 + (!queuedepth)
               ) else (
-                if (not !queuestop) then
-                  queuestop := (not !queuestop)
-                else ()
+                (* if (not !queuestop) then
+                   queuestop := (not !queuestop)
+                   else () *)
               );
             )
 
