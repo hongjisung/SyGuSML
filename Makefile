@@ -10,7 +10,7 @@ solvertest: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/method,src/synlogic,benchmarks/ solver.native --
 
 install-deps:
-	opam install -y ocamlbuild menhir
+	opam install -y ocamlbuild menhir batteries z3
 
 clean:
 	ocamlbuild -clean
