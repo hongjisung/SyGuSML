@@ -14,7 +14,7 @@ let rec checkTermHasNonTerminal term nontermlist =
     in 
     (ListMethods.containElement nontermlist (Identifier(identifier))) || (checkTermlist termlist)
   | _ -> false
-  
+
 (* count Term have non-terminal *)
 let rec countTermHasNonTerminal term nontermlist =
   match term with
@@ -32,3 +32,16 @@ let rec countTermHasNonTerminal term nontermlist =
     then 1 + (countTermlist termlist)
     else (countTermlist termlist)
   | _ -> 0
+
+(* count Term have non-terminal *)
+let rec countTerm term =
+  match term with
+  | IdentifierTerms (identifier, termlist) ->
+    let rec countTermlist termlist =
+      match termlist with
+      | [] -> 0
+      | h::t ->
+        (countTerm h) + (countTermlist t)
+    in
+    1 + (countTermlist termlist)
+  | _ -> 1
