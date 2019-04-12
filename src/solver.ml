@@ -18,13 +18,15 @@ Because solver find result for special case of variable.
 open Ast
 open SetSynFuncType
 
+let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"]
 (*
 solver error at example2
 *)
-let examples = ["./benchmarks/example1";
+(* let examples = ["./benchmarks/example1";
                 "./benchmarks/example2";
                 "./benchmarks/example3";
-                "./benchmarks/example6";]
+                "./benchmarks/example6";
+                "./benchmarks/example5"] *)
 (*
 Search algorithm is very inefficient now(searchByBFS),
 So to run example5, Remove Grammar 
@@ -49,7 +51,11 @@ let rec solveExamples examples=
     (* 5. make fun with grammar by search algorithm *)
     (* first based on BFS *)
     (* now, only consider one function case *)
-    (Search.searchByBFS parsetree synfunIngredient)::(solveExamples tex)
+
+    (* By BFS *)
+    (* (Search.searchByBFS parsetree synfunIngredient)::(solveExamples tex) *)
+    (* By Heap *)
+    (Search.searchByHeap parsetree synfunIngredient)::(solveExamples tex)
 
 let _ =
   let result = solveExamples examples in
