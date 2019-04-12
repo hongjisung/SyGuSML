@@ -8,6 +8,7 @@
 open Ast
 open SetSynFuncType
 exception GTVariableError
+exception SynthFunInputError
 
 
 let rec addSortedvarlistToHash sortedvarlist hash = 
@@ -84,12 +85,14 @@ let getSynFuncIngredient synfun =
     hashref := addSortedvarlistToHash sortedvarlist !hashref;
     let sort = Sort(outputiden) in
     (* let outputSort = GetSynFuncGrammars.getStringFromSort sort in *)
-    let output = Identifier(outputiden) in
-    match grammardefopt with
-    | None -> FuncIngredient(funcname, sortedvarlist, sort, output, !hashref)
-    | Some GrammarDef(grammarlist) ->
-      hashref := addGrammarlistToHash grammarlist !hashref;
-      FuncIngredient(funcname, sortedvarlist, sort, output, !hashref)
+    let output = Identifier(outputiden) in (
+      match grammardefopt with 
+      | None -> FuncIngredient(funcname, sortedvarlist, sort, output, !hashref)
+      | Some GrammarDef(grammarlist) ->
+        hashref := addGrammarlistToHash grammarlist !hashref;
+        FuncIngredient(funcname, sortedvarlist, sort, output, !hashref)
+    )
+  | _ -> raise SynthFunInputError
 
 let rec getSynFuncListIngredient synfunlist =
   match synfunlist with
