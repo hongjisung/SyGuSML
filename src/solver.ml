@@ -18,15 +18,15 @@ Because solver find result for special case of variable.
 open Ast
 open SetSynFuncType
 
-let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"]
+(* let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"] *)
 (*
 solver error at example2
 *)
-(* let examples = ["./benchmarks/example1";
+let examples = ["./benchmarks/example1";
                 "./benchmarks/example2";
                 "./benchmarks/example3";
                 "./benchmarks/example6";
-                "./benchmarks/example5"] *)
+                "./benchmarks/example5"]
 (*
 Search algorithm is very inefficient now(searchByBFS),
 So to run example5, Remove Grammar 
