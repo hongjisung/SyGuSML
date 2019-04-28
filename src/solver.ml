@@ -1,43 +1,44 @@
-(* find the correct function satisfy sygus language problem *)
+(**
+   Find the correct function satisfy sygus language problem 
+   1. read example string from file
+   2. change it to parse tree
+   3. get syn-fun grammar from the tree
+   4. get syn-fun ingredient hash from syn-fun grammar
+   5. make fun with grammar by search algorithm
 
-(*
-1. read example string from file
-2. change it to parse tree
-3. get syn-fun grammar from the tree
-4. get syn-fun ingredient hash from syn-fun grammar
-5. make fun with grammar by search algorithm
+   $ eval $(opam env)
+   $ export LD_LIBRARY_PATH=/newdisk/synKU/_opam/lib/z3
 
-$ eval $(opam env)
-$ export LD_LIBRARY_PATH=/newdisk/synKU/_opam/lib/z3
+   how to set cost
 
-how to set cost
-
-Instead of check sat, check unsat for not expr.
-Because solver find result for special case of variable.
+   Instead of check sat, check unsat for not expr.
+   Because solver find result for special case of variable.
 *)
+
 open Ast
 open SetSynFuncType
 
 (* let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"] *)
+
+(** Test example file list*)
+let examples = ["./benchmarks/integer/max2";]
+
 (*
 solver error at example2
 *)
-let examples = ["./benchmarks/example1";
+(* let examples = ["./benchmarks/example1";
                 "./benchmarks/example2";
                 "./benchmarks/example3";
                 "./benchmarks/example6";
-                "./benchmarks/example5"]
-(*
-Search algorithm is very inefficient now(searchByBFS),
-So to run example5, Remove Grammar 
-  (str.replace ntString ntString ntString)
-  (str.substr ntString ntInt ntInt)
-*)
-(* let examples = ["./benchmarks/example5"] *)
+                "./benchmarks/example5"] *)
 
-let rec solveExamples examples=
+(** Find the correct function in examples.
+    @param examples example file list 
+    @return the result sygus string
+*)
+let rec solveExamples examples =
   match examples with
-  | [] -> []
+  | [] -> [] 
   | h::tex ->
     (* 1. read example string from file *)
     let example = Readfile.readfile h in
@@ -57,6 +58,7 @@ let rec solveExamples examples=
     (* By Heap *)
     (Search.searchByHeap parsetree synfunIngredient)::(solveExamples tex)
 
+(** Execute solver test *)
 let _ =
   let result = solveExamples examples in
   print_newline ();
