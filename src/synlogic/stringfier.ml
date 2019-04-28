@@ -1,6 +1,6 @@
 open Ast
 
-let literalToString literal =
+let literalToSygusString literal =
   match literal with
   | Numeral s -> s
   | Decimal s -> s
@@ -9,170 +9,170 @@ let literalToString literal =
   | BinConst s -> s
   | StringConst s -> s
 
-let featureToString feature =
+let featureToSygusString feature =
   match feature with
   | Grammars -> "grammars"
   | FwdDecls -> "fwd-decls"
   | Recursion -> "recursion"
 
-let symbolToString symbol =
+let symbolToSygusString symbol =
   match symbol with
   | Symbol str -> str
 
-let indexToString index =
+let indexToSygusString index =
   match index with
   | NumeralIndex s -> s
-  | SymbolIndex symbol -> symbolToString symbol
+  | SymbolIndex symbol -> symbolToSygusString symbol
 
-let rec indexlistToString indexlist =
-  let rec indexlistToStringList indexlist =
+let rec indexlistToSygusString indexlist =
+  let rec indexlistToSygusStringList indexlist =
     match indexlist with
     | [] -> []
-    | h::t -> (indexToString h)::(indexlistToStringList t)
-  in String.concat " " (indexlistToStringList indexlist)
+    | h::t -> (indexToSygusString h)::(indexlistToSygusStringList t)
+  in String.concat " " (indexlistToSygusStringList indexlist)
 
-let identifierToString identifier =
+let identifierToSygusString identifier =
   match identifier with
-  | SymbolIdentifier symbol -> symbolToString symbol
+  | SymbolIdentifier symbol -> symbolToSygusString symbol
   | UnderbarIdentifier (symbol, indexlist) ->
-    String.concat "" ["(_ "; symbolToString symbol; " "; (indexlistToString indexlist); ")"]
+    String.concat "" ["(_ "; symbolToSygusString symbol; " "; (indexlistToSygusString indexlist); ")"]
 
-let rec sortToString sort =
+let rec sortToSygusString sort =
   match sort with
-  | Sort identifier -> identifierToString identifier
+  | Sort identifier -> identifierToSygusString identifier
   | SortWithSorts (identifier, sortlist) ->
-    let rec sortlistToStringlist  sortlist =
+    let rec sortlistToSygusStringlist  sortlist =
       match sortlist with
       | [] -> []
-      | h::t -> (sortToString h)::(sortlistToStringlist t)
+      | h::t -> (sortToSygusString h)::(sortlistToSygusStringlist t)
     in
-    let sortlistString = String.concat " " (sortlistToStringlist sortlist) in
-    String.concat "" ["("; identifierToString identifier; " "; sortlistString; ")"]
+    let sortlistString = String.concat " " (sortlistToSygusStringlist sortlist) in
+    String.concat "" ["("; identifierToSygusString identifier; " "; sortlistString; ")"]
 
-let sortdeclToString sortdecl =
+let sortdeclToSygusString sortdecl =
   match sortdecl with
   | SortDeclaration (symbol, numeral) ->
-    symbolToString symbol
+    symbolToSygusString symbol
 
-let sortedvarToString sortedvar =
+let sortedvarToSygusString sortedvar =
   match sortedvar with
   | SortedVar (symbol, sort) ->
-    String.concat "" ["("; symbolToString symbol; " "; sortToString sort; ")"]
+    String.concat "" ["("; symbolToSygusString symbol; " "; sortToSygusString sort; ")"]
 
-let sortedvarlistToString sortedvarlist =
-  let rec sortedvarlistToStringlist sortedvarlist =
+let sortedvarlistToSygusString sortedvarlist =
+  let rec sortedvarlistToSygusStringlist sortedvarlist =
     match sortedvarlist with
     | [] -> []
-    | h::t -> (sortedvarToString h)::(sortedvarlistToStringlist t)
+    | h::t -> (sortedvarToSygusString h)::(sortedvarlistToSygusStringlist t)
   in
-  String.concat " " (sortedvarlistToStringlist sortedvarlist)
+  String.concat " " (sortedvarlistToSygusStringlist sortedvarlist)
 
-let dtconddecToString dtconddec =
+let dtconddecToSygusString dtconddec =
   match dtconddec with
   | DTConsDec (symbol, sortedvarlist) ->
     if List.length sortedvarlist == 0 then
-      symbolToString symbol
+      symbolToSygusString symbol
     else
-      String.concat "" ["("; symbolToString symbol; " "; sortedvarlistToString sortedvarlist; ")"]
+      String.concat "" ["("; symbolToSygusString symbol; " "; sortedvarlistToSygusString sortedvarlist; ")"]
 
-let dtdecToString dtdec =
-  let rec dtconddeclistToStringlist dtconddeclist =
+let dtdecToSygusString dtdec =
+  let rec dtconddeclistToSygusStringlist dtconddeclist =
     match dtconddeclist with
     | [] -> []
-    | h::t -> (dtconddecToString h)::(dtconddeclistToStringlist t)
+    | h::t -> (dtconddecToSygusString h)::(dtconddeclistToSygusStringlist t)
   in
   match dtdec with
   | DTDec dtconddeclist ->
-    String.concat " " (dtconddeclistToStringlist dtconddeclist)
+    String.concat " " (dtconddeclistToSygusStringlist dtconddeclist)
 
-let rec termToString term =
+let rec termToSygusString term =
   match term with
   | Identifier identifier ->
-    identifierToString identifier
-  | Literal literal -> literalToString literal
+    identifierToSygusString identifier
+  | Literal literal -> literalToSygusString literal
   | IdentifierTerms (identifier, termlist) ->
-    let rec termlistToStringlist termlist =
+    let rec termlistToSygusStringlist termlist =
       match termlist with
       | [] -> []
       | h::t ->
-        (termToString h)::(termlistToStringlist t)
+        (termToSygusString h)::(termlistToSygusStringlist t)
     in
-    let termlistString = String.concat " " (termlistToStringlist termlist) in
-    String.concat "" ["("; identifierToString identifier; " "; termlistString; ")"]
+    let termlistString = String.concat " " (termlistToSygusStringlist termlist) in
+    String.concat "" ["("; identifierToSygusString identifier; " "; termlistString; ")"]
   | Exists (sortedvarlist, term) ->
-    String.concat "" ["(exists ("; (sortedvarlistToString sortedvarlist); ") "; (termToString term); ")"]
+    String.concat "" ["(exists ("; (sortedvarlistToSygusString sortedvarlist); ") "; (termToSygusString term); ")"]
   | Forall (sortedvarlist,term) ->
-    String.concat "" ["(forall ("; (sortedvarlistToString sortedvarlist); ") "; (termToString term); ")"]
+    String.concat "" ["(forall ("; (sortedvarlistToSygusString sortedvarlist); ") "; (termToSygusString term); ")"]
   | Let (varbindinglist, term) ->
-    let varbindingToString varbinding =
+    let varbindingToSygusString varbinding =
       match varbinding with
       | VarBinding (symbol, term) ->
-        String.concat " " ["("; symbolToString symbol; termToString term; ")"]
+        String.concat " " ["("; symbolToSygusString symbol; termToSygusString term; ")"]
     in
-    let rec varbindinglistToStringlist varbindinglist =
+    let rec varbindinglistToSygusStringlist varbindinglist =
       match varbindinglist with
       | [] -> []
       | h::t ->
-        (varbindingToString h)::(varbindinglistToStringlist t)
+        (varbindingToSygusString h)::(varbindinglistToSygusStringlist t)
     in
-    String.concat "" ["(let ("; (String.concat " " (varbindinglistToStringlist varbindinglist)); ")"; (termToString term); ")"]
+    String.concat "" ["(let ("; (String.concat " " (varbindinglistToSygusStringlist varbindinglist)); ")"; (termToSygusString term); ")"]
 
-let rec bftermToString bfterm =
+let rec bftermToSygusString bfterm =
   match bfterm with
-  | BfIdentifier identifier -> identifierToString identifier
-  | BfLiteral literal -> literalToString literal
+  | BfIdentifier identifier -> identifierToSygusString identifier
+  | BfLiteral literal -> literalToSygusString literal
   | BfIdentifierTerms (identifier, bftermlist) ->
-    let rec bftermlistToStringlist bftermlist =
+    let rec bftermlistToSygusStringlist bftermlist =
       match bftermlist with
       | [] -> []
       | h::t ->
-        (bftermToString h)::(bftermlistToStringlist t)
+        (bftermToSygusString h)::(bftermlistToSygusStringlist t)
     in
-    String.concat "" ["( "; (identifierToString identifier); " "; (String.concat " " (bftermlistToStringlist bftermlist)); ")"]
+    String.concat "" ["( "; (identifierToSygusString identifier); " "; (String.concat " " (bftermlistToSygusStringlist bftermlist)); ")"]
 
-let gtermToString gterm =
+let gtermToSygusString gterm =
   match gterm with
-  | GTConstant sort -> String.concat "" ["(Constant "; (sortToString sort); ")"]
-  | GTVariable sort -> String.concat "" ["(Variable "; (sortToString sort); ")"]
-  | GTBfTerm bfterm -> bftermToString bfterm
+  | GTConstant sort -> String.concat "" ["(Constant "; (sortToSygusString sort); ")"]
+  | GTVariable sort -> String.concat "" ["(Variable "; (sortToSygusString sort); ")"]
+  | GTBfTerm bfterm -> bftermToSygusString bfterm
 
-let smtcmdToString smtcmd =
+let smtcmdToSygusString smtcmd =
   match smtcmd with
   | DeclareDatatype (symbol, dtdec) ->
-    String.concat " " ("(declare-datatype"::(symbolToString symbol)::(dtdecToString dtdec)::[")"])
+    String.concat " " ("(declare-datatype"::(symbolToSygusString symbol)::(dtdecToSygusString dtdec)::[")"])
   | DeclareDatatypes declaredatatypeslist ->
     let rec toString lst =
       match lst with
       | (sort_decl, dt_dec)::tl ->
-        String.concat " " ["("; sortdeclToString sort_decl; dtdecToString dt_dec; ")"; toString tl]
+        String.concat " " ["("; sortdeclToSygusString sort_decl; dtdecToSygusString dt_dec; ")"; toString tl]
       | [] -> ""
     in
     String.concat "" ["(declare-datatypes () ("; toString declaredatatypeslist; "))"]
   | DeclareSort (symbol, numeral) ->
-    String.concat "" ["(declare-sort "; (symbolToString symbol); " "; numeral; ")"]
+    String.concat "" ["(declare-sort "; (symbolToSygusString symbol); " "; numeral; ")"]
   | DefineFun (symbol, sortedvarlist, sort, term) ->
-    String.concat "" ["(define-fun "; (symbolToString symbol); " ("; (sortedvarlistToString sortedvarlist); ") "; (sortToString sort); " "; (termToString term); ")"]
+    String.concat "" ["(define-fun "; (symbolToSygusString symbol); " ("; (sortedvarlistToSygusString sortedvarlist); ") "; (sortToSygusString sort); " "; (termToSygusString term); ")"]
   | DefineSort (symbol, sort) ->
-    String.concat "" ["(define-sort "; (symbolToString symbol); " "; (sortToString sort); ")"]
+    String.concat "" ["(define-sort "; (symbolToSygusString symbol); " "; (sortToSygusString sort); ")"]
   | SetLogic symbol ->
-    String.concat "" ["(set-logic "; (symbolToString symbol); ")"]
+    String.concat "" ["(set-logic "; (symbolToSygusString symbol); ")"]
   | SetOption (symbol, literal) ->
-    String.concat "" ["(set-option : "; (symbolToString symbol); " "; (literalToString literal); ")"]
+    String.concat "" ["(set-option : "; (symbolToSygusString symbol); " "; (literalToSygusString literal); ")"]
 
 let cmdToSygusString cmd =
   match cmd with
   | CheckSynth -> "(check-synth)\n"
   | Constraint term ->
-    String.concat "" ["(constraint "; (termToString term); ")"]
+    String.concat "" ["(constraint "; (termToSygusString term); ")"]
   | DeclareVar (symbol, sort) ->
-    String.concat "" ["(declare-var "; (symbolToString symbol); " "; (sortToString sort); ")"]
+    String.concat "" ["(declare-var "; (symbolToSygusString symbol); " "; (sortToSygusString sort); ")"]
   | InvConstraint (symbol1, symbol2, symbol3, symbol4) ->
-    String.concat "" ["(inv-constraint "; (symbolToString symbol1); " "; (symbolToString symbol2); " "; (symbolToString symbol3); " "; (symbolToString symbol4); ")"]
+    String.concat "" ["(inv-constraint "; (symbolToSygusString symbol1); " "; (symbolToSygusString symbol2); " "; (symbolToSygusString symbol3); " "; (symbolToSygusString symbol4); ")"]
   | SetFeature (feature, boolconst) ->
-    String.concat "" ["(set-feature : "; (featureToString feature); boolconst; ")"]
+    String.concat "" ["(set-feature : "; (featureToSygusString feature); boolconst; ")"]
   | SynthFun (symbol, sortedvarlist, sort, grammardefoption) -> "SYNTH-FUN"
   | SynthInv (symbol, sortedvarlist, grammardefoption) -> "SYNTH-INV"
-  | SmtCmd smtcmd -> smtcmdToString smtcmd
+  | SmtCmd smtcmd -> smtcmdToSygusString smtcmd
 
 let astToSygusString ast =
   let rec iter ast before =
@@ -192,14 +192,14 @@ let rec astToZ3StringList ast vars =
     | Constraint term ->
       if List.length vars > 0 then
         let varsStr = String.concat " " (["("] @ vars @ [")"]) in
-        let str = String.concat " " ["(assert"; "(forall"; varsStr; (termToString term); "))"] in
+        let str = String.concat " " ["(assert"; "(forall"; varsStr; (termToSygusString term); "))"] in
         str::(astToZ3StringList t vars)
       else
-        let str = String.concat " " ("(assert"::(termToString term)::[")"]) in
+        let str = String.concat " " ("(assert"::(termToSygusString term)::[")"]) in
         str::(astToZ3StringList t vars)
     | DeclareVar (symbol, sort) -> 
-      let symbolStr = symbolToString symbol in
-      let sortStr = sortToString sort in
+      let symbolStr = symbolToSygusString symbol in
+      let sortStr = sortToSygusString sort in
       let str = String.concat " " ("(declare-const"::symbolStr::sortStr::[")"]) in
       let sortVar = String.concat " " ["("; symbolStr; sortStr; ")"] in
       str::(astToZ3StringList t (vars @ [sortVar]))
@@ -213,17 +213,17 @@ let rec astToZ3StringList ast vars =
         | DeclareDatatype (symbol, dtdec) -> 
           astToZ3StringList (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t) vars
         | DeclareDatatypes dtlist ->
-          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+          (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
         | DeclareSort (symbol, numeral)  -> 
-          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+          (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
         | DefineFun (symbol, sortedvarlist, sort, term) -> 
-          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+          (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
         | DefineSort (symbol, sort) ->  
-          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+          (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
         | SetLogic symbol ->  
-          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+          (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
         | SetOption (symbol, literal) ->  
-          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+          (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
       )
 
 let astToZ3string ast =

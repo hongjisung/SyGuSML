@@ -44,10 +44,6 @@ let searchByBFS parsetree synfunIngredient =
             (* check testterm has non-terminal *)
             let countnonterm =(CheckTermHasNonTerminal.countTermHasNonTerminal testterm !nontermlistref) in 
 
-            (* if ((AstToSygusString.termToString testterm) = "( ite ( >= y x ) y x )") then
-               Printf.printf ("%s : %d\n") (AstToSygusString.termToString testterm) (countnonterm)
-               else (); *)
-
             if countnonterm < 5 && countnonterm > 0
             (* if has, find next fun list with testterm and add to Queue *)
             then (
@@ -56,19 +52,11 @@ let searchByBFS parsetree synfunIngredient =
                 match nextfunlist with
                 | [] -> ()
                 | h::t ->
-                  (* if ((AstToSygusString.termToString h) = "( ite ( >= y x ) y x )") then
-                     Printf.printf ("%s\n") (AstToSygusString.termToString h)
-                     else (); *)
                   Queue.add h searchQueue;
                   pushQueue t
               in
-              (* Queue.push option*)
-              (* Printf.printf ("%s  ") (AstToSygusString.termToString testterm);
-                 Printf.printf ("next fun length: %d\n") (List.length nextfunlist); *)
 
               if (not !queuestop) && (Queue.length searchQueue) < 50000 then (
-                (* Printf.printf "queue length: %d\n" (Queue.length searchQueue);
-                   Printf.printf "new fun length: %d\n" (List.length nextfunlist); *)
                 pushQueue nextfunlist;
                 queuedepth := 1 + (!queuedepth)
               ) else (
@@ -88,16 +76,6 @@ let searchByBFS parsetree synfunIngredient =
                 let newstring = Stringfier.astToZ3string newparsetree in
                 (* 8. test it with z3 *)
                 let z3solver = Z3testing.z3testing newstring in 
-                (
-                  if ((Stringfier.termToString testterm) = "( ite ( >= y x ) y x )") 
-                  then (
-                    Printf.printf ("%s\n") (Stringfier.termToString testterm);
-                    Printf.printf ("%s\n") (newstring);
-                    Printf.printf ("%b\n") z3solver;
-                    ()
-                  ) 
-                  else ()
-                );
                 (* 9. if satisfiable return that else go next search *)
                 if z3solver then ( 
                   deffunresult := newstring;
@@ -105,12 +83,6 @@ let searchByBFS parsetree synfunIngredient =
                 )
                 else ()                    
               else (
-                (* Printf.printf ("%s\n") (AstToSygusString.termToString testterm) ; *)
-                (* while not (Queue.is_empty searchQueue) do 
-                   let term = Queue.pop searchQueue in
-                   Printf.printf "%s\n" (AstToSygusString.termToString term)
-                   done; *)
-                (* raise LoopOut *)
                 ()
               )
             );
@@ -175,8 +147,6 @@ let searchByHeap parsetree synfunIngredient =
             heapref := Heap.del_min !heapref;
             match testtermwithcount with
             | TermWithCount(testterm, countnonterm, countterm) ->  
-              (* Printf.printf "%d\n" (Heap.size !heapref);
-                 print_endline (AstToSygusString.termToString testterm); *)
               if countnonterm > 0 then
                 let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in 
                 let rec pushHeap nextfunlist = 
