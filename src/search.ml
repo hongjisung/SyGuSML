@@ -85,13 +85,13 @@ let searchByBFS parsetree synfunIngredient =
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
                 let newparsetree = ChangeSynfunToDefFun.changeSynfunToDefFun parsetree defFun in
                 (* 7. change it to z3 string *)
-                let newstring = AstToZ3string.astToZ3string newparsetree in
+                let newstring = Stringfier.astToZ3string newparsetree in
                 (* 8. test it with z3 *)
                 let z3solver = Z3testing.z3testing newstring in 
                 (
-                  if ((AstToSygusString.termToString testterm) = "( ite ( >= y x ) y x )") 
+                  if ((Stringfier.termToString testterm) = "( ite ( >= y x ) y x )") 
                   then (
-                    Printf.printf ("%s\n") (AstToSygusString.termToString testterm);
+                    Printf.printf ("%s\n") (Stringfier.termToString testterm);
                     Printf.printf ("%s\n") (newstring);
                     Printf.printf ("%b\n") z3solver;
                     ()
@@ -198,7 +198,7 @@ let searchByHeap parsetree synfunIngredient =
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
                 let newparsetree = ChangeSynfunToDefFun.changeSynfunToDefFun parsetree defFun in
                 (* 7. change it to z3 string *)
-                let newstring = AstToZ3string.astToZ3string newparsetree in
+                let newstring = Stringfier.astToZ3string newparsetree in
                 (* 8. test it with z3 *)
                 let z3solver = Z3testing.z3testing newstring in
                 (* 9. if satisfiable return that else go next search *)

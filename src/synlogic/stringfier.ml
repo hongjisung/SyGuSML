@@ -1,100 +1,5 @@
 open Ast
 
-(*
-Don't need to Change synthfun, synthinv
-
-Here, Yet change the declaretypes
-
-*** type cmd =
-  | CheckSynth
-  | Constraint of term
-  | DeclareVar of symbol * sort
-  | InvConstraint of symbol * symbol * symbol * symbol
-  | SetFeature of feature * boolconst
-  | SynthFun of symbol * sorted_var list * sort * grammar_def option
-  | SynthInv of symbol * sorted_var list * grammar_def option
-  | SmtCmd of smt_cmd
-
-*** and smt_cmd =
-  | DeclareDatatype of symbol * dt_dec
-  | DeclareDatatypes of (sort_decl * dt_dec) list
-  | DeclareSort of symbol * numeral
-  | DefineFun of symbol * sorted_var list * sort * term
-  | DefineSort of symbol * sort
-  | SetLogic of symbol
-  | SetOption of symbol * literal
-
-** and term =
-  | Identifier of identifier
-  | Literal of literal
-  | IdentifierTerms of identifier * term list
-  | Exists of sorted_var list * term
-  | Forall of sorted_var list * term
-  | Let of var_binding list * term
-
-** and bf_term =
-  | BfIdentifier of identifier
-  | BfLiteral of literal
-  | BfIdentifierTerms of identifier * bf_term list
-
-** and sorted_var =
-  | SortedVar of symbol * sort
-
-** and var_binding =
-  | VarBinding of symbol * term
-
-** and identifier =
-  | SymbolIdentifier of symbol
-  | UnderbarIdentifier of symbol * index list
-
-** and symbol =
-  | Symbol of string
-
-** and index =
-  | NumeralIndex of numeral
-  | SymbolIndex of symbol
-
-** and sort =
-  | Sort of identifier
-  | SortWithSorts of identifier * sort list
-
-** and feature =
-  | Grammars
-  | FwdDecls
-  | Recursion
-
-** and sort_decl =
-  | SortDeclaration of symbol * numeral
-
-**and dt_dec =
-  | DTDec of dt_cond_dec list
-
-** and dt_cond_dec =
-  | DTConsDec of symbol * sorted_var list
-
-and grammar_def =
-  | GrammarDef of (sorted_var * grouped_rule_list) list
-
-and grouped_rule_list =
-  | GroupedRuleList of symbol * sort * gterm list
-
-** and gterm =
-  | GTConstant of sort
-  | GTVariable of sort
-  | GTBfTerm of bf_term
-
-** and literal =
-  | Numeral of numeral
-  | Decimal of string
-  | BoolConst of boolconst
-  | HexConst of string
-  | BinConst of string
-  | StringConst of string
-
-** and numeral = string
-** and boolconst = string
-*)
-
 let literalToString literal =
   match literal with
   | Numeral s -> s
@@ -147,7 +52,6 @@ let rec sortToString sort =
 let sortdeclToString sortdecl =
   match sortdecl with
   | SortDeclaration (symbol, numeral) ->
-    (* String.concat "" ["("; symbolToString symbol; " "; numeral; ")"] *)
     symbolToString symbol
 
 let sortedvarToString sortedvar =
@@ -237,16 +141,6 @@ let smtcmdToString smtcmd =
   | DeclareDatatype (symbol, dtdec) ->
     String.concat " " ("(declare-datatype"::(symbolToString symbol)::(dtdecToString dtdec)::[")"])
   | DeclareDatatypes declaredatatypeslist ->
-    (* let rec toString lst =
-       match lst with
-       | (sort_decl, dt_dec)::tl ->
-        let tl_sort_decls, tl_dt_decs = toString tl in
-        (sortdeclToString sort_decl)::tl_sort_decls, dtdecToString dt_dec::tl_dt_decs
-       | [] -> [], []
-       in
-       let sort_decls_string_list, dt_decs_string_list = toString declaredatatypeslist in
-       let sort_decls_string = String.concat " " sort_decls_string_list in
-       let dt_decs_string = String.concat " " dt_decs_string_list in *)
     let rec toString lst =
       match lst with
       | (sort_decl, dt_dec)::tl ->
@@ -265,7 +159,7 @@ let smtcmdToString smtcmd =
   | SetOption (symbol, literal) ->
     String.concat "" ["(set-option : "; (symbolToString symbol); " "; (literalToString literal); ")"]
 
-let cmdToString cmd =
+let cmdToSygusString cmd =
   match cmd with
   | CheckSynth -> "(check-synth)\n"
   | Constraint term ->
@@ -280,10 +174,58 @@ let cmdToString cmd =
   | SynthInv (symbol, sortedvarlist, grammardefoption) -> "SYNTH-INV"
   | SmtCmd smtcmd -> smtcmdToString smtcmd
 
-let astToString ast =
+let astToSygusString ast =
   let rec iter ast before =
     match ast with
-    | cmd::tail -> iter tail (String.concat "\n" [before; (cmdToString cmd)])
+    | cmd::tail -> iter tail (String.concat "\n" [before; (cmdToSygusString cmd)])
     | [] -> before
   in
   iter ast ""
+
+let rec astToZ3StringList ast vars =
+  match ast with
+  | [] -> []
+  | h::t ->
+    match h with
+    | CheckSynth -> 
+      "(check-sat)"::(astToZ3StringList t vars)
+    | Constraint term ->
+      if List.length vars > 0 then
+        let varsStr = String.concat " " (["("] @ vars @ [")"]) in
+        let str = String.concat " " ["(assert"; "(forall"; varsStr; (termToString term); "))"] in
+        str::(astToZ3StringList t vars)
+      else
+        let str = String.concat " " ("(assert"::(termToString term)::[")"]) in
+        str::(astToZ3StringList t vars)
+    | DeclareVar (symbol, sort) -> 
+      let symbolStr = symbolToString symbol in
+      let sortStr = sortToString sort in
+      let str = String.concat " " ("(declare-const"::symbolStr::sortStr::[")"]) in
+      let sortVar = String.concat " " ["("; symbolStr; sortStr; ")"] in
+      str::(astToZ3StringList t (vars @ [sortVar]))
+    | InvConstraint _ -> (astToZ3StringList t vars)
+    | SetFeature (f, b) -> (astToZ3StringList t vars)
+    | SynthFun (symbol, sortedvarlist, sort, grammardefopt) -> (astToZ3StringList t vars)
+    | SynthInv (symbol, sortedvarlist, grammardefopt) ->         
+      astToZ3StringList (SynthFun(symbol, sortedvarlist, Sort(SymbolIdentifier(Symbol("Bool"))), grammardefopt)::t) vars
+    | SmtCmd smt_cmd -> (
+        match smt_cmd with
+        | DeclareDatatype (symbol, dtdec) -> 
+          astToZ3StringList (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t) vars
+        | DeclareDatatypes dtlist ->
+          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+        | DeclareSort (symbol, numeral)  -> 
+          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+        | DefineFun (symbol, sortedvarlist, sort, term) -> 
+          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+        | DefineSort (symbol, sort) ->  
+          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+        | SetLogic symbol ->  
+          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+        | SetOption (symbol, literal) ->  
+          (smtcmdToString smt_cmd)::(astToZ3StringList t vars)
+      )
+
+let astToZ3string ast =
+  let newstringlist = astToZ3StringList ast [] in
+  String.concat "\n" newstringlist
