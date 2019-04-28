@@ -11,7 +11,7 @@ The very simple algorithm for function synthsis
 9. if satisfiable return that else go next search
 *)
 
-let searchByBFS parsetree synfunIngredient =
+let searchByBFS ast synfunIngredient =
   match synfunIngredient with
   | [] -> 
     print_endline "SynFuncListIngredient check";
@@ -71,13 +71,12 @@ let searchByBFS parsetree synfunIngredient =
               if countnonterm = 0 then 
                 (* 6. make define-fun and change synth-fun to it*)
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
-                let newparsetree = ChangeSynfunToDefFun.changeSynfunToDefFun parsetree defFun in
+                let newAst = Transformer.synfunToDefFun ast defFun in
                 (* 7. change it to z3 string *)
-                let newstring = Stringfier.astToZ3string newparsetree in
+                let newstring = Stringfier.astToZ3string newAst in
                 (* 8. test it with z3 *)
-                let z3solver = Z3testing.z3testing newstring in 
                 (* 9. if satisfiable return that else go next search *)
-                if z3solver then ( 
+                if Z3solver.isSat newstring then ( 
                   deffunresult := newstring;
                   raise LoopOut 
                 )
@@ -166,13 +165,12 @@ let searchByHeap parsetree synfunIngredient =
               if countnonterm == 0 then
                 (* 6. make define-fun and change synth-fun to it*)
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
-                let newparsetree = ChangeSynfunToDefFun.changeSynfunToDefFun parsetree defFun in
+                let newAst = Transformer.synfunToDefFun parsetree defFun in
                 (* 7. change it to z3 string *)
-                let newstring = Stringfier.astToZ3string newparsetree in
+                let newstring = Stringfier.astToZ3string newAst in
                 (* 8. test it with z3 *)
-                let z3solver = Z3testing.z3testing newstring in
                 (* 9. if satisfiable return that else go next search *)
-                if z3solver then (
+                if Z3solver.isSat newstring then (
                   deffunresult := newstring;
                   raise LoopOut 
                 );
