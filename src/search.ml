@@ -1,5 +1,5 @@
 open Ast
-open SetSynFuncType
+open IntermediateTypes
 exception LoopOut
 
 (*

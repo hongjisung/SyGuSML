@@ -16,7 +16,7 @@
 *)
 
 open Ast
-open SetSynFuncType
+open IntermediateTypes
 
 (* let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"] *)
 

@@ -6,7 +6,7 @@
 5. get hashmap : term(sortname, varname) * term list
 *)
 open Ast
-open SetSynFuncType
+open IntermediateTypes
 exception GTVariableError
 exception SynthFunInputError
 

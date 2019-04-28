@@ -1,4 +1,5 @@
 open Ast
+
 type signature = 
   | SortSignature of sort
   | SymbolSignature of symbol

@@ -41,7 +41,7 @@ signature
 *)
 
 open Ast
-open SetSynFuncType
+open IntermediateTypes
 exception SygusError
 exception SetLogicError
 exception SetFeatureError
@@ -481,12 +481,6 @@ let getSynFuncGrammars parsetree =
       | _ -> [] 
   in 
   let synfunlist = analysisCmd parsetree in
-  (* PrintMethods.printStringList !logiclist;
-     print_endline "";
-     Printf.printf "%b\n" (isBVinSignature !signature);
-     print_endline "";
-     PrintMethods.printStringList (getSignatureStringList !signature); *)
-  Printf.printf "\nSynFuncGrammars test: %b\n\n" (synfunlist = HandmadeOutput.synfuntest);
   synfunlist
 
 
