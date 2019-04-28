@@ -13,16 +13,16 @@ The very simple algorithm for function synthsis
 
 let searchByBFS ast synfunIngredient =
   match synfunIngredient with
-  | [] -> 
+  | [] ->
     print_endline "SynFuncListIngredient check";
     print_endline "No function";
     ""
-  | h::t -> 
+  | h::t ->
     let searchQueue = Queue.create () in
-    let queuecountref = ref 0 in 
+    let queuecountref = ref 0 in
     let queuestop = ref false in
     let queuedepth = ref 0 in
-    let deffunresult = ref "" in 
+    let deffunresult = ref "" in
     (
       match h with
       | FuncIngredient(symbol, sortedvarlist, sort, term, hash) ->
@@ -42,12 +42,12 @@ let searchByBFS ast synfunIngredient =
             queuecountref := 1 + (!queuecountref);
 
             (* check testterm has non-terminal *)
-            let countnonterm =(CheckTermHasNonTerminal.countTermHasNonTerminal testterm !nontermlistref) in 
+            let countnonterm =(Terms.countTermHasNonTerminal testterm !nontermlistref) in
 
             if countnonterm < 5 && countnonterm > 0
             (* if has, find next fun list with testterm and add to Queue *)
             then (
-              let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in 
+              let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in
               let rec pushQueue nextfunlist =
                 match nextfunlist with
                 | [] -> ()
@@ -68,7 +68,7 @@ let searchByBFS ast synfunIngredient =
 
             (* if not, go step 6 to 9*)
             else(
-              if countnonterm = 0 then 
+              if countnonterm = 0 then
                 (* 6. make define-fun and change synth-fun to it*)
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
                 let newAst = Transformer.synfunToDefFun ast defFun in
@@ -76,11 +76,11 @@ let searchByBFS ast synfunIngredient =
                 let newstring = Stringfier.astToZ3string newAst in
                 (* 8. test it with z3 *)
                 (* 9. if satisfiable return that else go next search *)
-                if Z3solver.isSat newstring then ( 
+                if Z3solver.isSat newstring then (
                   deffunresult := newstring;
-                  raise LoopOut 
+                  raise LoopOut
                 )
-                else ()                    
+                else ()
               else (
                 ()
               )
@@ -88,7 +88,7 @@ let searchByBFS ast synfunIngredient =
           done
         with
           LoopOut -> ()
-        | Stack_overflow -> 
+        | Stack_overflow ->
           Printf.printf "error stack overflow\n\n"
     );
 
@@ -124,41 +124,41 @@ let searchByHeap parsetree synfunIngredient =
   | [] -> ""
   | h::t ->
     let deffunresult = ref "" in
-    let countref = ref 0 in 
+    let countref = ref 0 in
     (
       match h with
       | FuncIngredient(symbol, sortedvarlist, sort, term, hash) ->
         (* get non-terminal list *)
         let nontermlistref = ref [] in
-        let addnonterm key data = 
+        let addnonterm key data =
           nontermlistref := key::!nontermlistref in
         Hashtbl.iter addnonterm hash;
 
         let heapref = ref (Heap.insert (Heap.empty)
-                             (TermWithCount(term, 
-                                            (CheckTermHasNonTerminal.countTermHasNonTerminal term !nontermlistref),
-                                            (CheckTermHasNonTerminal.countTerm term)
-                                           ))) in 
+                             (TermWithCount(term,
+                                            (Terms.countTermHasNonTerminal term !nontermlistref),
+                                            (Terms.countTerm term)
+                                           ))) in
         try
           while (Heap.size !heapref) > 0 do
             let testtermwithcount = Heap.find_min !heapref in
             countref := !countref + 1;
             heapref := Heap.del_min !heapref;
             match testtermwithcount with
-            | TermWithCount(testterm, countnonterm, countterm) ->  
+            | TermWithCount(testterm, countnonterm, countterm) ->
               if countnonterm > 0 then
-                let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in 
-                let rec pushHeap nextfunlist = 
+                let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in
+                let rec pushHeap nextfunlist =
                   match nextfunlist with
                   | [] -> ()
                   | nextfun::others ->
-                    heapref := Heap.insert !heapref (TermWithCount(nextfun, 
-                                                                   (CheckTermHasNonTerminal.countTermHasNonTerminal nextfun !nontermlistref),
-                                                                   (CheckTermHasNonTerminal.countTerm nextfun)));
+                    heapref := Heap.insert !heapref (TermWithCount(nextfun,
+                                                                   (Terms.countTermHasNonTerminal nextfun !nontermlistref),
+                                                                   (Terms.countTerm nextfun)));
                     pushHeap others
                 in
-                (           
-                  if (Heap.size !heapref) < 200000 then 
+                (
+                  if (Heap.size !heapref) < 200000 then
                     pushHeap nextfunlist;
                 )
               else
@@ -172,12 +172,12 @@ let searchByHeap parsetree synfunIngredient =
                 (* 9. if satisfiable return that else go next search *)
                 if Z3solver.isSat newstring then (
                   deffunresult := newstring;
-                  raise LoopOut 
+                  raise LoopOut
                 );
           done
         with
           LoopOut -> ()
-        | Stack_overflow -> 
+        | Stack_overflow ->
           Printf.printf "error stack overflow\n\n"
     );
     Printf.printf "Search Count : %d\n\n" (!countref) ;

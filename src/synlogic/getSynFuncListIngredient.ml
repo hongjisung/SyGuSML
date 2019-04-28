@@ -10,7 +10,6 @@ open IntermediateTypes
 exception GTVariableError
 exception SynthFunInputError
 
-
 let rec addSortedvarlistToHash sortedvarlist hash = 
   match sortedvarlist with
   | [] -> hash
