@@ -21,11 +21,7 @@ open SetSynFuncType
 (* let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"] *)
 
 (** Test example file list*)
-let examples = ["./benchmarks/integer/max2";]
-
-(*
-solver error at example2
-*)
+let examples = ["./benchmarks/example1"]
 (* let examples = ["./benchmarks/example1";
                 "./benchmarks/example2";
                 "./benchmarks/example3";
