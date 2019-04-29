@@ -2,15 +2,23 @@ open Ast
 open IntermediateTypes
 exception LoopOut
 
-(*
-The very simple algorithm for function synthsis
+(**
+   The algorithms for function synthsis
 
-6. make define-fun
-7. change ast to z3 string (change synth-fun to declare-fun)
-8. test z3string with z3
-9. if satisfiable return that else go next search
+   6. make define-fun
+
+   7. change ast to z3 string (change synth-fun to declare-fun)
+
+   8. test z3string with z3
+
+   9. if satisfiable return that else go next search  
 *)
 
+(** Find the synth-fun body by BFS
+    @param ast parsed sygus string
+    @param synfunIngredient function ingredient
+    @return result sygus string with synth-fun body
+*)
 let searchByBFS ast synfunIngredient =
   match synfunIngredient with
   | [] ->
@@ -119,7 +127,13 @@ end
 
 module Heap = BatHeap.Make (OrderedType)
 
-let searchByHeap parsetree synfunIngredient =
+
+(** Find the synth-fun body by using heap
+    @param ast parsed sygus string
+    @param synfunIngredient function ingredient
+    @return result sygus string with synth-fun body
+*)
+let searchByHeap ast synfunIngredient =
   match synfunIngredient with
   | [] -> ""
   | h::t ->
@@ -165,7 +179,7 @@ let searchByHeap parsetree synfunIngredient =
               if countnonterm == 0 then
                 (* 6. make define-fun and change synth-fun to it*)
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
-                let newAst = Transformer.synfunToDefFun parsetree defFun in
+                let newAst = Transformer.synfunToDefFun ast defFun in
                 (* 7. change it to z3 string *)
                 let newstring = Stringfier.astToZ3string newAst in
                 (* 8. test it with z3 *)
