@@ -19,9 +19,6 @@ _build/
 setup.data
 setup.log
 
-# Merlin configuring file for Vim and Emacs
-.merlin
-
 # opam switch data
 _opam
 
@@ -31,5 +28,3 @@ _opam
 # Auto-generated from make
 ._d/
 
-# Build result!
-myprogram
