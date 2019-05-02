@@ -2,5 +2,5 @@ PKG core parser lexer z3 batteries
 S src
 B _build/src
 B _build/src/utils
-B _build/src/synlogic
+B _build/src/solver
 B _build/src/types
