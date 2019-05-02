@@ -1,20 +1,22 @@
-# synKU
-A project for competition at https://sygus.org/
+# SyGuSML
+
+A project for competition at https://sygus.org/  
 To synthesize function with the sygus language standard version 2.0
 
-## Run
+## Run Solver Test
 
 ```Bash
-$ git clone https://github.com/hongjisung/synKU && cd synKU
+$ git clone https://github.com/hongjisung/SyGuSML && cd SyGuSML
 $ make install-deps
-$ make
-$ ./main.native <inputfile>
+$ eval $(opam env)
+$ export LD_LIBRARY_PATH={/path/to/your/z3/lib/path}:$LD_LIBRARY_PATH
+$ make solvertest
+'Result for solver shows here'
 ```
 
-## Run solver
-z3 lib position example : /synKU/_opam/lib/z3
-```Bash
-$ eval $(opam env)
-$ export LD_LIBRARY_PATH={{z3 lib position}}
-$ make solvertest
-```
+### Why z3 lib position is added to LD_LIBRARY_PATH
+
+We found that make fails in some environments because ocamlbuild cannot find z3.  
+So we appended z3 path to LD_LIBRARY_PATH.
+
+z3 lib position example : /your/ocaml/switch/path/lib/z3
