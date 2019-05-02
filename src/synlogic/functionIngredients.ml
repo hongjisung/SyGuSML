@@ -76,14 +76,13 @@ let rec addGrammarlistToHash grammarlist hash =
       hashref := addGtermlistToHash gtermlist (Identifier(SymbolIdentifier(symbol))) !hashref;
       addGrammarlistToHash t !hashref
 
-let getSynFuncIngredient synfun =
+let getFunctionIngredient synfun =
   let hashref = ref (Hashtbl.create 31) in
   match synfun with
   (* not consider all case how to treat SortWithSorts *)
   | SynthFun (funcname, sortedvarlist, Sort(outputiden), grammardefopt) ->
     hashref := addSortedvarlistToHash sortedvarlist !hashref;
     let sort = Sort(outputiden) in
-    (* let outputSort = GetSynFuncGrammars.getStringFromSort sort in *)
     let output = Identifier(outputiden) in (
       match grammardefopt with 
       | None -> FuncIngredient(funcname, sortedvarlist, sort, output, !hashref)
@@ -93,8 +92,5 @@ let getSynFuncIngredient synfun =
     )
   | _ -> raise SynthFunInputError
 
-let rec getSynFuncListIngredient synfunlist =
-  match synfunlist with
-  | [] -> []
-  | h::t-> 
-    (getSynFuncIngredient h)::(getSynFuncListIngredient t)
+let rec getFunctionIngredientList synfunlist =
+  List.map getFunctionIngredient synfunlist

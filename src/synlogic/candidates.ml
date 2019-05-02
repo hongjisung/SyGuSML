@@ -22,30 +22,29 @@ let rec combIdenTermList idenlist termlist =
       | h::t ->
         (IdentifierTerms(iden, h))::(combtermlist t iden)
     in
-      (combtermlist termlist h) @ (combIdenTermList t termlist)
+    (combtermlist termlist h) @ (combIdenTermList t termlist)
 
 (* just one function *)
-let rec makeNextSynFuncList term hash = 
+let rec makeNextBodyList term hash = 
   match term with
   | Identifier identifier -> 
     (try
-      Hashtbl.find hash (Identifier(identifier))
-    with
-      _ -> [Identifier(identifier)]
+       Hashtbl.find hash (Identifier(identifier))
+     with
+       _ -> [Identifier(identifier)]
     )
-  | Literal literal -> [Literal(literal)]
   | IdentifierTerms (identifier, termlist) ->
     let rec makeTermlist termlist =
       match termlist with
       | [] -> [[]]
       | h::t ->
-        let caselistiden = makeNextSynFuncList h hash in
+        let caselistiden = makeNextBodyList h hash in
         let caselistterm = makeTermlist t in
         combinationTwoList caselistiden caselistterm
     in 
-      let termlistcase = makeTermlist termlist in
-      combIdenTermList [identifier] termlistcase
-     
+    let termlistcase = makeTermlist termlist in
+    combIdenTermList [identifier] termlistcase
+  | Literal literal -> [Literal(literal)]
   | Exists (sortedvarlist, term) -> [Exists(sortedvarlist, term)]
   | Forall (sortedvarlist, term) -> [Forall(sortedvarlist, term)]
   | Let (varbindinglist, term) -> [Let(varbindinglist, term)]

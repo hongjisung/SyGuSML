@@ -39,9 +39,9 @@ let rec solveExamples examples =
     let parsetree = ChangeToParseTree.changeToParseTree example in 
     (* 3. get syn-fun grammar from the tree *)
     (* default grammar and feature are not implemented *)
-    let synfunlist = GetSynFuncGrammars.getSynFuncGrammars parsetree in 
+    let synfunlist = Preprocessor.preprocess parsetree in 
     (* 4. get syn-fun ingredient hash from syn-fun grammar *)
-    let synfunIngredient = GetSynFuncListIngredient.getSynFuncListIngredient synfunlist in
+    let synfunIngredient = FunctionIngredients.getFunctionIngredientList synfunlist in
     (* 5. make fun with grammar by search algorithm *)
     (* first based on BFS *)
     (* now, only consider one function case *)

@@ -327,16 +327,16 @@ let changeVarsortToParam grammardef paramhash =
       *SETOPTION -> set literal to S, if unrecognized, ignore
                   (add this to signature with option)
 *)
-let getSynFuncGrammars parsetree =
+let preprocess ast =
   let signature = ref [] in
   (* just for feature setting, not yet implement *)
-  let funsignature = ref [] in
+  (* let funsignature = ref [] in *)
   let logiclist = ref [] in
   let featureGrammars = ref true in
   let featureFwdDecls = ref false in 
   let featureRecursion = ref false in 
-  let rec analysisCmd parsetree  = 
-    match parsetree with
+  let rec analysisCmd ast  = 
+    match ast with
     | [] -> []
     | h::t ->
       match h with
@@ -362,7 +362,7 @@ let getSynFuncGrammars parsetree =
            | FwdDecls, "true" -> featureFwdDecls := true
            | FwdDecls, "false" -> featureFwdDecls := false
            | Recursion, "true" -> featureRecursion := true
-           | FwdDecls, "false" -> featureFwdDecls := false
+           | Recursion, "false" -> featureRecursion := false
            | _ -> raise SetFeatureError
           );
           analysisCmd t
@@ -462,7 +462,6 @@ let getSynFuncGrammars parsetree =
                   logiclist := (getLogicList str);
                   analysisCmd t
                 )
-              | _ -> raise SetLogicError
             )
           | SetOption (symbol, literal) ->
             let siglist = getSignatureStringList !signature in 
@@ -476,11 +475,9 @@ let getSynFuncGrammars parsetree =
                   analysisCmd t
                 )
             )
-          | _ -> raise SygusError
         )
-      | _ -> [] 
   in 
-  let synfunlist = analysisCmd parsetree in
+  let synfunlist = analysisCmd ast in
   synfunlist
 
 

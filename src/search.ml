@@ -55,7 +55,7 @@ let searchByBFS ast synfunIngredient =
             if countnonterm < 5 && countnonterm > 0
             (* if has, find next fun list with testterm and add to Queue *)
             then (
-              let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in
+              let nextfunlist = Candidates.makeNextBodyList testterm hash in
               let rec pushQueue nextfunlist =
                 match nextfunlist with
                 | [] -> ()
@@ -161,7 +161,7 @@ let searchByHeap ast synfunIngredient =
             match testtermwithcount with
             | TermWithCount(testterm, countnonterm, countterm) ->
               if countnonterm > 0 then
-                let nextfunlist = MakeNextSynFuncList.makeNextSynFuncList testterm hash in
+                let nextfunlist = Candidates.makeNextBodyList testterm hash in
                 let rec pushHeap nextfunlist =
                   match nextfunlist with
                   | [] -> ()
