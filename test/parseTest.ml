@@ -1,19 +1,10 @@
-let parse s =
-  let lexbuf = Lexing.from_string s in
-  let ast = Parser.sygus Lexer.start lexbuf in
-  ast
-
-let rec ast_to_string exprs =
-  match exprs with
-    _ -> []
-
-let rec test_parse num test_cases =
+let rec run num test_cases =
   match test_cases with
     (test_case, expected)::tail ->
     print_string "Case ";
     print_int (num + 1);
     print_string " ";
-    if (parse test_case) = expected then (
+    if (Solver.parse test_case) = expected then (
       print_string "passed.";
     ) else (
       print_string "failed!!!!!!!\n";
@@ -22,11 +13,11 @@ let rec test_parse num test_cases =
       print_string "'";
     );
     print_newline ();
-    test_parse (num + 1) tail
+    run (num + 1) tail
   | [] -> num
 
 let test_result = 
-  test_parse 0 [
+  run 0 [
     (* Case 1 *)
     ("(check-synth)",
      [CheckSynth]);
