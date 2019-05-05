@@ -46,7 +46,7 @@ let rec solveExamples examples =
   | [] -> [] 
   | h::t ->
     let s = Readfile.readfile h in
-    (Solver.solve s Search.searchByHeap) :: (solveExamples t)
+    (Solver.solve s Search.searchByHeap Cost.basicCost) :: (solveExamples t)
 
 (** Execute solver test *)
 let _ =

@@ -19,7 +19,7 @@ exception LoopOut
     @param synfunIngredient function ingredient
     @return result sygus string with synth-fun body
 *)
-let searchByBFS ast synfunIngredient =
+let searchByBFS ast synfunIngredient costFunc =
   match synfunIngredient with
   | [] ->
     print_endline "SynFuncListIngredient check";
@@ -111,21 +111,18 @@ let searchByBFS ast synfunIngredient =
 
 (* search by heap *)
 type heapterm =
-  | TermWithCount of term * int * int
+  | Node of term * int
 
 module OrderedType = struct
   type t = heapterm
-  let compare (p1) (p2) =
-    let multi = 5 in
-    let multi2 = 2 in
-    match p1, p2 with
-    | TermWithCount(t1, i1, j1), TermWithCount(t2, i2, j2) ->
-      if (i1*multi + j1*multi2 == i2*multi + j2*multi2) then 0
-      else if i1*multi + j1*multi2 > i2*multi + j2*multi2 then 1
-      else -1
+  let compare (Node(t1, i1)) (Node(t2, i2)) =
+    if i1 = i2 then 0
+    else if i1 > i2 then 1
+    else -1
 end
 
 module Heap = BatHeap.Make (OrderedType)
+
 
 
 (** Find the synth-fun body by using heap
@@ -133,7 +130,7 @@ module Heap = BatHeap.Make (OrderedType)
     @param synfunIngredient function ingredient
     @return result sygus string with synth-fun body
 *)
-let searchByHeap ast synfunIngredient =
+let searchByHeap ast synfunIngredient costFunc=
   match synfunIngredient with
   | [] -> ""
   | h::t ->
@@ -148,27 +145,21 @@ let searchByHeap ast synfunIngredient =
           nontermlistref := key::!nontermlistref in
         Hashtbl.iter addnonterm hash;
 
-        let heapref = ref (Heap.insert (Heap.empty)
-                             (TermWithCount(term,
-                                            (Terms.countTermHasNonTerminal term !nontermlistref),
-                                            (Terms.countTerm term)
-                                           ))) in
+        let heapref = ref (Heap.insert (Heap.empty) (Node(term, costFunc term !nontermlistref))) in
         try
           while (Heap.size !heapref) > 0 do
             let testtermwithcount = Heap.find_min !heapref in
             countref := !countref + 1;
             heapref := Heap.del_min !heapref;
             match testtermwithcount with
-            | TermWithCount(testterm, countnonterm, countterm) ->
-              if countnonterm > 0 then
+            | Node(testterm, cost) ->
+              if (Terms.countTermHasNonTerminal testterm !nontermlistref) > 0 then
                 let nextfunlist = Candidates.makeNextBodyList testterm hash in
                 let rec pushHeap nextfunlist =
                   match nextfunlist with
                   | [] -> ()
                   | nextfun::others ->
-                    heapref := Heap.insert !heapref (TermWithCount(nextfun,
-                                                                   (Terms.countTermHasNonTerminal nextfun !nontermlistref),
-                                                                   (Terms.countTerm nextfun)));
+                    heapref := Heap.insert !heapref (Node(nextfun, costFunc nextfun !nontermlistref));
                     pushHeap others
                 in
                 (
@@ -176,7 +167,6 @@ let searchByHeap ast synfunIngredient =
                     pushHeap nextfunlist;
                 )
               else
-              if countnonterm == 0 then
                 (* 6. make define-fun and change synth-fun to it*)
                 let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
                 let newAst = Transformer.synfunToDefFun ast defFun in

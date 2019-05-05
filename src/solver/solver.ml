@@ -10,8 +10,8 @@ let parse s =
     @param examples example file list 
     @return the result sygus string list
 *)
-let solve s search =
+let solve s search cost =
   let ast = parse s in 
   let synfunlist = Preprocessor.preprocess ast in 
   let synfunIngredient = FunctionIngredients.getFunctionIngredientList synfunlist in
-  Search.searchByHeap ast synfunIngredient
+  search ast synfunIngredient cost
