@@ -4,13 +4,10 @@ read file and return all the contents
 
 let readfile name = 
   let channel = open_in name in 
-  let text = ref "" in 
+  let rec readtext channel =
     try
-      while true do 
-        let line = input_line channel in 
-          text := String.concat "" [!text;"\n";line];
-      done;
-      ""
+      let line = input_line channel in
+      line::(readtext channel)
     with
-      End_of_file -> !text ;;
-  
+      End_of_file -> []
+  in String.concat "\n" (readtext channel) 
