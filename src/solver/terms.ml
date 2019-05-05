@@ -45,3 +45,9 @@ let rec countTerm term =
     in
     1 + (countTermlist termlist)
   | _ -> 1
+
+let rec sortToTerm sort =
+  match sort with
+  | Sort(identifier) -> Identifier(identifier)
+  | SortWithSorts(identifier, sortlist) ->
+    IdentifierTerms(identifier, List.fold_right (fun x y -> (sortToTerm x)::y) sortlist [])

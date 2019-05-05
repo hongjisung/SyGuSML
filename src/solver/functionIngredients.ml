@@ -15,20 +15,12 @@ let rec addSortedvarlistToHash sortedvarlist hash =
   | [] -> hash
   | h::t ->
     match h with
-    | SortedVar(sym, Sort(symsort)) -> 
+    | SortedVar(sym, sort) ->
       (
         try
-          let li = Hashtbl.find hash (Identifier(symsort)) in 
-          Hashtbl.add hash (Identifier(symsort)) (Identifier(SymbolIdentifier(sym))::li) 
-        with _ -> Hashtbl.add hash (Identifier(symsort)) [Identifier(SymbolIdentifier(sym))]
-      );
-      addSortedvarlistToHash t hash
-    | SortedVar(sym, SortWithSorts(symsort, sort)) ->
-      (
-        try
-          let li = Hashtbl.find hash (Identifier(symsort)) in 
-          Hashtbl.add hash (Identifier(symsort)) (Identifier(SymbolIdentifier(sym))::li) 
-        with _ -> Hashtbl.add hash (Identifier(symsort)) [Identifier(SymbolIdentifier(sym))]
+          let li = Hashtbl.find hash (Terms.sortToTerm sort) in 
+          Hashtbl.add hash (Terms.sortToTerm sort) (Identifier(SymbolIdentifier(sym))::li) 
+        with _ -> Hashtbl.add hash (Terms.sortToTerm sort) [Identifier(SymbolIdentifier(sym))]
       );
       addSortedvarlistToHash t hash
 
@@ -79,11 +71,9 @@ let rec addGrammarlistToHash grammarlist hash =
 let getFunctionIngredient synfun =
   let hashref = ref (Hashtbl.create 31) in
   match synfun with
-  (* not consider all case how to treat SortWithSorts *)
-  | SynthFun (funcname, sortedvarlist, Sort(outputiden), grammardefopt) ->
+  | SynthFun (funcname, sortedvarlist, sort, grammardefopt) ->
     hashref := addSortedvarlistToHash sortedvarlist !hashref;
-    let sort = Sort(outputiden) in
-    let output = Identifier(outputiden) in (
+    let output = Terms.sortToTerm sort in (
       match grammardefopt with 
       | None -> FuncIngredient(funcname, sortedvarlist, sort, output, !hashref)
       | Some GrammarDef(grammarlist) ->
