@@ -1,5 +1,6 @@
 open Ast
 open IntermediateTypes
+open BatDeque
 exception LoopOut
 
 (**
@@ -14,18 +15,61 @@ exception LoopOut
    9. if satisfiable return that else go next search  
 *)
 
+module WorklistBFS = struct
+  type t = Ast.term BatDeque.t
+  let empty = BatDeque.empty
+  let is_empty = BatDeque.is_empty
+  let add a l = BatDeque.snoc l a
+  let add_list al l = List.fold_right add al l
+  let choose l = BatDeque.front l
+  let size l = BatDeque.size l
+end  
+
+let synthFuncByBFS
+  = fun ast fname args sort initTerm grammar nonterminals ->
+    let rec iter worklist =
+      match WorklistBFS.choose worklist with
+      | None -> ""
+      | Some(term, worklist) ->
+        let countnonterm = Terms.countTermHasNonTerminal term nonterminals in
+        if countnonterm = 0 then
+          match Verifier.verify (fname, args, sort, term) ast with
+          | VerificationSuccess(str) -> str
+          | VerificationFailure -> iter worklist
+        else if countnonterm < 5 then
+          let nextterms = Candidates.makeNextBodyList term grammar in
+          if (WorklistBFS.size worklist + List.length nextterms) < 50000 then
+            let worklist = WorklistBFS.add_list nextterms worklist in
+            iter worklist
+          else
+            iter worklist
+        else
+          iter worklist
+    in iter (WorklistBFS.add initTerm WorklistBFS.empty)
+
+
 (** Find the synth-fun body by BFS
     @param ast parsed sygus string
     @param synfunIngredient function ingredient
     @return result sygus string with synth-fun body
 *)
-let searchByBFS ast synfunIngredient costFunc =
-  match synfunIngredient with
-  | [] ->
+let searchByBFS
+  = fun ast funcIngredients costFunc ->
+    match funcIngredients with 
+    | [] -> print_endline "No function to synthesize"; ""
+    | (FuncIngredient(fname, args, sort, term, grammar))::[] ->
+      let nonterminals = Hashtbl.fold (fun a _ c -> a::c) grammar [] in
+      synthFuncByBFS ast fname args sort term grammar nonterminals
+    | _ -> raise (Failure "Not Supported")
+
+
+(* let searchByBFS ast synfunIngredient costFunc =
+   match synfunIngredient with
+   | [] ->
     print_endline "SynFuncListIngredient check";
     print_endline "No function";
     ""
-  | h::t ->
+   | h::t ->
     let searchQueue = Queue.create () in
     let queuecountref = ref 0 in
     let queuestop = ref false in
@@ -77,18 +121,12 @@ let searchByBFS ast synfunIngredient costFunc =
             (* if not, go step 6 to 9*)
             else(
               if countnonterm = 0 then
-                (* 6. make define-fun and change synth-fun to it*)
-                let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
-                let newAst = Transformer.synfunToDefFun ast defFun in
-                (* 7. change it to z3 string *)
-                let newstring = Stringfier.astToZ3string newAst in
-                (* 8. test it with z3 *)
-                (* 9. if satisfiable return that else go next search *)
-                if Z3solver.isSat newstring then (
-                  deffunresult := newstring;
-                  raise LoopOut
-                )
-                else ()
+                match Verifier.verify (symbol, sortedvarlist, sort, testterm) ast with
+                | VerificationSuccess(str) -> (
+                    deffunresult := str;
+                    raise LoopOut
+                  )
+                | VerificationFailure -> ()
               else (
                 ()
               )
@@ -107,7 +145,7 @@ let searchByBFS ast synfunIngredient costFunc =
     Printf.printf "Queue Search Number of meet non-terminal : %d\n\n" (!queuedepth);
     print_newline ();
     print_string !deffunresult;
-    !deffunresult
+    !deffunresult *)
 
 (* search by heap *)
 type heapterm =
@@ -167,17 +205,12 @@ let searchByHeap ast synfunIngredient costFunc=
                     pushHeap nextfunlist;
                 )
               else
-                (* 6. make define-fun and change synth-fun to it*)
-                let defFun = SmtCmd(DefineFun(symbol, sortedvarlist, sort, testterm)) in
-                let newAst = Transformer.synfunToDefFun ast defFun in
-                (* 7. change it to z3 string *)
-                let newstring = Stringfier.astToZ3string newAst in
-                (* 8. test it with z3 *)
-                (* 9. if satisfiable return that else go next search *)
-                if Z3solver.isSat newstring then (
-                  deffunresult := newstring;
-                  raise LoopOut
-                );
+                match Verifier.verify (symbol, sortedvarlist, sort, testterm) ast with
+                | VerificationSuccess(str) -> (
+                    deffunresult := str;
+                    raise LoopOut
+                  )
+                | VerificationFailure -> ()
           done
         with
           LoopOut -> ()

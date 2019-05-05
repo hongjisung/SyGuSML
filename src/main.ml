@@ -30,7 +30,7 @@ open IntermediateTypes
 (* let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"] *)
 
 (** Test example file list*)
-let examples = ["./benchmarks/example1"]
+let examples = ["./benchmarks/example3"]
 (* let examples = ["./benchmarks/example1";
                 "./benchmarks/example2";
                 "./benchmarks/example3";
@@ -46,7 +46,8 @@ let rec solveExamples examples =
   | [] -> [] 
   | h::t ->
     let s = Readfile.readfile h in
-    (Solver.solve s Search.searchByHeap Cost.basicCost) :: (solveExamples t)
+    (Solver.solve s Search.searchByBFS Cost.basicCost) :: (solveExamples t)
+(* (Solver.solve s Search.searchByHeap Cost.basicCost) :: (solveExamples t) *)
 
 (** Execute solver test *)
 let _ =
