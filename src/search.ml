@@ -161,17 +161,47 @@ end
 
 module Heap = BatHeap.Make (OrderedType)
 
-
+let synthFuncByHeap
+  = fun ast fname args sort initTerm grammar nonterminals costFunc ->
+    let rec iter heap =
+      if Heap.size heap = 0 then ""
+      else 
+        let Node(term,cost) = Heap.find_min heap in
+        let nontermcount = Terms.countTermHasNonTerminal term nonterminals in
+        if nontermcount = 0 then
+          match Verifier.verify (fname, args, sort, term) ast with
+          | VerificationSuccess(str) -> str
+          | VerificationFailure -> iter (Heap.del_min heap)
+        else
+          let nextterms = Candidates.makeNextBodyList term grammar in
+          let rec makeNodeList nextterms =
+            match nextterms with
+            | [] -> []
+            | h::t -> Node(h, costFunc h nonterminals) :: (makeNodeList t)
+          in 
+          let nextNodes = makeNodeList nextterms  in
+          let heap = List.fold_left Heap.insert (Heap.del_min heap) nextNodes in
+          iter heap
+    in iter (Heap.insert Heap.empty (Node(initTerm, 0)))
 
 (** Find the synth-fun body by using heap
     @param ast parsed sygus string
     @param synfunIngredient function ingredient
     @return result sygus string with synth-fun body
 *)
-let searchByHeap ast synfunIngredient costFunc=
-  match synfunIngredient with
-  | [] -> ""
-  | h::t ->
+let searchByHeap
+  = fun ast funcIngredients costFunc ->
+    match funcIngredients with 
+    | [] -> print_endline "No function to synthesize"; ""
+    | (FuncIngredient(fname, args, sort, term, grammar))::[] ->
+      let nonterminals = Hashtbl.fold (fun a _ c -> a::c) grammar [] in
+      synthFuncByHeap ast fname args sort term grammar nonterminals costFunc
+    | _ -> raise (Failure "Not Supported")
+
+(* let searchByHeap ast synfunIngredient costFunc=
+   match synfunIngredient with
+   | [] -> ""
+   | h::t ->
     let deffunresult = ref "" in
     let countref = ref 0 in
     (
@@ -219,4 +249,4 @@ let searchByHeap ast synfunIngredient costFunc=
     );
     Printf.printf "Search Count : %d\n\n" (!countref) ;
     print_endline !deffunresult;
-    !deffunresult
+    !deffunresult *)
