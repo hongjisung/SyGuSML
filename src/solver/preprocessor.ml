@@ -356,7 +356,7 @@ let changeInvConstraintToConstraint (InvConstraint(Symbol(s), s_pre, s_trans, s_
              makeFuncIdentifierTerms (s_trans) (varnamelist@varsubnamelist);
            ]
          );
-         makeFuncIdentifierTerms (Symbol(s)) varnamelist
+         makeFuncIdentifierTerms (Symbol(s)) varsubnamelist
        ]
      )
    );
