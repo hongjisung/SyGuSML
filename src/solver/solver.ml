@@ -11,7 +11,7 @@ let parse s =
     @return the result sygus string list
 *)
 let solve s search cost =
-  let ast = parse s in 
+  let ast = Preprocessor.desugar (parse s) in
   let synfunlist = Preprocessor.preprocess ast in 
   let synfunIngredient = FunctionIngredients.getFunctionIngredientList synfunlist in
   search ast synfunIngredient cost
