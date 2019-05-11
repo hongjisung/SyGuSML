@@ -30,7 +30,7 @@ open IntermediateTypes
 (* let examples =["/newdisk/sygus1.0/chexec/euphony_space/BITVEC/100_10.sl"] *)
 
 (** Test example file list*)
-(* let examples = ["./benchmarks/example1"] *)
+(* let examples = ["./benchmarks/example7"] *)
 let examples = ["./benchmarks/example1";
                 "./benchmarks/example2";
                 "./benchmarks/example3";
