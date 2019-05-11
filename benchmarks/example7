@@ -1,5 +1,11 @@
-(set-logic INV_LIA)
-(synth-inv inv-f ((x Int) (y Int)))
+(synth-inv inv-f ((x Int) (y Int))
+ ((B Bool) (I Int))
+ ((B Bool (
+   (>= I I)
+ ))
+ (I Int (
+   x y 0 1
+ ))))
 (define-fun pre-f ((x Int) (y Int)) Bool
   (and (>= x 5) (<= x 9) (>= y 1) (<= y 3)))
 (define-fun trans-f ((x Int) (y Int) (xp Int) (yp Int)) Bool

@@ -338,7 +338,7 @@ let changeInvConstraintToConstraint (InvConstraint(Symbol(s), s_pre, s_trans, s_
   (makeDeclareVarlist sortedvarlist varsubnamelist) @
   [Constraint(
       IdentifierTerms(
-        SymbolIdentifier(Symbol(">=")),
+        SymbolIdentifier(Symbol("=>")),
         [
           makeFuncIdentifierTerms (s_pre) varnamelist;
           makeFuncIdentifierTerms (Symbol(s)) varnamelist
@@ -347,7 +347,7 @@ let changeInvConstraintToConstraint (InvConstraint(Symbol(s), s_pre, s_trans, s_
     );
    Constraint(
      IdentifierTerms(
-       SymbolIdentifier(Symbol(">=")),
+       SymbolIdentifier(Symbol("=>")),
        [
          IdentifierTerms(
            SymbolIdentifier(Symbol("and")),
@@ -362,7 +362,7 @@ let changeInvConstraintToConstraint (InvConstraint(Symbol(s), s_pre, s_trans, s_
    );
    Constraint(
      IdentifierTerms(
-       SymbolIdentifier(Symbol(">=")),
+       SymbolIdentifier(Symbol("=>")),
        [
          makeFuncIdentifierTerms (Symbol(s)) varnamelist;
          makeFuncIdentifierTerms (s_post) varnamelist
