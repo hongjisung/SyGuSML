@@ -97,23 +97,24 @@ set-logic
   PBE_ (additional) : programming-by-examples
   INV_ (additional) : single invariant-to-synthesize
 *)
+let getsub str len sl =
+  if len >= sl then String.sub str 0 sl
+  else ""
+
 let rec getLogicList logic =
   let len = String.length logic in
-  let sub4 = ref "" in
-  let sub1 = ref "" in 
-  let sub2 = ref "" in
-  if len >= 4 then sub4 := (String.sub logic 0 4);
-  if len >= 2 then sub2 := (String.sub logic 0 2);
-  if len >= 1 then sub1 := (String.sub logic 0 1);
-  match !sub4 with
+  let sub4 = getsub logic len 4 in
+  let sub1 = getsub logic len 1 in 
+  let sub2 = getsub logic len 2 in
+  match sub4 with
   | "PBE_" -> "PBE_" :: getLogicList (String.sub logic 4 (len - 4)) 
   | "INV_" -> "INV_" :: getLogicList (String.sub logic 4 (len - 4)) 
   | _ ->
-    match !sub1 with
+    match sub1 with
     | "S" -> "S" :: getLogicList (String.sub logic 1 (len - 1))
     | "A" -> "A" :: getLogicList (String.sub logic 1 (len - 1))
     | _ ->
-      match !sub2 with
+      match sub2 with
       | "BV" -> "BV" :: getLogicList (String.sub logic 2 (len - 2))
       | "DT" -> "DT" :: getLogicList (String.sub logic 2 (len - 2))
       | "UF" -> "UF" :: getLogicList (String.sub logic 2 (len - 2))
@@ -128,21 +129,18 @@ let rec getLogicList logic =
 
 let rec settingLogicSignature logic =
   let len = String.length logic in
-  let sub4 = ref "" in
-  let sub1 = ref "" in 
-  let sub2 = ref "" in
-  if len >= 4 then sub4 := (String.sub logic 0 4);
-  if len >= 2 then sub2 := (String.sub logic 0 2);
-  if len >= 1 then sub1 := (String.sub logic 0 1);
-  match !sub4 with
+  let sub4 = getsub logic len 4 in
+  let sub1 = getsub logic len 1 in 
+  let sub2 = getsub logic len 2 in
+  match sub4 with
   | "PBE_" 
   | "INV_" -> settingLogicSignature (String.sub logic 4 (len - 4)) 
   | _ ->
-    match !sub1 with
+    match sub1 with
     | "S" -> SortSignature(Sort(SymbolIdentifier(Symbol("String")))) :: settingLogicSignature (String.sub logic 1 (len - 1))
     | "A" -> SortSignature(Sort(SymbolIdentifier(Symbol("Array")))) :: settingLogicSignature (String.sub logic 1 (len - 1))
     | _ ->
-      match !sub2 with
+      match sub2 with
       | "BV" -> SortSignature(Sort(UnderbarIdentifier(Symbol("BitVec"), [NumeralIndex("0")]))) :: settingLogicSignature (String.sub logic 2 (len - 2))
       | "DT" -> settingLogicSignature (String.sub logic 2 (len - 2))
       | "UF" -> settingLogicSignature (String.sub logic 2 (len - 2))
@@ -266,12 +264,6 @@ let getParameterPerSort sortedvarlist =
   addParamToHash sortedvarlist;
   hash
 
-(* check this has grammar *)
-let doesSynHasGrammar grammardefopt =
-  match grammardefopt with
-  | None -> false
-  | Some gammardef -> true
-
 let rec makeGTBfTermVarlist varlist =
   match varlist with
   | [] -> []
@@ -286,7 +278,6 @@ let rec checkgtermlist gtermlist paramhash =
     | GTConstant sort -> h::(checkgtermlist t paramhash)
     | GTBfTerm bf_term -> h::(checkgtermlist t paramhash)
     | GTVariable sort ->
-      (* Printf.printf "Variable change\n\n"; *)
       let sortname = getStringFromSort sort in 
       let varlist = Hashtbl.find paramhash sortname in
       (makeGTBfTermVarlist varlist) @ (checkgtermlist t paramhash)
@@ -328,156 +319,136 @@ let changeVarsortToParam grammardef paramhash =
                   (add this to signature with option)
 *)
 let preprocess ast =
-  let signature = ref [] in
   (* just for feature setting, not yet implement *)
-  (* let funsignature = ref [] in *)
-  let logiclist = ref [] in
-  let featureGrammars = ref true in
-  let featureFwdDecls = ref false in 
-  let featureRecursion = ref false in 
-  let rec analysisCmd ast  = 
+  let rec analysisCmd ast signature logiclist (ftGrammars, ftFwdDecls, ftRecursion) = 
     match ast with
     | [] -> []
     | h::t ->
       match h with
-      | CheckSynth -> analysisCmd t
-      | Constraint _-> analysisCmd t
+      | CheckSynth -> analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
+      | Constraint _-> analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
       | DeclareVar (symbol, sort) ->
-        let siglist = getSignatureStringList !signature in 
+        let siglist = getSignatureStringList signature in 
         (
           match symbol with
           | Symbol str ->
             if (ListMethods.containElement siglist str)
-            then analysisCmd t
+            then analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
             else (
-              signature := SymbolSignature(symbol)::!signature;
-              analysisCmd t
+              analysisCmd t (SymbolSignature(symbol) :: signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion)
             )
         )
-      | InvConstraint _ -> analysisCmd t
+      | InvConstraint _ ->
+        (*
+        1. get params of S - how? use signature?
+        2. make declare-var for 2*(params)
+        3. make three contraints
+        *)
+        analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
       | SetFeature (f, b) -> (
           (match f, b with
-           | Grammars, "true" -> featureGrammars := true
-           | Grammars, "false" -> featureGrammars := false
-           | FwdDecls, "true" -> featureFwdDecls := true
-           | FwdDecls, "false" -> featureFwdDecls := false
-           | Recursion, "true" -> featureRecursion := true
-           | Recursion, "false" -> featureRecursion := false
+           | Grammars, "true" -> analysisCmd t signature logiclist (true, ftFwdDecls, ftRecursion)
+           | Grammars, "false" -> analysisCmd t signature logiclist (false, ftFwdDecls, ftRecursion)
+           | FwdDecls, "true" -> analysisCmd t signature logiclist (ftGrammars, true, ftRecursion)
+           | FwdDecls, "false" -> analysisCmd t signature logiclist (ftGrammars, false, ftRecursion)
+           | Recursion, "true" -> analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, true)
+           | Recursion, "false" -> analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, false)
            | _ -> raise SetFeatureError
-          );
-          analysisCmd t
+          )
         )
       | SynthFun (symbol, sortedvarlist, sort, grammardefopt) ->
-        let siglist = getSignatureStringList !signature in 
+        let siglist = getSignatureStringList signature in 
         (
           match symbol with
           | Symbol str ->
             if (ListMethods.containElement siglist str)
-            then analysisCmd t
+            then analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
             else (
-              signature := SymbolSignature(symbol)::!signature;
               (* get parameter per sort *)
               let paramhash = (getParameterPerSort sortedvarlist) in
               (* PrintMethods.printStringList (Hashtbl.find paramhash "Int");
                  print_newline (); *)
               (* check this has grammar *)
-              let isgrammar = doesSynHasGrammar grammardefopt in
-              let grammar = ref (GrammarDef([])) in
-              (* no grammars then add basic grammars based on logiclist
-                 and extract that syn-func grammar*)
-              if not isgrammar then (
-                (* Printf.printf("false\n") *)
-                (* make basic grammar here *)
-              )
-              (* else extract that syn-func grammar*)
-              else (
-                (* Printf.printf("true\n\n"); *)
+              (
                 match grammardefopt with
-                | None -> ()
+                | None -> 
+                  (* make basic grammar here *)
+                  SynthFun(symbol, sortedvarlist, sort, Some(GrammarDef([])))::(analysisCmd t (SymbolSignature(symbol)::signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion))
                 | Some grammardef ->
-                  grammar := grammardef 
-              );
-              (* change Variable sort to parameters of that sort in syn-func *)
-              (* didn't check when featureFwdDecls, featureRecursion is true *)
-              grammar := changeVarsortToParam !grammar paramhash;
-              (* add it to list and go next cmd*)
-              SynthFun(symbol, sortedvarlist, sort, Some(!grammar))::(analysisCmd t)
+                  (* change Variable sort to parameters of that sort in syn-func *)
+                  (* didn't check when featureFwdDecls, featureRecursion is true *)
+                  let grammar = changeVarsortToParam grammardef paramhash in
+                  SynthFun(symbol, sortedvarlist, sort, Some(grammar))::(analysisCmd t (SymbolSignature(symbol)::signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion))
+              )
             )
         )
       | SynthInv (symbol, sortedvarlist, grammardefopt) ->         
-        analysisCmd (SynthFun(symbol, sortedvarlist, Sort(SymbolIdentifier(Symbol("Bool"))), grammardefopt)::t)
+        analysisCmd (SynthFun(symbol, sortedvarlist, Sort(SymbolIdentifier(Symbol("Bool"))), grammardefopt)::t) signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
       | SmtCmd smt_cmd -> (
           match smt_cmd with
           | DeclareDatatype (symbol, dtdec) -> 
-            analysisCmd (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t)
+            analysisCmd (SmtCmd(DeclareDatatypes([(SortDeclaration(symbol, "0"), dtdec)]))::t) signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
           | DeclareDatatypes dtlist -> 
-            let siglist = getSignatureStringList !signature in 
+            let siglist = getSignatureStringList signature in 
             let symbollist = getSymbolOfDataTypes dtlist in 
             if (ListMethods.containAnyElement siglist symbollist)
-            then analysisCmd t
+            then analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
             else (
-              signature := (symbolListToSigature symbollist) @ !signature;
-              analysisCmd t
+              analysisCmd t ((symbolListToSigature symbollist) @ signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion)
             )
           | DeclareSort (symbol, numeral)  -> 
-            let siglist = getSignatureStringList !signature in 
+            let siglist = getSignatureStringList signature in 
             (
               match symbol with
               | Symbol str ->
                 if (ListMethods.containElement siglist str)
-                then analysisCmd t
+                then analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 else (
-                  signature := SymbolSignature(symbol)::!signature;
-                  analysisCmd t
+                  analysisCmd t (SymbolSignature(symbol)::signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 )
             )
           | DefineFun (symbol, sortedvarlist, sort, term) ->
-            let siglist = getSignatureStringList !signature in 
+            let siglist = getSignatureStringList signature in 
             (
               match symbol with
               | Symbol str ->
                 if (ListMethods.containElement siglist str)
-                then analysisCmd t
+                then analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 else (
-                  signature := SymbolSignature(symbol)::!signature;
-                  analysisCmd t
+                  analysisCmd t (SymbolSignature(symbol)::signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 )
             )
           | DefineSort (symbol, sort) -> 
-            let siglist = getSignatureStringList !signature in 
+            let siglist = getSignatureStringList signature in 
             (
               match symbol with
               | Symbol str ->
                 if (ListMethods.containElement siglist str)
-                then analysisCmd t
+                then analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 else (
-                  signature := SymbolSignature(symbol)::!signature;
-                  analysisCmd t
+                  analysisCmd t (SymbolSignature(symbol)::signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 )
             )
           | SetLogic symbol -> (
               match symbol with
               | Symbol str -> (
-                  signature := (settingLogicSignature str);
-                  logiclist := (getLogicList str);
-                  analysisCmd t
+                  analysisCmd t (settingLogicSignature str) (getLogicList str) (ftGrammars, ftFwdDecls, ftRecursion)
                 )
             )
           | SetOption (symbol, literal) ->
-            let siglist = getSignatureStringList !signature in 
+            let siglist = getSignatureStringList signature in
             (
               match symbol with
               | Symbol str ->
                 if (ListMethods.containElement siglist str)
-                then analysisCmd t
+                then analysisCmd t signature logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 else (
-                  signature := SymbolSignature(symbol)::!signature;
-                  analysisCmd t
+                  analysisCmd t (SymbolSignature(symbol)::signature) logiclist (ftGrammars, ftFwdDecls, ftRecursion)
                 )
             )
         )
   in 
-  let synfunlist = analysisCmd ast in
+  let synfunlist = analysisCmd ast [] [] (true, false, false) in
   synfunlist
 
 
