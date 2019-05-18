@@ -18,8 +18,6 @@ let isSat testcode =
     | Some (model) -> 
       let modelstring = (Z3.Model.to_string model) in
       if (modelstring = "") then (
-        Printf.printf "Model: \n%s\n" modelstring;
-        Printf.printf "Solver: \n%s\n" (Z3.Solver.to_string solver);
         true
       )
       else 
