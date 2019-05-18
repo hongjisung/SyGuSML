@@ -6,6 +6,9 @@
 solvertest: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ main.native --
 
+testbenchmarks: clean
+	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/,test/ testBenchmarks.native --
+
 test: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/,test/ parseTest.native --
 
