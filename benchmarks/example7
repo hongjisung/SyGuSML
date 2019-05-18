@@ -1,7 +1,7 @@
 (synth-inv inv-f ((x Int) (y Int))
  ((B Bool) (I Int))
  ((B Bool (
-   (>= I I)
+   (> I I)
  ))
  (I Int (
    x y 0 1
