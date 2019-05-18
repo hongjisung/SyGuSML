@@ -107,9 +107,13 @@ let rec testAllFile name=
   else
     let len = String.length name in
     if String.sub name (len-3) 3 = ".sl" then
-      let s = Readfile.readfile name in
-      let res = Solver.solve s searchByHeapTest Cost.basicCost in
-      ()
+      let rfs = Readfile.readfile name in
+      match rfs with
+      | Some(s) ->
+        let res = Solver.solve s searchByHeapTest Cost.basicCost in
+        ()
+      | None ->
+        Printf.printf "Can't read given file '%s'\n" name
     else
       ()
 
