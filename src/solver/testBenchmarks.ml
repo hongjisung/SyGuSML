@@ -113,11 +113,11 @@ let rec testAllFile name=
     else
       ()
 
-let testdirlist = "/newdisk/sygus-benchmarks/v2"
-(* let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
+(* let testdirlist = ["/newdisk/sygus-benchmarks/v2"] *)
+let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
                    "/newdisk/sygus-benchmarks/v2/2018/General_Track";
                    "/newdisk/sygus-benchmarks/v2/2018/PBE_BV_Track";
-                   "/newdisk/sygus-benchmarks/v2/2018/PBE_Strings_Track"] *)
+                   "/newdisk/sygus-benchmarks/v2/2018/PBE_Strings_Track"]
 (* let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/Inv_Track"] *)
 
 let rec testDirs testdirlist=

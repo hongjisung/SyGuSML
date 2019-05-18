@@ -29,7 +29,7 @@ let _ = List.iter (fun (keyword,tok) -> Hashtbl.add reserved_word keyword tok)
 let numeral = '0' | ['1'-'9']['0'-'9']*
 let decimal = numeral '.' '0'* numeral
 let boolconst = "true" | "false"
-let hexconst = "#x"['A'-'F' '0'-'9']+
+let hexconst = "#x"['a'-'f' 'A'-'F' '0'-'9']+
 let binconst = "#b"['0' '1']+
 let stringconst = ['"'][^'"' '"''"']*['"']
 
