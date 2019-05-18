@@ -57,10 +57,9 @@ let searchByBFS
   = fun ast funcIngredients costFunc ->
     match funcIngredients with 
     | [] -> print_endline "No function to synthesize"; ""
-    | (FuncIngredient(fname, args, sort, term, grammar))::[] ->
+    | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
       let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
       synthFuncByBFS ast fname args sort term grammar nonterminals
-    | _ -> raise (Failure "Not Supported")
 
 (* search by heap *)
 type heapterm =
@@ -108,7 +107,6 @@ let searchByHeap
   = fun ast funcIngredients costFunc ->
     match funcIngredients with 
     | [] -> print_endline "No function to synthesize"; ""
-    | (FuncIngredient(fname, args, sort, term, grammar))::[] ->
+    | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
       let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
       synthFuncByHeap ast fname args sort term grammar nonterminals costFunc
-    | _ -> raise (Failure "Not Supported")

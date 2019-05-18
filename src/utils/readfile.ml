@@ -10,7 +10,9 @@ let readfile name =
         let line = input_line channel in
         line::(readtext channel)
       with
-        End_of_file -> []
+        End_of_file -> 
+        close_in channel;
+        []
     in
     Some(String.concat "\n" (readtext channel))
   with e -> None

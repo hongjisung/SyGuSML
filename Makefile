@@ -7,6 +7,9 @@ run_examples:
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ main.native
 	./main.native benchmarks/*
 
+testbenchmarks: clean
+	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/,test/ testBenchmarks.native --
+
 test: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/,test/ parseTest.native --
 
