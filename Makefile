@@ -1,10 +1,11 @@
-.PHONY : all test clean install-deps
+.PHONY : all run_examples test clean install-deps
 
-# all:
-# 	ocamlbuild -use-ocamlfind -use-menhir -r -I src/ main.native
+all: clean
+	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ main.native
 
-solvertest: clean
-	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ main.native --
+run_examples:
+	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ main.native
+	./main.native benchmarks/*
 
 testbenchmarks: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/,test/ testBenchmarks.native --
