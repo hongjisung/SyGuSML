@@ -221,7 +221,8 @@ let rec astToZ3StringList ast vars =
         | DefineSort (symbol, sort) ->  
           (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
         | SetLogic symbol ->  
-          (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
+          (* (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars) *)
+          (astToZ3StringList t vars)
         | SetOption (symbol, literal) ->  
           (smtcmdToSygusString smt_cmd)::(astToZ3StringList t vars)
       )
