@@ -4,10 +4,10 @@ open BatDeque
 exception LoopOut
 exception Testfail;;
 
-let cfg = [];;
-let ctx = Z3.mk_context cfg;;
 
 let isSatTest testcode =
+  let cfg = [] in
+  let ctx = Z3.mk_context cfg in
   let test = Z3.SMT.parse_smtlib2_string ctx testcode  [] [] [] [] in
   let solver  = Z3.Solver.mk_solver ctx None in
   let inex = Z3.AST.ASTVector.to_expr_list test in
@@ -38,6 +38,7 @@ let verifyTest (fname, args, sort, term) cmds =
   with e ->
     let msg = Printexc.to_string e in
     (* print_newline ();
+       print_endline newstring;
        Printf.printf "error in z3solver: \n  %s" msg;
        print_newline ();
        print_newline (); *)
@@ -136,8 +137,8 @@ let testdirlist = ["/newdisk/sygus-benchmarks/v2/euphony_space";
                       "/newdisk/sygus-benchmarks/v2/2018/General_Track"; *)
                    "/newdisk/sygus-benchmarks/v2/2017/Inv_Track";
                    "/newdisk/sygus-benchmarks/v2/2018/Inv_Track";
-                   "/newdisk/sygus-benchmarks/v2/2017/PBE_BV_Track";
-                   "/newdisk/sygus-benchmarks/v2/2018/PBE_BV_Track";
+                   (* "/newdisk/sygus-benchmarks/v2/2017/PBE_BV_Track";
+                      "/newdisk/sygus-benchmarks/v2/2018/PBE_BV_Track"; *)
                    "/newdisk/sygus-benchmarks/v2/2017/PBE_Strings_Track";
                    "/newdisk/sygus-benchmarks/v2/2018/PBE_Strings_Track"]
 (* let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/Inv_Track"] *)

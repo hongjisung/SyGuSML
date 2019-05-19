@@ -1,9 +1,8 @@
 exception Testfail;;
 
-let cfg = [];;
-let ctx = Z3.mk_context cfg;;
-
 let isSat testcode =
+  let cfg = [] in
+  let ctx = Z3.mk_context cfg in
   let test = Z3.SMT.parse_smtlib2_string ctx testcode  [] [] [] [] in
   let solver  = Z3.Solver.mk_solver ctx None in
   let inex = Z3.AST.ASTVector.to_expr_list test in
