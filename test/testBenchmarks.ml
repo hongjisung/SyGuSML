@@ -37,11 +37,11 @@ let verifyTest (fname, args, sort, term) cmds =
     else IntermediateTypes.VerificationFailure
   with e ->
     let msg = Printexc.to_string e in
-    print_newline ();
-    Printf.printf "error in z3solver: \n  %s" msg;
-    print_newline ();
-    print_newline ();
-    IntermediateTypes.VerificationSuccess("")
+    (* print_newline ();
+       Printf.printf "error in z3solver: \n  %s" msg;
+       print_newline ();
+       print_newline (); *)
+    IntermediateTypes.VerificationSuccess("error in z3 solver")
 
 (* search by heap *)
 type heapterm =
@@ -93,8 +93,16 @@ let searchByHeapTest
       let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
       synthFuncByHeapTest ast fname args sort term grammar nonterminals costFunc
 
+let testCost term nontermlist =
+  let mul = 5 in
+  let mul2 = 2 in
+  let nonTermCount = Terms.countTermHasNonTerminal term nontermlist in
+  let termCount = Terms.countTerm term in
+  mul * nonTermCount + mul2 * termCount
+
+
 let rec testAllFile name=
-  print_endline(name);
+  (* print_endline(name); *)
   if Sys.is_directory name then
     let rec testFiles filelist=
       match filelist with
@@ -110,17 +118,27 @@ let rec testAllFile name=
       let rfs = Readfile.readfile name in
       match rfs with
       | Some(s) ->
-        let res = Solver.solve s searchByHeapTest Cost.basicCost in
-        ()
+        let res = Solver.solve s searchByHeapTest testCost in
+        if res = "error in z3 solver" then
+          print_endline(name)
+        else
+          ()
       | None ->
         Printf.printf "Can't read given file '%s'\n" name
     else
       ()
 
 (* let testdirlist = ["/newdisk/sygus-benchmarks/v2"] *)
-let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
-                   "/newdisk/sygus-benchmarks/v2/2018/General_Track";
+let testdirlist = ["/newdisk/sygus-benchmarks/v2/euphony_space";
+                   "/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
+                   "/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
+                   (* "/newdisk/sygus-benchmarks/v2/2017/General_Track";
+                      "/newdisk/sygus-benchmarks/v2/2018/General_Track"; *)
+                   "/newdisk/sygus-benchmarks/v2/2017/Inv_Track";
+                   "/newdisk/sygus-benchmarks/v2/2018/Inv_Track";
+                   "/newdisk/sygus-benchmarks/v2/2017/PBE_BV_Track";
                    "/newdisk/sygus-benchmarks/v2/2018/PBE_BV_Track";
+                   "/newdisk/sygus-benchmarks/v2/2017/PBE_Strings_Track";
                    "/newdisk/sygus-benchmarks/v2/2018/PBE_Strings_Track"]
 (* let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/Inv_Track"] *)
 
