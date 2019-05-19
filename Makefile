@@ -5,7 +5,7 @@ all: clean
 
 run_examples:
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ main.native
-	./main.native benchmarks/*
+	./main.native benchmarks/example[^4]
 
 testbenchmarks: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/,test/ testBenchmarks.native --
