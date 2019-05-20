@@ -70,7 +70,7 @@ let synthFuncByHeapTest
           | VerificationSuccess(str) -> str
           | VerificationFailure -> iter (Heap.del_min heap)
         else
-          let nextterms = Candidates.makeNextBodyList term grammar in
+          let nextterms = Candidates.makeNextBodyListWithOneChange term grammar in
           let rec makeNodeList nextterms =
             match nextterms with
             | [] -> []
@@ -95,7 +95,7 @@ let searchByHeapTest
       synthFuncByHeapTest ast fname args sort term grammar nonterminals costFunc
 
 let testCost term nontermlist =
-  let mul = 5 in
+  let mul = 10 in
   let mul2 = 2 in
   let nonTermCount = Terms.countTermHasNonTerminal term nontermlist in
   let termCount = Terms.countTerm term in
@@ -130,17 +130,19 @@ let rec testAllFile name=
       ()
 
 (* let testdirlist = ["/newdisk/sygus-benchmarks/v2"] *)
-let testdirlist = ["/newdisk/sygus-benchmarks/v2/euphony_space";
-                   "/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
-                   "/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
-                   (* "/newdisk/sygus-benchmarks/v2/2017/General_Track";
-                      "/newdisk/sygus-benchmarks/v2/2018/General_Track"; *)
-                   "/newdisk/sygus-benchmarks/v2/2017/Inv_Track";
-                   "/newdisk/sygus-benchmarks/v2/2018/Inv_Track";
-                   (* "/newdisk/sygus-benchmarks/v2/2017/PBE_BV_Track";
-                      "/newdisk/sygus-benchmarks/v2/2018/PBE_BV_Track"; *)
-                   "/newdisk/sygus-benchmarks/v2/2017/PBE_Strings_Track";
-                   "/newdisk/sygus-benchmarks/v2/2018/PBE_Strings_Track"]
+let testdirlist = [
+  "/newdisk/sygus-benchmarks/v2/euphony_space";
+  "/newdisk/sygus-benchmarks/v2/2017/CLIA_Track";
+  "/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
+  "/newdisk/sygus-benchmarks/v2/2017/General_Track";
+  "/newdisk/sygus-benchmarks/v2/2018/General_Track";
+  "/newdisk/sygus-benchmarks/v2/2017/Inv_Track";
+  "/newdisk/sygus-benchmarks/v2/2018/Inv_Track";
+  "/newdisk/sygus-benchmarks/v2/2017/PBE_BV_Track";
+  "/newdisk/sygus-benchmarks/v2/2018/PBE_BV_Track";
+  "/newdisk/sygus-benchmarks/v2/2017/PBE_Strings_Track";
+  "/newdisk/sygus-benchmarks/v2/2018/PBE_Strings_Track"
+]
 (* let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/Inv_Track"] *)
 
 let rec testDirs testdirlist=

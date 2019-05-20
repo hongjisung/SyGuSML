@@ -45,3 +45,31 @@ let rec makeNextBodyList term transitionMap =
   | Exists (sortedvarlist, term) -> [Exists(sortedvarlist, term)]
   | Forall (sortedvarlist, term) -> [Forall(sortedvarlist, term)]
   | Let (varbindinglist, term) -> [Let(varbindinglist, term)]
+
+
+(**
+   just change one non-terminal
+*)
+let rec makeNextBodyListWithOneChange term transitionMap=
+  match term with
+  | Identifier identifier ->
+    TransitionMap.find_default [Identifier(identifier)] (Identifier(identifier)) transitionMap
+  | IdentifierTerms (identifier, termlist) ->
+    let rec makeTermlist termlist =
+      match termlist with
+      | [] -> [[]]
+      | h::t ->
+        let caselistiden = makeNextBodyListWithOneChange h transitionMap in
+        (* does exist a change in h?*)
+        if List.length caselistiden = 1 && List.nth caselistiden 0 = h then
+          let caselistterm = makeTermlist t in
+          combinationTwoList caselistiden caselistterm
+        else 
+          combinationTwoList caselistiden [t]
+    in
+    let termlistcase = makeTermlist termlist in
+    combIdenTermList [identifier] termlistcase
+  | Literal literal -> [Literal(literal)]
+  | Exists (sortedvarlist, term) -> [Exists(sortedvarlist, term)]
+  | Forall (sortedvarlist, term) -> [Forall(sortedvarlist, term)]
+  | Let (varbindinglist, term) -> [Let(varbindinglist, term)]
