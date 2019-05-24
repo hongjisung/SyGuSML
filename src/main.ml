@@ -33,7 +33,7 @@ let _ =
     match filenames with
     | filename :: rest ->
       (
-        let inputOption = Readfile.readfile filename in
+        let inputOption = FileMethods.readfile filename in
         match inputOption with
         | Some(inputString) ->
           let result = Solver.solve inputString !search !cost in

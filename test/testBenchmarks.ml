@@ -116,7 +116,7 @@ let rec testAllFile name=
   else
     let len = String.length name in
     if String.sub name (len-3) 3 = ".sl" then
-      let rfs = Readfile.readfile name in
+      let rfs = FileMethods.readfile name in
       match rfs with
       | Some(s) ->
         let res = Solver.solve s searchByHeapTest testCost in
