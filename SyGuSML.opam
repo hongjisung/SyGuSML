@@ -11,9 +11,9 @@ authors: "hongjisung <rhfktj@gmail.com>"
 license: "MIT"
 homepage: "https://github.com/hongjisung/SyGuSML"
 bug-reports: "https://github.com/hongjisung/SyGuSML/issues"
-dev-repo: "https://github.com/hongjisung/SyGuSML.git"
+dev-repo: "git+https://github.com/hongjisung/SyGuSML.git"
 depends: [
-    "ocaml" {>= "4.07.1"}
+    "ocaml" {>= "4.07.0"}
     "ocamlbuild" {>= "0.14.0"}
     "batteries" {>= "2.9.0"}
     "z3" {>= "4.8.4"}
