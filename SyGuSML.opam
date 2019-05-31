@@ -18,6 +18,7 @@ depends: [
     "batteries" {>= "2.9.0"}
     "z3" {>= "4.8.4"}
     "menhir" {>= "20181113"}
+    "core"
 ]
 build: [
   [make "all"]

@@ -8,6 +8,15 @@ let readfile name =
     Some(String.concat "\n" lines)
   with e -> None
 
+let readStdin () =
+  let rec iter result =
+    try
+      let line = input_line stdin in
+      iter (result ^ line)
+    with End_of_file ->
+      result
+  in iter ""
+
 let appendStrToFile str filename =
   let outc =Core.Out_channel.create ~append:true filename in
   Core.protect ~f:(fun ()->Core.fprintf outc "%s\n" str)
