@@ -16,8 +16,8 @@ test: clean
 doc: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ synKU.docdir/index.html
 
-install-deps:
-	opam install -y ocamlbuild menhir batteries z3 core
+switch:
+	opam switch create . ocaml-base-compiler.4.07.1 -y
 
 clean:
 	ocamlbuild -clean
