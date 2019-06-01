@@ -3,6 +3,9 @@
 A project for competition at https://sygus.org/  
 To synthesize function with the sygus language standard version 2.0
 
+## Document
+[Doc page](https://hongjisung.github.io/SyGuSML/)
+
 ## Run Solver Test
 
 ```Bash
