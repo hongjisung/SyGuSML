@@ -3,18 +3,6 @@ open IntermediateTypes
 open BatDeque
 exception LoopOut
 
-(**
-   The algorithms for function synthsis
-
-   6. make define-fun
-
-   7. change ast to z3 string (change synth-fun to declare-fun)
-
-   8. test z3string with z3
-
-   9. if satisfiable return that else go next search  
-*)
-
 module WorklistBFS = struct
   type t = Ast.term BatDeque.t
   let empty = BatDeque.empty
@@ -48,10 +36,11 @@ let synthFuncByBFS
     in iter (WorklistBFS.add initTerm WorklistBFS.empty)
 
 
-(** Find the synth-fun body by BFS
+(** Find the synth-fun list body by BFS
     @param ast parsed sygus string
-    @param synfunIngredient function ingredient
-    @return result sygus string with synth-fun body
+    @param funcIngredients function ingredient list of synth-fun list
+    @param costFunc cost function
+    @return the sygus string which have correct body of synth-fun
 *)
 let searchByBFS
   = fun ast funcIngredients costFunc ->
@@ -98,10 +87,12 @@ let synthFuncByHeap
           iter heap
     in iter (Heap.insert Heap.empty (Node(initTerm, 0)))
 
-(** Find the synth-fun body by using heap
+
+(** Find the synth-fun list body by using heap
     @param ast parsed sygus string
-    @param synfunIngredient function ingredient
-    @return result sygus string with synth-fun body
+    @param funcIngredients function ingredient list of synth-fun list
+    @param costFunc cost function
+    @return the sygus string which have correct body of synth-fun
 *)
 let searchByHeap
   = fun ast funcIngredients costFunc ->
