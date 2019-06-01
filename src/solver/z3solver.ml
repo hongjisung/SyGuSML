@@ -1,5 +1,14 @@
 exception Testfail;;
+(**
+    All methods which use z3 library are in here
+*)
 
+
+(**
+    check the given smt string passing all condition by z3
+    @param testcode a smt string
+    @return if it pass all assert in every case, returns true
+*)
 let isSat testcode =
   let cfg = [] in
   let ctx = Z3.mk_context cfg in
