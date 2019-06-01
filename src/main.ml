@@ -35,7 +35,7 @@ let _ =
     match filenames with
     | filename :: rest ->
       (
-        let inputOption = FileMethods.readfile filename in
+        let inputOption = Io.readfile filename in
         match inputOption with
         | Some(inputString) ->
           let result = Solver.solve inputString !search !cost in
@@ -47,7 +47,7 @@ let _ =
   in 
   if !readFromStdin then (
     (* print_endline usage_msg *)
-    let inputString = FileMethods.readStdin() in
+    let inputString = Io.readStdin() in
     let result = Solver.solve inputString !search !cost in
     let resultHeader = Printf.sprintf " Result for stdin\n" in
     print_endline (resultHeader ^ result)
