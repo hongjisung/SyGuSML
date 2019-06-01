@@ -14,7 +14,7 @@ test: clean
 	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/,test/ parseTest.native --
 
 doc: clean
-	ocamlbuild -use-ocamlfind -use-menhir -r -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ SyGuSML.docdir/index.html
+	ocamlbuild -use-ocamlfind -use-menhir -r -package core -package batteries -package z3 -tags thread -Is src/,src/types,src/utils,src/solver,benchmarks/ SyGuSML.docdir/index.html
 
 switch:
 	opam switch create . ocaml-base-compiler.4.07.1 -y
