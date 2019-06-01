@@ -1,6 +1,15 @@
 open Ast
+(**
+   this has the methods which are relevant with term in ast
+*)
 
-(* check Term have non-terminal *)
+
+(**
+   check Term have non-terminal
+   @param term Ast term
+   @param nontermlist non-terminal list in term
+   @return if term have non-terminal, return true
+*)
 let rec checkTermHasNonTerminal term nontermlist =
   match term with
   | Identifier identifier -> ListMethods.containElement nontermlist (Identifier(identifier))
@@ -15,7 +24,13 @@ let rec checkTermHasNonTerminal term nontermlist =
     (ListMethods.containElement nontermlist (Identifier(identifier))) || (checkTermlist termlist)
   | _ -> false
 
-(* count Term have non-terminal *)
+
+(**
+   count Term have how many non-terminals
+   @param term Ast term
+   @param nontermlist non-terminal list in term
+   @return the number of non-terminals in term
+*)
 let rec countTermHasNonTerminal term nontermlist =
   match term with
   | Identifier identifier -> 
@@ -33,7 +48,11 @@ let rec countTermHasNonTerminal term nontermlist =
     else (countTermlist termlist)
   | _ -> 0
 
-(* count Term have non-terminal *)
+(**
+   count Term have how many terminals
+   @param term Ast term
+   @return the number of terminals in term
+*)
 let rec countTerm term =
   match term with
   | IdentifierTerms (identifier, termlist) ->
@@ -46,6 +65,12 @@ let rec countTerm term =
     1 + (countTermlist termlist)
   | _ -> 1
 
+
+(**
+   change sort of Ast to term of Ast
+   @param Ast sort
+   @return Ast term
+*)
 let rec sortToTerm sort =
   match sort with
   | Sort(identifier) -> Identifier(identifier)
