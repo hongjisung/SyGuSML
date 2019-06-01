@@ -6,6 +6,14 @@ To synthesize function with the sygus language standard version 2.0
 ## Document
 [Doc page](https://hongjisung.github.io/SyGuSML/)
 
+## Start with Docker
+```bash
+# download docker image
+$ docker pull sygusml/sygusml:1.0
+# run solver with local file
+$ cat input/file/name | docker run -i --rm sygusml/sygusml:1.0
+```
+
 ## Run Solver Test
 
 ```Bash
