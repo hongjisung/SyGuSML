@@ -2,6 +2,11 @@ open Ast
 open IntermediateTypes
 
 (**
+   Dealing with solver methods
+*)
+
+
+(**
     parse sygus string and make ast
     @param s sygus string
     @return the ast of given sygus string
