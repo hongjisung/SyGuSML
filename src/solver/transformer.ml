@@ -1,5 +1,14 @@
 open Ast
-(* now, only one function *)
+(**
+   related with transformation
+*)
+
+(**
+   change first SynthFun with given DefineFun
+   @param parsetree Ast which have one synth-fun
+   @param deffun DefineFun which have body of first synth-fun
+   @return Ast which have no synth-fun
+*)
 let synfunToDefFun parsetree deffun=
   let rec analysisCmd parsetree  = 
     match parsetree with
