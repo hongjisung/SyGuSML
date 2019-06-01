@@ -1,10 +1,8 @@
-open Ast
-open IntermediateTypes
-
 (**
    Dealing with solver methods
 *)
-
+open Ast
+open IntermediateTypes
 
 (**
     parse sygus string and make ast

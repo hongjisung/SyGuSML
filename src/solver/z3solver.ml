@@ -1,7 +1,7 @@
-exception Testfail;;
 (**
     All methods which use z3 library are in here
 *)
+exception Testfail;;
 
 
 (**

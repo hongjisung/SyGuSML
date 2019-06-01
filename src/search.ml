@@ -1,11 +1,11 @@
+(**
+   In this module, find the correct body of given Ast by iterative search 
+*)
 open Ast
 open IntermediateTypes
 open BatDeque
 exception LoopOut
 
-(**
-   In this module, find the correct body of given Ast by iterative search 
-*)
 
 module WorklistBFS = struct
   type t = Ast.term BatDeque.t

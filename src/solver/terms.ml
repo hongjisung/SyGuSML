@@ -1,7 +1,7 @@
-open Ast
 (**
    this has the methods which are relevant with term in ast
 *)
+open Ast
 
 
 (**

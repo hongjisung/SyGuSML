@@ -1,7 +1,7 @@
-open Ast
 (**
    verify the answer of sygus string
 *)
+open Ast
 
 
 (**

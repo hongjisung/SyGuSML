@@ -1,7 +1,7 @@
-open Ast
 (**
    related with transformation
 *)
+open Ast
 
 (**
    change first SynthFun with given DefineFun
