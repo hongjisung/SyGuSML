@@ -1,0 +1,468 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Z3solver.html">
+<link rel="next" href="IntermediateTypes.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Candidates" rel="Chapter" href="Candidates.html">
+<link title="Cost" rel="Chapter" href="Cost.html">
+<link title="FunctionIngredients" rel="Chapter" href="FunctionIngredients.html">
+<link title="Preprocessor" rel="Chapter" href="Preprocessor.html">
+<link title="Solver" rel="Chapter" href="Solver.html">
+<link title="Stringfier" rel="Chapter" href="Stringfier.html">
+<link title="Terms" rel="Chapter" href="Terms.html">
+<link title="Transformer" rel="Chapter" href="Transformer.html">
+<link title="Z3solver" rel="Chapter" href="Z3solver.html">
+<link title="Ast" rel="Chapter" href="Ast.html">
+<link title="IntermediateTypes" rel="Chapter" href="IntermediateTypes.html">
+<link title="Io" rel="Chapter" href="Io.html">
+<link title="ListMethods" rel="Chapter" href="ListMethods.html">
+<link title="PrintMethods" rel="Chapter" href="PrintMethods.html">
+<link title="Search" rel="Chapter" href="Search.html">
+<link title="Verifier" rel="Chapter" href="Verifier.html"><title>Ast</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Z3solver.html" title="Z3solver">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="IntermediateTypes.html" title="IntermediateTypes">Next</a>
+</div>
+<h1>Module <a href="type_Ast.html">Ast</a></h1>
+
+<pre><span id="MODULEAst"><span class="keyword">module</span> Ast</span>: <code class="code">sig</code> <a href="Ast.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
+<pre><code><span id="TYPEcmd"><span class="keyword">type</span> <code class="type"></code>cmd</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.CheckSynth"><span class="constructor">CheckSynth</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.Constraint"><span class="constructor">Constraint</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEterm">term</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.DeclareVar"><span class="constructor">DeclareVar</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsort">sort</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.InvConstraint"><span class="constructor">InvConstraint</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsymbol">symbol</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.SetFeature"><span class="constructor">SetFeature</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEfeature">feature</a> * <a href="Ast.html#TYPEboolconst">boolconst</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.SynthFun"><span class="constructor">SynthFun</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsorted_var">sorted_var</a> list * <a href="Ast.html#TYPEsort">sort</a> * <a href="Ast.html#TYPEgrammar_def">grammar_def</a> option</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.SynthInv"><span class="constructor">SynthInv</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsorted_var">sorted_var</a> list * <a href="Ast.html#TYPEgrammar_def">grammar_def</a> option</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcmd.SmtCmd"><span class="constructor">SmtCmd</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsmt_cmd">smt_cmd</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEsmt_cmd"><span class="keyword">type</span> <code class="type"></code>smt_cmd</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsmt_cmd.DeclareDatatype"><span class="constructor">DeclareDatatype</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEdt_dec">dt_dec</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsmt_cmd.DeclareDatatypes"><span class="constructor">DeclareDatatypes</span></span> <span class="keyword">of</span> <code class="type">(<a href="Ast.html#TYPEsort_decl">sort_decl</a> * <a href="Ast.html#TYPEdt_dec">dt_dec</a>) list</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsmt_cmd.DeclareSort"><span class="constructor">DeclareSort</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEnumeral">numeral</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsmt_cmd.DefineFun"><span class="constructor">DefineFun</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsorted_var">sorted_var</a> list * <a href="Ast.html#TYPEsort">sort</a> * <a href="Ast.html#TYPEterm">term</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsmt_cmd.DefineSort"><span class="constructor">DefineSort</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsort">sort</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsmt_cmd.SetLogic"><span class="constructor">SetLogic</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsmt_cmd.SetOption"><span class="constructor">SetOption</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEliteral">literal</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEterm"><span class="keyword">type</span> <code class="type"></code>term</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Identifier"><span class="constructor">Identifier</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEidentifier">identifier</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Literal"><span class="constructor">Literal</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEliteral">literal</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.IdentifierTerms"><span class="constructor">IdentifierTerms</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEidentifier">identifier</a> * <a href="Ast.html#TYPEterm">term</a> list</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Exists"><span class="constructor">Exists</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsorted_var">sorted_var</a> list * <a href="Ast.html#TYPEterm">term</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Forall"><span class="constructor">Forall</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsorted_var">sorted_var</a> list * <a href="Ast.html#TYPEterm">term</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTterm.Let"><span class="constructor">Let</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEvar_binding">var_binding</a> list * <a href="Ast.html#TYPEterm">term</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEbf_term"><span class="keyword">type</span> <code class="type"></code>bf_term</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTbf_term.BfIdentifier"><span class="constructor">BfIdentifier</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEidentifier">identifier</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTbf_term.BfLiteral"><span class="constructor">BfLiteral</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEliteral">literal</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTbf_term.BfIdentifierTerms"><span class="constructor">BfIdentifierTerms</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEidentifier">identifier</a> * <a href="Ast.html#TYPEbf_term">bf_term</a> list</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEsorted_var"><span class="keyword">type</span> <code class="type"></code>sorted_var</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsorted_var.SortedVar"><span class="constructor">SortedVar</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsort">sort</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEvar_binding"><span class="keyword">type</span> <code class="type"></code>var_binding</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvar_binding.VarBinding"><span class="constructor">VarBinding</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEterm">term</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEidentifier"><span class="keyword">type</span> <code class="type"></code>identifier</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTidentifier.SymbolIdentifier"><span class="constructor">SymbolIdentifier</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTidentifier.UnderbarIdentifier"><span class="constructor">UnderbarIdentifier</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEindex">index</a> list</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEsymbol"><span class="keyword">type</span> <code class="type"></code>symbol</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsymbol.Symbol"><span class="constructor">Symbol</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEindex"><span class="keyword">type</span> <code class="type"></code>index</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTindex.NumeralIndex"><span class="constructor">NumeralIndex</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEnumeral">numeral</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTindex.SymbolIndex"><span class="constructor">SymbolIndex</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEsort"><span class="keyword">type</span> <code class="type"></code>sort</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsort.Sort"><span class="constructor">Sort</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEidentifier">identifier</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsort.SortWithSorts"><span class="constructor">SortWithSorts</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEidentifier">identifier</a> * <a href="Ast.html#TYPEsort">sort</a> list</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEfeature"><span class="keyword">type</span> <code class="type"></code>feature</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfeature.Grammars"><span class="constructor">Grammars</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfeature.FwdDecls"><span class="constructor">FwdDecls</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfeature.Recursion"><span class="constructor">Recursion</span></span></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEsort_decl"><span class="keyword">type</span> <code class="type"></code>sort_decl</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsort_decl.SortDeclaration"><span class="constructor">SortDeclaration</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEnumeral">numeral</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEdt_dec"><span class="keyword">type</span> <code class="type"></code>dt_dec</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTdt_dec.DTDec"><span class="constructor">DTDec</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEdt_cond_dec">dt_cond_dec</a> list</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEdt_cond_dec"><span class="keyword">type</span> <code class="type"></code>dt_cond_dec</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTdt_cond_dec.DTConsDec"><span class="constructor">DTConsDec</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsorted_var">sorted_var</a> list</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEgrammar_def"><span class="keyword">type</span> <code class="type"></code>grammar_def</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTgrammar_def.GrammarDef"><span class="constructor">GrammarDef</span></span> <span class="keyword">of</span> <code class="type">(<a href="Ast.html#TYPEsorted_var">sorted_var</a> * <a href="Ast.html#TYPEgrouped_rule_list">grouped_rule_list</a>) list</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEgrouped_rule_list"><span class="keyword">type</span> <code class="type"></code>grouped_rule_list</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTgrouped_rule_list.GroupedRuleList"><span class="constructor">GroupedRuleList</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsymbol">symbol</a> * <a href="Ast.html#TYPEsort">sort</a> * <a href="Ast.html#TYPEgterm">gterm</a> list</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEgterm"><span class="keyword">type</span> <code class="type"></code>gterm</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTgterm.GTConstant"><span class="constructor">GTConstant</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsort">sort</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTgterm.GTVariable"><span class="constructor">GTVariable</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEsort">sort</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTgterm.GTBfTerm"><span class="constructor">GTBfTerm</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEbf_term">bf_term</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEliteral"><span class="keyword">type</span> <code class="type"></code>literal</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTliteral.Numeral"><span class="constructor">Numeral</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEnumeral">numeral</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTliteral.Decimal"><span class="constructor">Decimal</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTliteral.BoolConst"><span class="constructor">BoolConst</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEboolconst">boolconst</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTliteral.HexConst"><span class="constructor">HexConst</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTliteral.BinConst"><span class="constructor">BinConst</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTliteral.StringConst"><span class="constructor">StringConst</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="TYPEnumeral"><span class="keyword">type</span> <code class="type"></code>numeral</span> = <code class="type">string</code> </pre>
+
+
+<pre><span id="TYPEboolconst"><span class="keyword">type</span> <code class="type"></code>boolconst</span> = <code class="type">string</code> </pre>
+
+</body></html>

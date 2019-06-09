@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Candidates.html">
+<link rel="next" href="FunctionIngredients.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Candidates" rel="Chapter" href="Candidates.html">
+<link title="Cost" rel="Chapter" href="Cost.html">
+<link title="FunctionIngredients" rel="Chapter" href="FunctionIngredients.html">
+<link title="Preprocessor" rel="Chapter" href="Preprocessor.html">
+<link title="Solver" rel="Chapter" href="Solver.html">
+<link title="Stringfier" rel="Chapter" href="Stringfier.html">
+<link title="Terms" rel="Chapter" href="Terms.html">
+<link title="Transformer" rel="Chapter" href="Transformer.html">
+<link title="Z3solver" rel="Chapter" href="Z3solver.html">
+<link title="Ast" rel="Chapter" href="Ast.html">
+<link title="IntermediateTypes" rel="Chapter" href="IntermediateTypes.html">
+<link title="Io" rel="Chapter" href="Io.html">
+<link title="ListMethods" rel="Chapter" href="ListMethods.html">
+<link title="PrintMethods" rel="Chapter" href="PrintMethods.html">
+<link title="Search" rel="Chapter" href="Search.html">
+<link title="Verifier" rel="Chapter" href="Verifier.html"><title>Cost</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Candidates.html" title="Candidates">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="FunctionIngredients.html" title="FunctionIngredients">Next</a>
+</div>
+<h1>Module <a href="type_Cost.html">Cost</a></h1>
+
+<pre><span id="MODULECost"><span class="keyword">module</span> Cost</span>: <code class="code">sig</code> <a href="Cost.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Measture the cost of term</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="VALbasicCost"><span class="keyword">val</span> basicCost</span> : <code class="type"><a href="Ast.html#TYPEterm">Ast.term</a> -> <a href="Ast.html#TYPEterm">Ast.term</a> list -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>measure the cost of term by counting and multiply a constant</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> the cost of term</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">term</code> : the target body</div>
+<div class="param_info"><code class="code">nontermlist</code> : non-terminal list</div>
+</body></html>

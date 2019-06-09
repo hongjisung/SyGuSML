@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="FunctionIngredients.html">
+<link rel="next" href="Solver.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Candidates" rel="Chapter" href="Candidates.html">
+<link title="Cost" rel="Chapter" href="Cost.html">
+<link title="FunctionIngredients" rel="Chapter" href="FunctionIngredients.html">
+<link title="Preprocessor" rel="Chapter" href="Preprocessor.html">
+<link title="Solver" rel="Chapter" href="Solver.html">
+<link title="Stringfier" rel="Chapter" href="Stringfier.html">
+<link title="Terms" rel="Chapter" href="Terms.html">
+<link title="Transformer" rel="Chapter" href="Transformer.html">
+<link title="Z3solver" rel="Chapter" href="Z3solver.html">
+<link title="Ast" rel="Chapter" href="Ast.html">
+<link title="IntermediateTypes" rel="Chapter" href="IntermediateTypes.html">
+<link title="Io" rel="Chapter" href="Io.html">
+<link title="ListMethods" rel="Chapter" href="ListMethods.html">
+<link title="PrintMethods" rel="Chapter" href="PrintMethods.html">
+<link title="Search" rel="Chapter" href="Search.html">
+<link title="Verifier" rel="Chapter" href="Verifier.html"><title>Preprocessor</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="FunctionIngredients.html" title="FunctionIngredients">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Solver.html" title="Solver">Next</a>
+</div>
+<h1>Module <a href="type_Preprocessor.html">Preprocessor</a></h1>
+
+<pre><span id="MODULEPreprocessor"><span class="keyword">module</span> Preprocessor</span>: <code class="code">sig</code> <a href="Preprocessor.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
+<pre><span id="EXCEPTIONSygusError"><span class="keyword">exception</span> SygusError</span></pre>
+
+<pre><span id="EXCEPTIONSetLogicError"><span class="keyword">exception</span> SetLogicError</span></pre>
+
+<pre><span id="EXCEPTIONSetFeatureError"><span class="keyword">exception</span> SetFeatureError</span></pre>
+
+<pre><span id="VALsymbolListToSigature"><span class="keyword">val</span> symbolListToSigature</span> : <code class="type">string list -> <a href="IntermediateTypes.html#TYPEsignature">IntermediateTypes.signature</a> list</code></pre>
+<pre><span id="VALgetStringFromSort"><span class="keyword">val</span> getStringFromSort</span> : <code class="type"><a href="Ast.html#TYPEsort">Ast.sort</a> -> string</code></pre>
+<pre><span id="VALgetStringFromSignature"><span class="keyword">val</span> getStringFromSignature</span> : <code class="type"><a href="IntermediateTypes.html#TYPEsignature">IntermediateTypes.signature</a> -> string</code></pre>
+<pre><span id="VALgetSignatureStringList"><span class="keyword">val</span> getSignatureStringList</span> : <code class="type"><a href="IntermediateTypes.html#TYPEsignature">IntermediateTypes.signature</a> list -> string list</code></pre>
+<pre><span id="VALgetsub"><span class="keyword">val</span> getsub</span> : <code class="type">string -> int -> int -> string</code></pre>
+<pre><span id="VALgetLogicList"><span class="keyword">val</span> getLogicList</span> : <code class="type">string -> string list</code></pre>
+<pre><span id="VALsettingLogicSignature"><span class="keyword">val</span> settingLogicSignature</span> : <code class="type">string -> <a href="IntermediateTypes.html#TYPEsignature">IntermediateTypes.signature</a> list</code></pre>
+<pre><span id="VALcheckBVsort"><span class="keyword">val</span> checkBVsort</span> : <code class="type"><a href="IntermediateTypes.html#TYPEsignature">IntermediateTypes.signature</a> -> bool</code></pre>
+<pre><span id="VALisBVinSignature"><span class="keyword">val</span> isBVinSignature</span> : <code class="type"><a href="IntermediateTypes.html#TYPEsignature">IntermediateTypes.signature</a> list -> bool</code></pre>
+<pre><span id="VALgetSymbolOfsortdecl"><span class="keyword">val</span> getSymbolOfsortdecl</span> : <code class="type"><a href="Ast.html#TYPEsort_decl">Ast.sort_decl</a> -> string</code></pre>
+<pre><span id="VALgetSymbolOfsortedvarlist"><span class="keyword">val</span> getSymbolOfsortedvarlist</span> : <code class="type"><a href="Ast.html#TYPEsorted_var">Ast.sorted_var</a> list -> string list</code></pre>
+<pre><span id="VALgetSymbolOfdtconddeclist"><span class="keyword">val</span> getSymbolOfdtconddeclist</span> : <code class="type"><a href="Ast.html#TYPEdt_cond_dec">Ast.dt_cond_dec</a> list -> string list</code></pre>
+<pre><span id="VALgetSymbolOfDataTypes"><span class="keyword">val</span> getSymbolOfDataTypes</span> : <code class="type">(<a href="Ast.html#TYPEsort_decl">Ast.sort_decl</a> * <a href="Ast.html#TYPEdt_dec">Ast.dt_dec</a>) list -> string list</code></pre>
+<pre><span id="VALgetParameterPerSort"><span class="keyword">val</span> getParameterPerSort</span> : <code class="type"><a href="Ast.html#TYPEsorted_var">Ast.sorted_var</a> list -> (string, string list) Stdlib.Hashtbl.t</code></pre>
+<pre><span id="VALmakeGTBfTermVarlist"><span class="keyword">val</span> makeGTBfTermVarlist</span> : <code class="type">string list -> <a href="Ast.html#TYPEgterm">Ast.gterm</a> list</code></pre>
+<pre><span id="VALcheckgtermlist"><span class="keyword">val</span> checkgtermlist</span> : <code class="type"><a href="Ast.html#TYPEgterm">Ast.gterm</a> list -> (string, string list) Stdlib.Hashtbl.t -> <a href="Ast.html#TYPEgterm">Ast.gterm</a> list</code></pre>
+<pre><span id="VALcheckGrammarlist"><span class="keyword">val</span> checkGrammarlist</span> : <code class="type">('a * <a href="Ast.html#TYPEgrouped_rule_list">Ast.grouped_rule_list</a>) list -><br>       (string, string list) Stdlib.Hashtbl.t -> ('a * <a href="Ast.html#TYPEgrouped_rule_list">Ast.grouped_rule_list</a>) list</code></pre>
+<pre><span id="VALchangeVarsortToParam"><span class="keyword">val</span> changeVarsortToParam</span> : <code class="type"><a href="Ast.html#TYPEgrammar_def">Ast.grammar_def</a> -> (string, string list) Stdlib.Hashtbl.t -> <a href="Ast.html#TYPEgrammar_def">Ast.grammar_def</a></code></pre>
+<pre><span id="VALchangeInvConstraintToConstraint"><span class="keyword">val</span> changeInvConstraintToConstraint</span> : <code class="type"><a href="Ast.html#TYPEcmd">Ast.cmd</a> -> (<a href="Ast.html#TYPEsymbol">Ast.symbol</a> * <a href="Ast.html#TYPEsorted_var">Ast.sorted_var</a> list) list -> <a href="Ast.html#TYPEcmd">Ast.cmd</a> list</code></pre>
+<pre><span id="VALdesugar"><span class="keyword">val</span> desugar</span> : <code class="type"><a href="Ast.html#TYPEcmd">Ast.cmd</a> list -> <a href="Ast.html#TYPEcmd">Ast.cmd</a> list</code></pre>
+<pre><span id="VALpreprocess"><span class="keyword">val</span> preprocess</span> : <code class="type"><a href="Ast.html#TYPEcmd">Ast.cmd</a> list -> <a href="Ast.html#TYPEcmd">Ast.cmd</a> list</code></pre></body></html>

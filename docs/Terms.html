@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Stringfier.html">
+<link rel="next" href="Transformer.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Candidates" rel="Chapter" href="Candidates.html">
+<link title="Cost" rel="Chapter" href="Cost.html">
+<link title="FunctionIngredients" rel="Chapter" href="FunctionIngredients.html">
+<link title="Preprocessor" rel="Chapter" href="Preprocessor.html">
+<link title="Solver" rel="Chapter" href="Solver.html">
+<link title="Stringfier" rel="Chapter" href="Stringfier.html">
+<link title="Terms" rel="Chapter" href="Terms.html">
+<link title="Transformer" rel="Chapter" href="Transformer.html">
+<link title="Z3solver" rel="Chapter" href="Z3solver.html">
+<link title="Ast" rel="Chapter" href="Ast.html">
+<link title="IntermediateTypes" rel="Chapter" href="IntermediateTypes.html">
+<link title="Io" rel="Chapter" href="Io.html">
+<link title="ListMethods" rel="Chapter" href="ListMethods.html">
+<link title="PrintMethods" rel="Chapter" href="PrintMethods.html">
+<link title="Search" rel="Chapter" href="Search.html">
+<link title="Verifier" rel="Chapter" href="Verifier.html"><title>Terms</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Stringfier.html" title="Stringfier">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Transformer.html" title="Transformer">Next</a>
+</div>
+<h1>Module <a href="type_Terms.html">Terms</a></h1>
+
+<pre><span id="MODULETerms"><span class="keyword">module</span> Terms</span>: <code class="code">sig</code> <a href="Terms.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>this has the methods which are relevant with term in ast</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="VALcheckTermHasNonTerminal"><span class="keyword">val</span> checkTermHasNonTerminal</span> : <code class="type"><a href="Ast.html#TYPEterm">Ast.term</a> -> <a href="Ast.html#TYPEterm">Ast.term</a> list -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>check Term have non-terminal</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> if term have non-terminal, return true</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">term</code> : Ast term</div>
+<div class="param_info"><code class="code">nontermlist</code> : non-terminal list in term</div>
+
+<pre><span id="VALcountTermHasNonTerminal"><span class="keyword">val</span> countTermHasNonTerminal</span> : <code class="type"><a href="Ast.html#TYPEterm">Ast.term</a> -> <a href="Ast.html#TYPEterm">Ast.term</a> list -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>count Term have how many non-terminals</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> the number of non-terminals in term</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">term</code> : Ast term</div>
+<div class="param_info"><code class="code">nontermlist</code> : non-terminal list in term</div>
+
+<pre><span id="VALcountTerm"><span class="keyword">val</span> countTerm</span> : <code class="type"><a href="Ast.html#TYPEterm">Ast.term</a> -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>count Term have how many terminals</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> the number of terminals in term</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">term</code> : Ast term</div>
+
+<pre><span id="VALsortToTerm"><span class="keyword">val</span> sortToTerm</span> : <code class="type"><a href="Ast.html#TYPEsort">Ast.sort</a> -> <a href="Ast.html#TYPEterm">Ast.term</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>change sort of Ast to term of Ast</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> Ast term</li>
+</ul>
+</div>
+</body></html>

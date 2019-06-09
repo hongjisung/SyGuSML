@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Search.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Candidates" rel="Chapter" href="Candidates.html">
+<link title="Cost" rel="Chapter" href="Cost.html">
+<link title="FunctionIngredients" rel="Chapter" href="FunctionIngredients.html">
+<link title="Preprocessor" rel="Chapter" href="Preprocessor.html">
+<link title="Solver" rel="Chapter" href="Solver.html">
+<link title="Stringfier" rel="Chapter" href="Stringfier.html">
+<link title="Terms" rel="Chapter" href="Terms.html">
+<link title="Transformer" rel="Chapter" href="Transformer.html">
+<link title="Z3solver" rel="Chapter" href="Z3solver.html">
+<link title="Ast" rel="Chapter" href="Ast.html">
+<link title="IntermediateTypes" rel="Chapter" href="IntermediateTypes.html">
+<link title="Io" rel="Chapter" href="Io.html">
+<link title="ListMethods" rel="Chapter" href="ListMethods.html">
+<link title="PrintMethods" rel="Chapter" href="PrintMethods.html">
+<link title="Search" rel="Chapter" href="Search.html">
+<link title="Verifier" rel="Chapter" href="Verifier.html"><title>Verifier</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Search.html" title="Search">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Verifier.html">Verifier</a></h1>
+
+<pre><span id="MODULEVerifier"><span class="keyword">module</span> Verifier</span>: <code class="code">sig</code> <a href="Verifier.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>verify the answer of sygus string</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="VALverify"><span class="keyword">val</span> verify</span> : <code class="type"><a href="Ast.html#TYPEsymbol">Ast.symbol</a> * <a href="Ast.html#TYPEsorted_var">Ast.sorted_var</a> list * <a href="Ast.html#TYPEsort">Ast.sort</a> * <a href="Ast.html#TYPEterm">Ast.term</a> -><br>       <a href="Ast.html#TYPEcmd">Ast.cmd</a> list -> <a href="IntermediateTypes.html#TYPEverifyResult">IntermediateTypes.verifyResult</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>verify the given sygus ast and the presumed answer body of synth-fun</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> the result of verification</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">(fname,args,sort,term)</code> : <div class="parameter-desc">
+<code>term</code> : the body of function</div>
+<div class="parameter-desc">
+<code>sort</code> : return sort of function</div>
+<div class="parameter-desc">
+<code>args</code> : parameters of function</div>
+<div class="parameter-desc">
+<code>fname</code> : function name</div>
+</div>
+<div class="param_info"><code class="code">cmds</code> : A sygus ast</div>
+</body></html>

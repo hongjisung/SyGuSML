@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="PrintMethods.html">
+<link rel="next" href="Verifier.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Candidates" rel="Chapter" href="Candidates.html">
+<link title="Cost" rel="Chapter" href="Cost.html">
+<link title="FunctionIngredients" rel="Chapter" href="FunctionIngredients.html">
+<link title="Preprocessor" rel="Chapter" href="Preprocessor.html">
+<link title="Solver" rel="Chapter" href="Solver.html">
+<link title="Stringfier" rel="Chapter" href="Stringfier.html">
+<link title="Terms" rel="Chapter" href="Terms.html">
+<link title="Transformer" rel="Chapter" href="Transformer.html">
+<link title="Z3solver" rel="Chapter" href="Z3solver.html">
+<link title="Ast" rel="Chapter" href="Ast.html">
+<link title="IntermediateTypes" rel="Chapter" href="IntermediateTypes.html">
+<link title="Io" rel="Chapter" href="Io.html">
+<link title="ListMethods" rel="Chapter" href="ListMethods.html">
+<link title="PrintMethods" rel="Chapter" href="PrintMethods.html">
+<link title="Search" rel="Chapter" href="Search.html">
+<link title="Verifier" rel="Chapter" href="Verifier.html"><title>Search</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="PrintMethods.html" title="PrintMethods">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Verifier.html" title="Verifier">Next</a>
+</div>
+<h1>Module <a href="type_Search.html">Search</a></h1>
+
+<pre><span id="MODULESearch"><span class="keyword">module</span> Search</span>: <code class="code">sig</code> <a href="Search.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>In this module, find the correct body of given Ast by iterative search</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="EXCEPTIONLoopOut"><span class="keyword">exception</span> LoopOut</span></pre>
+
+<pre><span id="MODULEWorklistBFS"><span class="keyword">module</span> <a href="Search.WorklistBFS.html">WorklistBFS</a></span>: <code class="code">sig</code> <a href="Search.WorklistBFS.html">..</a> <code class="code">end</code></pre>
+<pre><span id="VALsynthFuncByBFS"><span class="keyword">val</span> synthFuncByBFS</span> : <code class="type"><a href="Ast.html#TYPEcmd">Ast.cmd</a> list -><br>       <a href="Ast.html#TYPEsymbol">Ast.symbol</a> -><br>       <a href="Ast.html#TYPEsorted_var">Ast.sorted_var</a> list -><br>       <a href="Ast.html#TYPEsort">Ast.sort</a> -><br>       <a href="Ast.html#TYPEterm">Ast.term</a> -><br>       <a href="Ast.html#TYPEterm">Ast.term</a> list IntermediateTypes.TransitionMap.t -> <a href="Ast.html#TYPEterm">Ast.term</a> list -> string</code></pre>
+<pre><span id="VALsearchByBFS"><span class="keyword">val</span> searchByBFS</span> : <code class="type"><a href="Ast.html#TYPEcmd">Ast.cmd</a> list -> <a href="IntermediateTypes.html#TYPEfuncIngredient">IntermediateTypes.funcIngredient</a> list -> 'a -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>Find the synth-fun list body by BFS</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> the sygus string which have correct body of synth-fun</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">ast</code> : parsed sygus string</div>
+<div class="param_info"><code class="code">funcIngredients</code> : function ingredient list of synth-fun list</div>
+<div class="param_info"><code class="code">costFunc</code> : cost function</div>
+
+<pre><code><span id="TYPEheapterm"><span class="keyword">type</span> <code class="type"></code>heapterm</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTheapterm.Node"><span class="constructor">Node</span></span> <span class="keyword">of</span> <code class="type"><a href="Ast.html#TYPEterm">Ast.term</a> * int</code></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="MODULEOrderedType"><span class="keyword">module</span> <a href="Search.OrderedType.html">OrderedType</a></span>: <code class="code">sig</code> <a href="Search.OrderedType.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEHeap"><span class="keyword">module</span> <a href="Search.Heap.html">Heap</a></span>: <code class="type">BatHeap.Make</code><code class="code">(</code><code class="type"><a href="Search.OrderedType.html">OrderedType</a></code><code class="code">)</code></pre>
+<pre><span id="VALsynthFuncByHeap"><span class="keyword">val</span> synthFuncByHeap</span> : <code class="type"><a href="Ast.html#TYPEcmd">Ast.cmd</a> list -><br>       <a href="Ast.html#TYPEsymbol">Ast.symbol</a> -><br>       <a href="Ast.html#TYPEsorted_var">Ast.sorted_var</a> list -><br>       <a href="Ast.html#TYPEsort">Ast.sort</a> -><br>       <a href="Ast.html#TYPEterm">Ast.term</a> -><br>       <a href="Ast.html#TYPEterm">Ast.term</a> list IntermediateTypes.TransitionMap.t -><br>       <a href="Ast.html#TYPEterm">Ast.term</a> list -> (<a href="Ast.html#TYPEterm">Ast.term</a> -> <a href="Ast.html#TYPEterm">Ast.term</a> list -> int) -> string</code></pre>
+<pre><span id="VALsearchByHeap"><span class="keyword">val</span> searchByHeap</span> : <code class="type"><a href="Ast.html#TYPEcmd">Ast.cmd</a> list -><br>       <a href="IntermediateTypes.html#TYPEfuncIngredient">IntermediateTypes.funcIngredient</a> list -><br>       (<a href="Ast.html#TYPEterm">Ast.term</a> -> <a href="Ast.html#TYPEterm">Ast.term</a> list -> int) -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>Find the synth-fun list body by using heap</p>
+</div>
+<ul class="info-attributes">
+<li><b>Returns</b> the sygus string which have correct body of synth-fun</li>
+</ul>
+</div>
+<div class="param_info"><code class="code">ast</code> : parsed sygus string</div>
+<div class="param_info"><code class="code">funcIngredients</code> : function ingredient list of synth-fun list</div>
+<div class="param_info"><code class="code">costFunc</code> : cost function</div>
+</body></html>
