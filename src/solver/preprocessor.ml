@@ -159,25 +159,7 @@ if other sort like this is about to enter signature, we need to reject this.
 *)
 let checkBVsort sign = 
   match sign with
-  | SortSignature s -> (
-      match s with
-      | Sort next -> (
-          match next with
-          | UnderbarIdentifier (sb, li) -> (
-              match sb with
-              | Symbol "BitVec" -> (
-                  match li with
-                  | h::t -> (
-                      match t with
-                      | [] -> (
-                          match h with
-                          | NumeralIndex _ -> true
-                          | _ -> false )
-                      | _ -> false )
-                  | _ -> false )
-              | _ -> false )
-          | _ -> false )
-      | _ -> false )
+  | SortSignature (Sort (UnderbarIdentifier (Symbol "BitVec", ((NumeralIndex _ ):: [])))) -> true
   | _ -> false
 
 let rec isBVinSignature li =
