@@ -28,3 +28,160 @@ let getDomainGrammarPrefix : Ast.cmd list -> string list -> string =
   let nontermList : string list = 
     ListMethods.collectAppliedList TypeMethods.cmd_getsl cmdlist in
   generateDomainGrammarPrefix (nontermList @ additional_prohibit_list)
+
+(* Common symbols and identifiers in Domain grammars (Terminal symbols only) *)
+let gen_id : string -> Ast.identifier = fun s -> SymbolIdentifier (Symbol s)
+let gen_short_sort : string -> Ast.sort = fun s -> Sort (SymbolIdentifier (Symbol s))
+let sortInt     : Ast.sort = gen_short_sort "Int"
+let sortBool    : Ast.sort = gen_short_sort "Bool"
+let sortReal    : Ast.sort = gen_short_sort "Real"
+let id_plus_op  : Ast.identifier = gen_id "+"
+let id_minus_op : Ast.identifier = gen_id "-"
+let id_mul_op   : Ast.identifier = gen_id "*"
+let id_div      : Ast.identifier = gen_id "div"
+let id_mod      : Ast.identifier = gen_id "mod"
+let id_abs      : Ast.identifier = gen_id "abs"
+let id_ite      : Ast.identifier = gen_id "ite"
+let id_gt_op    : Ast.identifier = gen_id ">"
+let id_ge_op    : Ast.identifier = gen_id ">="
+let id_lt_op    : Ast.identifier = gen_id "<"
+let id_le_op    : Ast.identifier = gen_id "<="
+
+(* only available with identifier list arguments. *)
+let gen_bfidentifierterms : Ast.identifier list -> Ast.bf_term = 
+  fun idlist ->
+  match idlist with
+  | [id1] -> BfIdentifier id1
+  | id1 :: t -> BfIdentifierTerms (id1, List.map (fun id -> BfIdentifier id) t)
+  | _ -> invalid_arg "DomainGrammar.gen_bfidentifierterms needs one or more elements in argument list."
+
+(* It cannot be used for general purposes. This generates (GTBfTerm (bf_term) : gterm) *)
+let gen_gtbfterm : Ast.identifier list -> Ast.gterm =
+  fun idlist ->
+  match idlist with
+  | h :: t -> GTBfTerm (gen_bfidentifierterms idlist)
+  | _ -> invalid_arg "DomainGrammar.gen_gtbfterm needs one or more elements in argument list."
+
+
+
+(****** Domain Grammars ******)
+
+
+(**********************************************************)
+(**********************************************************)
+(************************* LIA ****************************)
+(**********************************************************)
+(**********************************************************)
+
+let dom_LIA_grammardef : string -> Ast.grammar_def =
+  fun prefix ->
+  let pre : string = prefix ^ "LIA_" in
+  let y_term : Ast.symbol = Symbol (pre ^ "y_term") in
+  let y_cons : Ast.symbol = Symbol (pre ^ "y_cons") in
+  let y_pred : Ast.symbol = Symbol (pre ^ "y_pred") in
+  let id_y_term : Ast.identifier = SymbolIdentifier y_term in
+  let id_y_cons : Ast.identifier = SymbolIdentifier y_cons in
+  let id_y_pred : Ast.identifier = SymbolIdentifier y_pred in
+  (
+    GrammarDef
+      [
+        (
+          SortedVar (y_term, sortInt),
+          GroupedRuleList
+            (
+              y_term, 
+              sortInt, 
+              [
+                GTBfTerm (BfIdentifier id_y_cons);
+                GTVariable (sortInt);
+                gen_gtbfterm [id_minus_op; id_y_term];
+                gen_gtbfterm [id_plus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_minus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_mul_op; id_y_cons; id_y_term];
+                gen_gtbfterm [id_mul_op; id_y_term; id_y_cons];
+                gen_gtbfterm [id_div; id_y_term; id_y_cons];
+                gen_gtbfterm [id_mod; id_y_term; id_y_cons];
+                gen_gtbfterm [id_abs; id_y_term];
+                gen_gtbfterm [id_ite; id_y_pred; id_y_term; id_y_term]
+              ]
+            )
+        );
+        (
+          SortedVar (y_cons, sortInt),
+          GroupedRuleList
+            (
+              y_cons,
+              sortInt,
+              [ GTConstant sortInt ]
+            )
+        );
+        (
+          SortedVar (y_pred, sortBool),
+          GroupedRuleList
+            (
+              y_pred,
+              sortBool,
+              [
+                gen_gtbfterm [id_gt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_ge_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_lt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_le_op; id_y_term; id_y_term];
+              ]
+            )
+        )
+      ]
+  )
+
+
+(**********************************************************)
+(**********************************************************)
+(************************* NIA ****************************)
+(**********************************************************)
+(**********************************************************)
+
+let dom_NIA_grammardef : string -> Ast.grammar_def =
+  fun prefix ->
+  let pre : string = prefix ^ "NIA_" in
+  let y_term : Ast.symbol = Symbol (pre ^ "y_term") in
+  let y_pred : Ast.symbol = Symbol (pre ^ "y_pred") in
+  let id_y_term : Ast.identifier = SymbolIdentifier y_term in
+  let id_y_pred : Ast.identifier = SymbolIdentifier y_pred in
+  (
+    GrammarDef
+      [
+        (
+          SortedVar (y_term, sortInt),
+          GroupedRuleList
+            (
+              y_term, 
+              sortInt, 
+              [
+                GTConstant sortReal;
+                GTVariable sortInt;
+                gen_gtbfterm [id_minus_op; id_y_term];
+                gen_gtbfterm [id_plus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_minus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_mul_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_div; id_y_term; id_y_term];
+                gen_gtbfterm [id_mod; id_y_term; id_y_term];
+                gen_gtbfterm [id_abs; id_y_term];
+                gen_gtbfterm [id_ite; id_y_pred; id_y_term; id_y_term]
+              ]
+            )
+        );
+        (
+          SortedVar (y_pred, sortBool),
+          GroupedRuleList
+            (
+              y_pred,
+              sortBool,
+              [
+                gen_gtbfterm [id_gt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_ge_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_lt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_le_op; id_y_term; id_y_term];
+              ]
+            )
+        )
+      ]
+  )
