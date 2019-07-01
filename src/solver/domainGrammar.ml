@@ -38,10 +38,12 @@ let sortReal    : Ast.sort = gen_short_sort "Real"
 let id_plus_op  : Ast.identifier = gen_id "+"
 let id_minus_op : Ast.identifier = gen_id "-"
 let id_mul_op   : Ast.identifier = gen_id "*"
+let id_div_op   : Ast.identifier = gen_id "/"
 let id_div      : Ast.identifier = gen_id "div"
 let id_mod      : Ast.identifier = gen_id "mod"
 let id_abs      : Ast.identifier = gen_id "abs"
 let id_ite      : Ast.identifier = gen_id "ite"
+let id_eq_op    : Ast.identifier = gen_id "="
 let id_gt_op    : Ast.identifier = gen_id ">"
 let id_ge_op    : Ast.identifier = gen_id ">="
 let id_lt_op    : Ast.identifier = gen_id "<"
@@ -64,7 +66,13 @@ let gen_gtbfterm : Ast.identifier list -> Ast.gterm =
 
 
 
+
+
 (****** Domain Grammars ******)
+(* grammar version : 2019.Jun.30 *)
+
+
+
 
 
 (**********************************************************)
@@ -93,7 +101,7 @@ let dom_LIA_grammardef : string -> Ast.grammar_def =
               sortInt, 
               [
                 GTBfTerm (BfIdentifier id_y_cons);
-                GTVariable (sortInt);
+                GTVariable sortInt;
                 gen_gtbfterm [id_minus_op; id_y_term];
                 gen_gtbfterm [id_plus_op; id_y_term; id_y_term];
                 gen_gtbfterm [id_minus_op; id_y_term; id_y_term];
@@ -122,6 +130,7 @@ let dom_LIA_grammardef : string -> Ast.grammar_def =
               y_pred,
               sortBool,
               [
+                gen_gtbfterm [id_eq_op; id_y_term; id_y_term];
                 gen_gtbfterm [id_gt_op; id_y_term; id_y_term];
                 gen_gtbfterm [id_ge_op; id_y_term; id_y_term];
                 gen_gtbfterm [id_lt_op; id_y_term; id_y_term];
@@ -131,6 +140,9 @@ let dom_LIA_grammardef : string -> Ast.grammar_def =
         )
       ]
   )
+
+
+
 
 
 (**********************************************************)
@@ -156,7 +168,7 @@ let dom_NIA_grammardef : string -> Ast.grammar_def =
               y_term, 
               sortInt, 
               [
-                GTConstant sortReal;
+                GTConstant sortInt;
                 GTVariable sortInt;
                 gen_gtbfterm [id_minus_op; id_y_term];
                 gen_gtbfterm [id_plus_op; id_y_term; id_y_term];
@@ -176,6 +188,131 @@ let dom_NIA_grammardef : string -> Ast.grammar_def =
               y_pred,
               sortBool,
               [
+                gen_gtbfterm [id_eq_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_gt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_ge_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_lt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_le_op; id_y_term; id_y_term];
+              ]
+            )
+        )
+      ]
+  )
+
+
+
+
+
+(**********************************************************)
+(**********************************************************)
+(************************* LRA ****************************)
+(**********************************************************)
+(**********************************************************)
+
+let dom_LRA_grammardef : string -> Ast.grammar_def =
+  fun prefix ->
+  let pre : string = prefix ^ "LRA_" in
+  let y_term : Ast.symbol = Symbol (pre ^ "y_term") in
+  let y_cons : Ast.symbol = Symbol (pre ^ "y_cons") in
+  let y_pred : Ast.symbol = Symbol (pre ^ "y_pred") in
+  let id_y_term : Ast.identifier = SymbolIdentifier y_term in
+  let id_y_cons : Ast.identifier = SymbolIdentifier y_cons in
+  let id_y_pred : Ast.identifier = SymbolIdentifier y_pred in
+  (
+    GrammarDef
+      [
+        (
+          SortedVar (y_term, sortReal),
+          GroupedRuleList
+            (
+              y_term, 
+              sortReal, 
+              [
+                GTBfTerm (BfIdentifier id_y_cons);
+                GTVariable sortReal;
+                gen_gtbfterm [id_minus_op; id_y_term];
+                gen_gtbfterm [id_plus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_minus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_mul_op; id_y_cons; id_y_term];
+                gen_gtbfterm [id_mul_op; id_y_term; id_y_cons];
+                gen_gtbfterm [id_ite; id_y_pred; id_y_term; id_y_term]
+              ]
+            )
+        );
+        (
+          SortedVar (y_cons, sortReal),
+          GroupedRuleList
+            (
+              y_cons,
+              sortReal,
+              [ GTConstant sortReal ]
+            )
+        );
+        (
+          SortedVar (y_pred, sortBool),
+          GroupedRuleList
+            (
+              y_pred,
+              sortBool,
+              [
+                gen_gtbfterm [id_eq_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_gt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_ge_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_lt_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_le_op; id_y_term; id_y_term];
+              ]
+            )
+        )
+      ]
+  )
+
+
+
+(**********************************************************)
+(**********************************************************)
+(************************* NRA ****************************)
+(**********************************************************)
+(**********************************************************)
+(* NOTICE: In 19.Jun.30 version, NRA-grammar mentions 'y_cons' symbol but it doesn't have any derivative rule.
+    So I reomved it in this code.
+*)
+
+let dom_NRA_grammardef : string -> Ast.grammar_def =
+  fun prefix ->
+  let pre : string = prefix ^ "NRA_" in
+  let y_term : Ast.symbol = Symbol (pre ^ "y_term") in
+  let y_pred : Ast.symbol = Symbol (pre ^ "y_pred") in
+  let id_y_term : Ast.identifier = SymbolIdentifier y_term in
+  let id_y_pred : Ast.identifier = SymbolIdentifier y_pred in
+  (
+    GrammarDef
+      [
+        (
+          SortedVar (y_term, sortReal),
+          GroupedRuleList
+            (
+              y_term, 
+              sortReal, 
+              [
+                GTConstant sortReal;
+                GTVariable sortReal;
+                gen_gtbfterm [id_minus_op; id_y_term];
+                gen_gtbfterm [id_plus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_minus_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_mul_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_div_op; id_y_term; id_y_term];
+                gen_gtbfterm [id_ite; id_y_pred; id_y_term; id_y_term]
+              ]
+            )
+        );
+        (
+          SortedVar (y_pred, sortBool),
+          GroupedRuleList
+            (
+              y_pred,
+              sortBool,
+              [
+                gen_gtbfterm [id_eq_op; id_y_term; id_y_term];
                 gen_gtbfterm [id_gt_op; id_y_term; id_y_term];
                 gen_gtbfterm [id_ge_op; id_y_term; id_y_term];
                 gen_gtbfterm [id_lt_op; id_y_term; id_y_term];
