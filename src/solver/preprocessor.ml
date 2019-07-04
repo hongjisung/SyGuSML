@@ -153,6 +153,23 @@ let rec settingLogicSignature logic =
         | "NRA" -> SortSignature(Sort(SymbolIdentifier(Symbol("Real")))) :: settingLogicSignature ""
         | _ -> raise SetLogicError
 
+let selectDomainGrammar prefix logic = 
+  match logic with
+  | "LIA" ->  DomainGrammar.dom_LIA_grammardef prefix
+  | "NIA" ->  DomainGrammar.dom_NIA_grammardef prefix
+  | "LRA" ->  DomainGrammar.dom_LRA_grammardef prefix
+  | "NRA" ->  DomainGrammar.dom_NRA_grammardef prefix
+  | "BV" ->   DomainGrammar.dom_BV_grammardef prefix
+  | "S" ->    DomainGrammar.dom_S_grammardef prefix
+  | _ ->      DomainGrammar.emptyGrammarDef
+
+let constructDomainGrammarOpt prefix logiclist =
+  let grammardeflist = List.fold_left (fun grammarlist logic -> (selectDomainGrammar prefix logic) :: grammarlist) [] logiclist in
+  let grammardef = List.fold_left (fun gdef1 gdef2 -> DomainGrammar.combine_duplicated_rules gdef1 gdef2) DomainGrammar.emptyGrammarDef grammardeflist in
+  match grammardef with
+  | GrammarDef([])  -> None
+  | _               -> Some (grammardef)
+
 (* 
 BV - add sort (_ BitVec n)  , n is non-negative integer. 
 if other sort like this is about to enter signature, we need to reject this.
@@ -406,6 +423,9 @@ let desugar ast =
                   (add this to signature with option)
 *)
 let preprocess ast =
+  (* Preprocess for construct domain grammars *)
+  let domainGrammarPrefixProhibitList = [] in
+  let domainGrammarPrefix = DomainGrammar.getDomainGrammarPrefix ast domainGrammarPrefixProhibitList in
   (* just for feature setting, not yet implement *)
   let rec analysisCmd ast signature logiclist invfunclist (ftGrammars, ftFwdDecls, ftRecursion) = 
     match ast with
@@ -460,7 +480,8 @@ let preprocess ast =
                 match grammardefopt with
                 | None -> 
                   (* make basic grammar here *)
-                  SynthFun(symbol, sortedvarlist, sort, Some(GrammarDef([])))::(analysisCmd t (SymbolSignature(symbol)::signature) logiclist invfunclist (ftGrammars, ftFwdDecls, ftRecursion))
+                  SynthFun(symbol, sortedvarlist, sort, constructDomainGrammarOpt domainGrammarPrefix logiclist)::
+                  (analysisCmd t (SymbolSignature(symbol)::signature) logiclist invfunclist (ftGrammars, ftFwdDecls, ftRecursion))
                 | Some grammardef ->
                   (* change Variable sort to parameters of that sort in syn-func *)
                   (* didn't check when featureFwdDecls, featureRecursion is true *)

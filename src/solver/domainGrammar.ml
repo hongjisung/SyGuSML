@@ -10,6 +10,8 @@ open Ast
     this module will automatically set other appropriate prefix like "DOM1_" or "DOM2_".
 *)
 
+let emptyGrammarDef = GrammarDef ([])
+
 let generateDomainGrammarPrefix : string list -> string =
   fun strlist ->
   let k = ref 0 in
