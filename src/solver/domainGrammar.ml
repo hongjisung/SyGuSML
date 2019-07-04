@@ -2,7 +2,7 @@ open Ast
 
 (*
   Domain Grammar
-    Domain Grammar is the default grammar provided by SyGuS language 2.0 specification(2019/May/16) Appendix-B.
+    Domain Grammar is the default grammar provided by SyGuS language 2.0 specification(2019/June/30) Appendix-B.
     The specification shows six different domain grammars (LIA, NIA, LRA, NRA, BV, S).
 
     For convenience, all domain grammars' non-terminal symbol's name will have a prefix "DOM0_".
@@ -287,9 +287,6 @@ let dom_LRA_grammardef : string -> Ast.grammar_def =
 (************************* NRA ****************************)
 (**********************************************************)
 (**********************************************************)
-(* NOTICE: In 19.Jun.30 version, NRA-grammar mentions 'y_cons' symbol but it doesn't have any derivative rule.
-    So I reomved it in this code.
-*)
 
 let dom_NRA_grammardef : string -> Ast.grammar_def =
   fun prefix ->
@@ -489,3 +486,57 @@ let dom_S_grammardef : string -> Ast.grammar_def =
         )
       ]
   )
+
+
+
+
+
+(**********************************************************)
+(**********************************************************)
+(************************ Utilities ***********************)
+(**********************************************************)
+(**********************************************************)
+
+let symbolstr_of_sorted_var : Ast.sorted_var -> string =
+  fun (SortedVar (Symbol s, _)) -> s
+let sv_grl_list_to_hashtbl : int -> (Ast.sorted_var * Ast.grouped_rule_list) list -> (Ast.sorted_var, Ast.grouped_rule_list) Hashtbl.t =
+  fun hashtbl_init_size sv_grl_list ->
+  let htable = Hashtbl.create hashtbl_init_size in
+  let _ = List.iter (fun (sv, grl) -> Hashtbl.add htable sv grl) sv_grl_list in
+  htable
+
+(* The main purpose of combine_duplicated_rules is to concatenate derivation rules of the non-terminal 'y_pred'. *)
+(* Constraint1: there should be no duplicated non-terminal in one grammar_def. *)
+(* Constraint2: duplicated non-terminals should have same sort name too. *)
+let combine_duplicated_rules : Ast.grammar_def -> Ast.grammar_def -> Ast.grammar_def =
+  fun (GrammarDef sv_grl_list1) (GrammarDef sv_grl_list2) ->
+  let hashtbl_init_size = 16 in
+  let hashtbl_1 = sv_grl_list_to_hashtbl hashtbl_init_size sv_grl_list1 in
+  let hashtbl_2 = sv_grl_list_to_hashtbl hashtbl_init_size sv_grl_list2 in
+  let hashtbl_1_keys = Hashtbl.to_seq_keys hashtbl_1 in
+  let dupl_keys =
+    let match_find li k =
+      (match Hashtbl.find_opt hashtbl_2 k with
+       | Some _ -> k :: li
+       | None -> li
+      )
+    in
+    Seq.fold_left match_find [] hashtbl_1_keys
+  in
+  let not_match_append li (sv, grl) =
+    (match List.find_opt (fun x -> x = sv) dupl_keys with
+     | Some _ -> li
+     | None -> (sv, grl) :: li
+    )
+  in
+  let non_dupl_list1 = List.fold_left not_match_append [] sv_grl_list1 in
+  let non_dupl_list2 = List.fold_left not_match_append [] sv_grl_list2 in
+  let dupl_list =
+    let combine sv (GroupedRuleList(sym1, srt1, gterm_list1)) (GroupedRuleList(sym2, srt2, gterm_list2)) = 
+      (sv, GroupedRuleList(sym1, srt1, gterm_list1 @ gterm_list2))
+    in
+    let h1_find k = Hashtbl.find hashtbl_1 k in
+    let h2_find k = Hashtbl.find hashtbl_2 k in
+    List.fold_left (fun li key -> ((combine key (h1_find key) (h2_find key)) :: li)) [] dupl_keys
+  in
+  GrammarDef (non_dupl_list1 @ dupl_list @ non_dupl_list2)
