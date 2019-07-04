@@ -15,3 +15,12 @@ let isPrefixDuplicated : string -> string list -> bool =
   fun prefix strlist ->
   let slicedList = prefixSlicing (String.length prefix) strlist in
   ListMethods.containValid slicedList (String.equal prefix)
+
+let strListMiddlePaddingMap : string -> string list -> string list =
+  fun paddingstr slist ->
+  match slist with
+  | [] -> slist
+  | h :: [] -> slist
+  | h :: t -> let tt = (List.map (fun s -> paddingstr ^ s) t) in (h :: tt)
+
+let strListWsMiddlePadding = strListMiddlePaddingMap " "
