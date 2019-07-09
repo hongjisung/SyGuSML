@@ -128,13 +128,32 @@ let rec bftermToSygusString bfterm =
       | h::t ->
         (bftermToSygusString h)::(bftermlistToSygusStringlist t)
     in
-    String.concat "" ["( "; (identifierToSygusString identifier); " "; (String.concat " " (bftermlistToSygusStringlist bftermlist)); ")"]
+    String.concat "" ["("; (identifierToSygusString identifier); " "; (String.concat " " (bftermlistToSygusStringlist bftermlist)); ")"]
 
 let gtermToSygusString gterm =
   match gterm with
   | GTConstant sort -> String.concat "" ["(Constant "; (sortToSygusString sort); ")"]
   | GTVariable sort -> String.concat "" ["(Variable "; (sortToSygusString sort); ")"]
   | GTBfTerm bfterm -> bftermToSygusString bfterm
+
+let groupedrulelistToSygusString_debug groupedrulelist = 
+  let middlePadding = StringMethods.strListMiddlePaddingMap " " in
+  match groupedrulelist with
+  | GroupedRuleList (symbol, sort, gtermlist) ->
+    let gtermlist_middles = List.map gtermToSygusString gtermlist in
+    let gtermlist_strlist = ["("] @ (middlePadding gtermlist_middles) @ [")"] in
+    String.concat "" (["("; (symbolToSygusString symbol); " "; (sortToSygusString sort); " "] @ gtermlist_strlist @ [")"])
+
+let svgrlToSygusStringList_debug (sortedvar, groupedrulelist) =
+  String.concat "" ([" ("; sortedvarToSygusString sortedvar; " "; groupedrulelistToSygusString_debug groupedrulelist; ")"])
+
+let grammardefToSygusString_debug (GrammarDef sv_grl_list) = 
+  String.concat "" (List.map svgrlToSygusStringList_debug sv_grl_list)
+
+let grammardefoptionToSygusString_debug grammardefopt = 
+  match grammardefopt with
+  | None -> ""
+  | Some grammardef -> grammardefToSygusString_debug grammardef
 
 let smtcmdToSygusString smtcmd =
   match smtcmd with
@@ -230,3 +249,42 @@ let rec astToZ3StringList ast vars =
 let astToZ3string ast =
   let newstringlist = astToZ3StringList ast [] in
   String.concat "\n" newstringlist
+
+
+let cmdToSygusString_debug cmd = 
+  match cmd with
+  | SynthFun (symbol, sortedvarlist, sort, grammardefoption) ->
+    String.concat
+      ""
+      [
+        "(synth-fun ";
+        symbolToSygusString symbol;
+        " ";
+        sortedvarlistToSygusString sortedvarlist;
+        " ";
+        sortToSygusString sort;
+        " ";
+        grammardefoptionToSygusString_debug grammardefoption;
+        ")"
+      ]
+  | SynthInv (symbol, sortedvarlist, grammardefoption) ->
+    String.concat
+      ""
+      [
+        "(synth-fun ";
+        symbolToSygusString symbol;
+        " ";
+        sortedvarlistToSygusString sortedvarlist;
+        " ";
+        grammardefoptionToSygusString_debug grammardefoption;
+        ")"
+      ]
+  | _ -> cmdToSygusString cmd
+
+let astToSygusString_debug ast =
+  let rec iter ast before =
+    match ast with
+    | cmd::tail -> iter tail (String.concat "\n" [before; (cmdToSygusString_debug cmd)])
+    | [] -> before
+  in
+  iter ast ""
