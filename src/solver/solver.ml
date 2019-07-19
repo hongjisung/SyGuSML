@@ -26,3 +26,10 @@ let solve s search cost =
   let synfunlist = Preprocessor.preprocess ast in 
   let synfunIngredient = FunctionIngredients.getFunctionIngredientList synfunlist in
   search ast synfunIngredient cost
+
+(* solve timeout version *)
+let solve_timeout s search cost timeout =
+  let ast = Preprocessor.desugar (parse s) in
+  let synfunlist = Preprocessor.preprocess ast in 
+  let synfunIngredient = FunctionIngredients.getFunctionIngredientList synfunlist in
+  search ast synfunIngredient cost timeout

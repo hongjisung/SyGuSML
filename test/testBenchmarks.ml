@@ -5,6 +5,28 @@ exception LoopOut
 exception Testfail;;
 
 
+(* custom settings. *)
+let search_with_timeout = true
+let debug_log_switch = false
+
+let searchTactic = Search.searchByHeap
+let searchTactic_timeout = Search.searchByHeap_timeout
+let costFunction = Cost.basicCost
+let timeout : float = 10.0
+let testdirlist = [
+  "benchmarks"
+]
+
+
+let runCount = ref 0
+let timeoutCount = ref 0
+let errorCount = ref 0
+let z3ErrorCount = ref 0
+let intervalSums = ref 0.0
+let timeoutIntervalSums = ref 0.0
+let z3ErrorIntervalSums = ref 0.0
+let errorIntervalSums = ref 0.0
+
 let isSatTest testcode =
   let cfg = [] in
   let ctx = Z3.mk_context cfg in
@@ -119,40 +141,120 @@ let rec testAllFile name=
       let rfs = Io.readfile name in
       match rfs with
       | Some(s) ->
-        let res = Solver.solve s searchByHeapTest testCost in
-        if res = "error in z3 solver" then
-          print_endline(name)
-        else
-          ()
+        (
+          let _ = if debug_log_switch then print_endline ("<DEBUG> start solve file \"" ^ name ^"\"\n") else () in
+          let startTime = Sys.time () in
+          let _ = runCount := !runCount + 1 in
+          try
+            let res = Solver.solve s searchTactic costFunction in
+            let interval = Sys.time () -. startTime in
+            let intervalstr = string_of_float interval in
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ intervalstr ^ "\nResult:\n" ^ res ^ "\n");
+            if res = "error in z3 solver" then
+              (z3ErrorCount := !z3ErrorCount + 1;
+               z3ErrorIntervalSums := !z3ErrorIntervalSums +. interval)
+            else
+              (
+                intervalSums := !intervalSums +. interval
+              )
+          with
+          | _ -> 
+            let interval = Sys.time () -. startTime in
+            let intervalstr= string_of_float interval in
+            errorIntervalSums := !errorIntervalSums +. interval;
+            errorCount := !errorCount + 1;
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ (intervalstr ^ "\nError!!!\n"))
+        )
       | None ->
         Printf.printf "Can't read given file '%s'\n" name
     else
       ()
 
-(* let testdirlist = ["/newdisk/sygus-benchmarks/v2"] *)
-let testdirlist = [
-  "/newdisk/sygus-benchmarks/v2/euphony_space";
-  "/newdisk/sygus-benchmarks/v2/2017/CLIA_Track";
-  "/newdisk/sygus-benchmarks/v2/2018/CLIA_Track";
-  "/newdisk/sygus-benchmarks/v2/2017/General_Track";
-  "/newdisk/sygus-benchmarks/v2/2018/General_Track";
-  "/newdisk/sygus-benchmarks/v2/2017/Inv_Track";
-  "/newdisk/sygus-benchmarks/v2/2018/Inv_Track";
-  "/newdisk/sygus-benchmarks/v2/2017/PBE_BV_Track";
-  "/newdisk/sygus-benchmarks/v2/2018/PBE_BV_Track";
-  "/newdisk/sygus-benchmarks/v2/2017/PBE_Strings_Track";
-  "/newdisk/sygus-benchmarks/v2/2018/PBE_Strings_Track"
-]
-(* let testdirlist = ["/newdisk/sygus-benchmarks/v2/2018/Inv_Track"] *)
+
+
+let rec testAllFile_timeout name=
+  if Sys.is_directory name then
+    let rec testFiles filelist=
+      match filelist with
+      | [] -> ()
+      | h::t ->
+        testAllFile_timeout h;
+        testFiles t
+    in
+    testFiles (List.map (fun n -> String.concat "/" [name; n]) (Array.to_list (Sys.readdir name)))
+  else
+    let len = String.length name in
+    if String.sub name (len-3) 3 = ".sl" then
+      let rfs = Io.readfile name in
+      match rfs with
+      | Some(s) ->
+        (
+          let _ = if debug_log_switch then print_endline ("<DEBUG> start solve file \"" ^ name ^"\"\n") else () in
+          let startTime = Sys.time () in
+          let _ = runCount := !runCount + 1 in
+          try
+            let res = Solver.solve_timeout s searchTactic_timeout costFunction timeout in
+            let interval = Sys.time () -. startTime in
+            let intervalstr = string_of_float interval in
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ intervalstr ^ "\nResult:\n" ^ res ^ "\n");
+            if res = "error in z3 solver" then
+              (z3ErrorCount := !z3ErrorCount + 1;
+               z3ErrorIntervalSums := !z3ErrorIntervalSums +. interval)
+            else
+              (
+                intervalSums := !intervalSums +. interval
+              )
+          with
+          | Search.TimeOut ->
+            let interval = Sys.time () -. startTime in
+            let intervalstr = string_of_float interval in
+            timeoutIntervalSums := !timeoutIntervalSums +. interval;
+            timeoutCount := !timeoutCount + 1;
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ (intervalstr ^ "\nTimeOut!!!\n"))
+          | _ -> 
+            let interval = Sys.time () -. startTime in
+            let intervalstr= string_of_float interval in
+            errorIntervalSums := !errorIntervalSums +. interval;
+            errorCount := !errorCount + 1;
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ (intervalstr ^ "\nError!!!\n"))
+        )
+      | None ->
+        Printf.printf "Can't read given file '%s'\n" name
+    else
+      ()
+
+
+
 
 let rec testDirs testdirlist=
   match testdirlist with
   | [] -> ()
   | h::t ->
-    testAllFile h;
-    testDirs t
+    if search_with_timeout then (testAllFile_timeout h; testDirs t)
+    else (testAllFile h; testDirs t)
 
 let _ =
   print_newline();
-  testDirs testdirlist
+  testDirs testdirlist;
+  let normalRun = !runCount - !timeoutCount - !errorCount - !z3ErrorCount in
+  print_endline 
+    (
+      "\n\n<<Summary>>" ^
+      "\n\tTotalRun :\t" ^ string_of_int (!runCount) ^
+      "\n\tNoramlRun :\t" ^ string_of_int (normalRun) ^
+      "\n\tTimeout :\t" ^ string_of_int (!timeoutCount) ^
+      "\n\tZ3Error :\t" ^ string_of_int (!z3ErrorCount) ^
+      "\n\tSolverError :\t" ^ string_of_int (!errorCount) ^
+      "\n\n\tNoramlTotalTime :\t" ^ string_of_float (!intervalSums) ^
+      "\n\tTimeoutTotalTime: \t" ^ string_of_float (!timeoutIntervalSums) ^
+      "\n\tz3ErrorTotalTime: \t" ^ string_of_float (!z3ErrorIntervalSums) ^
+      "\n\terrorTotalTime: \t" ^ string_of_float (!errorIntervalSums) ^
+      "\n\n\tNoraml Avg. Time :\t" ^ string_of_float (!intervalSums /. float_of_int normalRun) ^
+      "\n\tTimeout Avg. Time: \t" ^ string_of_float (!timeoutIntervalSums /. float_of_int (!timeoutCount)) ^
+      "\n\tz3Error Avg. Time: \t" ^ string_of_float (!z3ErrorIntervalSums /. float_of_int (!z3ErrorCount)) ^
+      "\n\terror Avg. Time: \t" ^ string_of_float (!errorIntervalSums /. float_of_int (!errorCount)) ^
+      "\n\n\ttimeout_on: \t" ^ string_of_bool search_with_timeout ^
+      "\n\ttimeout_time: \t" ^ (string_of_float timeout)
+      ^ ("\n\n")
+    )
 

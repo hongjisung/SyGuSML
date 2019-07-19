@@ -5,6 +5,7 @@ open Ast
 open IntermediateTypes
 open BatDeque
 exception LoopOut
+exception TimeOut
 
 
 module WorklistBFS = struct
@@ -105,3 +106,49 @@ let searchByHeap
     | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
       let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
       synthFuncByHeap ast fname args sort term grammar nonterminals costFunc
+
+
+
+
+
+
+
+
+
+(* heap search timeout version *)
+
+let synthFuncByHeap_timeout
+  = fun ast fname args sort initTerm grammar nonterminals costFunc timeout ->
+    let starttime = Sys.time () in
+    let rec iter heap curtime =
+      if (curtime -. starttime) > timeout then raise TimeOut
+      else
+        (
+          if Heap.size heap = 0 then ""
+          else 
+            let Node(term,cost) = Heap.find_min heap in
+            let nontermcount = Terms.countTermHasNonTerminal term nonterminals in
+            if nontermcount = 0 then
+              match Verifier.verify (fname, args, sort, term) ast with
+              | VerificationSuccess(str) -> str
+              | VerificationFailure -> iter (Heap.del_min heap) (Sys.time ())
+            else
+              let nextterms = Candidates.makeNextBodyList term grammar in
+              let rec makeNodeList nextterms =
+                match nextterms with
+                | [] -> []
+                | h::t -> Node(h, costFunc h nonterminals) :: (makeNodeList t)
+              in 
+              let nextNodes = makeNodeList nextterms  in
+              let heap = List.fold_left Heap.insert (Heap.del_min heap) nextNodes in
+              iter heap (Sys.time ())
+        )
+    in iter (Heap.insert Heap.empty (Node(initTerm, 0))) (Sys.time ())
+
+let searchByHeap_timeout
+  = fun ast funcIngredients costFunc timeout ->
+    match funcIngredients with 
+    | [] -> print_endline "No function to synthesize"; ""
+    | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
+      let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
+      synthFuncByHeap_timeout ast fname args sort term grammar nonterminals costFunc timeout
