@@ -152,3 +152,42 @@ let searchByHeap_timeout
     | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
       let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
       synthFuncByHeap_timeout ast fname args sort term grammar nonterminals costFunc timeout
+
+
+
+(* bfs search timeout version *)
+
+let synthFuncByBFS_timeout
+  = fun ast fname args sort initTerm grammar nonterminals timeout ->
+    let starttime = Sys.time () in
+    let rec iter worklist curtime =
+      if (curtime -. starttime) > timeout then raise TimeOut
+      else
+        (
+          match WorklistBFS.choose worklist with
+          | None -> ""
+          | Some(term, worklist) ->
+            let countnonterm = Terms.countTermHasNonTerminal term nonterminals in
+            if countnonterm = 0 then
+              match Verifier.verify (fname, args, sort, term) ast with
+              | VerificationSuccess(str) -> str
+              | VerificationFailure -> iter worklist (Sys.time ())
+            else if countnonterm < 5 then
+              let nextterms = Candidates.makeNextBodyList term grammar in
+              if (WorklistBFS.size worklist + List.length nextterms) < 50000 then
+                let worklist = WorklistBFS.add_list nextterms worklist in
+                iter worklist (Sys.time ())
+              else
+                iter worklist (Sys.time ())
+            else
+              iter worklist (Sys.time ())
+        )
+    in iter (WorklistBFS.add initTerm WorklistBFS.empty) (Sys.time ())
+
+let searchByBFS_timeout
+  = fun ast funcIngredients costFunc timeout ->
+    match funcIngredients with 
+    | [] -> print_endline "No function to synthesize"; ""
+    | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
+      let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
+      synthFuncByBFS_timeout ast fname args sort term grammar nonterminals timeout
