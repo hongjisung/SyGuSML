@@ -76,3 +76,22 @@ let rec sortToTerm sort =
   | Sort(identifier) -> Identifier(identifier)
   | SortWithSorts(identifier, sortlist) ->
     IdentifierTerms(identifier, List.fold_right (fun x y -> (sortToTerm x)::y) sortlist [])
+
+
+
+(* listmax : temporary list utility *)
+let list_customFoldLeft f minimal_value = function 
+  | [] -> minimal_value
+  | h :: t -> List.fold_left (fun m x -> f m x) h t
+
+let rec getTermDepth base term =
+  match term with
+  | Identifier i -> 1
+  | Literal l -> 1
+  | IdentifierTerms (_, tl) ->
+    let ll = List.map (getTermDepth (base + 1)) tl in
+    list_customFoldLeft max 0 ll
+  | Exists (svlist, t) -> getTermDepth (base + 1) t
+  | Forall (svlist, t) -> getTermDepth (base + 1) t
+  | Let (vblist, t) -> getTermDepth (base + 1) t
+

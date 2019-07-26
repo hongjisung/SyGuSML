@@ -109,14 +109,6 @@ let searchByHeap
 
 
 
-
-
-
-
-
-
-(* heap search timeout version *)
-
 let synthFuncByHeap_timeout
   = fun ast fname args sort initTerm grammar nonterminals costFunc timeout ->
     let starttime = Sys.time () in
@@ -191,3 +183,17 @@ let searchByBFS_timeout
     | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
       let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
       synthFuncByBFS_timeout ast fname args sort term grammar nonterminals timeout
+
+
+
+
+
+let searchByHeap_timeout
+  = fun ast funcIngredients costFunc timeout ->
+    match funcIngredients with 
+    | [] -> print_endline "No function to synthesize"; ""
+    | (FuncIngredient(fname, args, sort, term, grammar))::otherfunclist ->
+      let nonterminals = TransitionMap.fold (fun a _ c -> a::c) grammar [] in
+      synthFuncByHeap_timeout ast fname args sort term grammar nonterminals costFunc timeout
+
+
