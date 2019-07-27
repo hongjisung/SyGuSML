@@ -1,3 +1,4 @@
+(* Sygus Langauge Standard Version 2.0 (2019/Jun/30) *)
 type cmd =
   | CheckSynth
   | Constraint of term
@@ -14,6 +15,7 @@ and smt_cmd =
   | DeclareSort of symbol * numeral
   | DefineFun of symbol * sorted_var list * sort * term
   | DefineSort of symbol * sort
+  | SetInfo of symbol * literal
   | SetLogic of symbol
   | SetOption of symbol * literal
 
@@ -86,3 +88,37 @@ and literal =
 
 and numeral = string
 and boolconst = string
+
+
+(*
+  TOPOLOGICAL SORTED AST TYPES LIST.
+
+  numeral
+  boolconst
+  literal
+  symbol
+  index
+  identifier
+  sort
+  bf_term
+  sorted_var
+  (
+    term
+    var_binding
+  )
+  feature
+  gterm
+  grouped_rule_list
+  grammar_def
+  dt_cons_dec
+  dt_dec
+  sort_decl
+  smt_cmd
+  cmd
+
+  * 'term' and 'var_binding' are mutually recursive.
+  * belows are self-recursivable types
+    - sort
+    - bf_term
+    - term
+*)
