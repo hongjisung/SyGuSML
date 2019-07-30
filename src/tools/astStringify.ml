@@ -147,3 +147,8 @@ let cmdStr =
       (optionStr grammar_defStr gdo)
     ] |> insertParen in
   cmdF csF ctF dvF icF sfF syfF syiF smt_cmdStr
+
+let astStr : Ast.cmd list -> string =
+  fun cmdlist ->
+  let strlist = List.map cmdStr cmdlist in
+  listStr strlist "\n"
