@@ -1,6 +1,8 @@
 open AstMatch
 
-(* Get Symbols from AST *)
+(****************************)
+(* Collect symbols from ast.*)
+(****************************)
 let getsymFold : ('a -> string list) -> 'a list -> string list =
   fun foldfunc li -> List.fold_left (fun l x -> (foldfunc x) @ l) [] li
 
@@ -105,3 +107,58 @@ let getsymCmdF =
   cmdF csF getsymTerm dvF icF sfF syfF syiF getsymSmtcmdF
 
 let getSymbols : Ast.cmd list -> string list = fun a -> getsymFold getsymCmdF a
+
+
+(*********************************)
+(* Generate unique symbol prefix *)
+(*********************************)
+
+module StringSet = Set.Make(struct type t = string let compare = Stdlib.compare end)
+
+(* "find_suitable_string_template" recieves generate_string function and generate_next function(iterating function) and returns "find_process". *)
+(* "find_process" uses "find_iter" to find appropriate string from "initial k" to satisfy the conditions. *)
+
+let find_suitable_string_template : ('a -> string) -> ('a -> 'a) -> (string -> bool) -> 'a -> string =
+  fun gen_str gen_next ->
+  let find_process : (string -> bool) -> 'a -> string = 
+    fun exists_in initial_k ->
+      let rec find_iter = 
+        fun k -> 
+          let candidate = gen_str k in
+          if not (exists_in candidate) then candidate else find_iter (gen_next k)
+      in
+      find_iter initial_k
+  in
+  find_process 
+
+let rec find_suitable_symbol_prefix_using_integer (prefix : string) (postfix : string) : (string -> bool) -> int -> string =
+  let gen_str n = prefix ^ (string_of_int n) ^ postfix in
+  let gen_next n = n + 1 in
+  find_suitable_string_template gen_str gen_next
+
+let gen_uniq_sym_prefix_using_integer_template : string -> string -> (string -> bool) -> string =
+  fun prefix postfix exists_in ->
+  if not (exists_in (prefix ^ postfix))
+  then
+    prefix ^ postfix
+  else
+    find_suitable_symbol_prefix_using_integer prefix postfix exists_in 0
+
+(* helper functions *)
+let gen_prefix_list : int -> string list -> string list = 
+  fun strlen strlist ->
+  let concat_operation acclist str =
+    try
+      (String.sub str 0 strlen) :: acclist
+    with Invalid_argument _ -> acclist
+  in List.fold_left (fun alist elem -> concat_operation alist elem) [] strlist
+
+let gen_prefix_set : int -> StringSet.t -> StringSet.t =
+  fun strlen strset ->
+  let add_operation accset str =
+    try
+      StringSet.add (String.sub str 0 strlen) accset
+    with Invalid_argument _ -> accset 
+  in
+  StringSet.fold (fun elem aset -> add_operation aset elem) strset StringSet.empty
+
