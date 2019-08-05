@@ -30,3 +30,24 @@ let isSat testcode =
       )
       else 
         false
+
+
+(*
+  <How to use Z3 solver in SyGuSML>
+
+  1. SyGuS problem can be divided into three parts. [constraints], [smt-lib commands], [synth-fun commands].
+  2. Modify [constraints] into [asserts] (and add 'forall')
+  3. Construct two (Z3.Expr.expr list) from [constraints] and [smt-lib commands].
+*)
+
+open Z3solverInn
+
+module SortedVarSet = Z3solverInn.SortedVarSet
+
+let make_Z3_string : Ast.cmd list -> string =
+  fun clist ->
+  let svset : SortedVarSet.t = collect_sorted_var clist in
+  let z3_likely_ast : Ast.cmd list = getZ3LikelyAst svset clist in
+  convert_Z3LikelyAst_to_Z3String z3_likely_ast
+
+let dummy = ()

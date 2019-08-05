@@ -8,7 +8,6 @@ open WellFormedCheckInn
 (*
   NOTICE:
     For now, "inv_constraint_well_formed_check" only checks,
-    - S's sort is Bool.
     - (n = n-pre) && (n = n-pre) && (n = n-post) && (2 * n = n-trans)
     (
       n       is the number of arguments S        requires,
@@ -49,7 +48,7 @@ let inv_constraint_well_formed_check
     | InvConstraint (sy1, sy2, sy3, sy4) -> sy1, sy2, sy3, sy4
     | _ -> invalid_arg "inv-constraint not found"
   ) in
-  let svl       = find_svlist_from_SynthInv cmdlist s |> opt_resolve_list in
+  let svl       = find_svlist_from_SynthInv true cmdlist s |> opt_resolve_list in
   let n_s       = List.length svl in
   let n_spre    = find_and_count_argnum_from_DefineFun cmdlist spre in
   let n_strans  = find_and_count_argnum_from_DefineFun cmdlist strans in

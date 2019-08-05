@@ -56,10 +56,10 @@ let sygusCmd_to_Z3LikelyCmdList : SortedVarSet.t -> cmd -> cmd list =
     | _ as c                        -> [c]
   )
 
-let getZ3LikelyCmd : SortedVarSet.t -> cmd list -> cmd list =
+let getZ3LikelyAst : SortedVarSet.t -> cmd list -> cmd list =
   fun varset clist ->
   let convertCmd = sygusCmd_to_Z3LikelyCmdList varset in 
-  List.fold_left (fun acc c -> (convertCmd c) @ acc) [] clist 
+  List.fold_left (fun acc c -> acc @ (convertCmd c)) [] clist 
 
 
 (*************************************************)
@@ -89,13 +89,13 @@ open AstStringify
 let smt_cmd_to_Z3String : smt_cmd -> string =
   fun sc ->
   match sc with
-  (* Undefined - desugared components *)
-  | DeclareDatatype _               -> ""
   (* default SyGuS string *)
   | DeclareDatatypes _
   | DeclareSort _
   | DefineFun _
   | DefineSort _                    -> smt_cmdStr sc
+  (* Undefined - desugared components *)
+  | DeclareDatatype _               -> ""
   (* Undefined components *)
   | SetInfo _
   | SetLogic _
@@ -116,3 +116,7 @@ let cmd_to_Z3String : cmd -> string =
   (* Undefined - desugared components *)
   | InvConstraint _
   | SynthInv _                      -> ""
+
+let convert_Z3LikelyAst_to_Z3String : cmd list -> string =
+  fun clist ->
+  List.fold_left (fun acc c -> acc ^ (cmd_to_Z3String c)) "" clist
