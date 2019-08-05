@@ -43,13 +43,15 @@ let sygusCmd_to_Z3LikelyCmdList : SortedVarSet.t -> cmd -> cmd list =
     | Constraint t -> [Constraint (Forall (svarlist, t))]
     (* I don't know how to interpret these commands well. *)
     | SmtCmd (SetInfo _)
-    | SmtCmd (SetLogic _)           -> []
+    | SmtCmd (SetLogic _)
+    | SmtCmd (SetOption _)          -> []
     (* This command should be ignored.*) 
     | SetFeature _                  -> []
     (* When meet desugared-expected-commands, raise UnexpectedCmdException. *)
     | InvConstraint _
     | SynthInv _
     | SmtCmd (DeclareDatatype _)    -> raise UnexpectedCmdException
+    (* SynthFun is not treated in this function, since 'declare-fun' is not in Sygus ast. *)
     (* For rest of all, preserve the exact command. *)
     | _ as c                        -> [c]
   )
@@ -58,3 +60,59 @@ let getZ3LikelyCmd : SortedVarSet.t -> cmd list -> cmd list =
   fun varset clist ->
   let convertCmd = sygusCmd_to_Z3LikelyCmdList varset in 
   List.fold_left (fun acc c -> (convertCmd c) @ acc) [] clist 
+
+
+(*************************************************)
+(* Make Z3 compatible string from Z3-likely Ast. *)
+(*************************************************)
+(*
+  "cmd_to_Z3String"
+  Change these components:
+  - CheckSynth
+  - Constraint
+  - DeclareVar
+  - SynthFun
+  Ignore this component:
+  - SetFeature
+  Undefined - desugared components:
+  - InvConstraint
+  - SynthInv
+  - SmtCmd DeclareDatatype
+  Undefined components:
+  - SmtCmd SetInfo
+  - SmtCmd SetLogic
+  - SmtCmd SetOption
+*)
+open AstStringify
+
+(* avoid using AstMatch module to avoid large weak-head-normal-form. *)
+let smt_cmd_to_Z3String : smt_cmd -> string =
+  fun sc ->
+  match sc with
+  (* Undefined - desugared components *)
+  | DeclareDatatype _               -> ""
+  (* default SyGuS string *)
+  | DeclareDatatypes _
+  | DeclareSort _
+  | DefineFun _
+  | DefineSort _                    -> smt_cmdStr sc
+  (* Undefined components *)
+  | SetInfo _
+  | SetLogic _
+  | SetOption _                     -> ""
+
+let cmd_to_Z3String : cmd -> string =
+  fun c ->
+  match c with
+  (* Change these components *)
+  | CheckSynth                      -> "(check-sat)"
+  | Constraint t                    -> sygusListStr [("assert"); (termStr t)] |> insertParen
+  | DeclareVar (sy, s)              -> sygusListStr [("declare-const"); (symsortStr sy s)] |> insertParen
+  | SynthFun (sy, svl, s, gdo)      -> sygusListStr [("declare-fun"); (sygusApplyListStr sorted_varStr svl |> insertParen); (sortStr s)] |> insertParen
+  (* smt_cmd *)
+  | SmtCmd sc                       -> smt_cmd_to_Z3String sc
+  (* ignore this component *)
+  | SetFeature _                    -> ""
+  (* Undefined - desugared components *)
+  | InvConstraint _
+  | SynthInv _                      -> ""
