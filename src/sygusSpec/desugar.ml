@@ -19,7 +19,7 @@ exception DesugarInvalidArgument
 (*********************************************)
 let desugar_declare_datatype_inner sy dtdec = DeclareDatatypes ([SortDeclaration (sy, "0"), dtdec])
 
-let desugar_declare_datatype : Ast.smt_cmd -> Ast.smt_cmd=
+let desugar_declare_datatype : Ast.smt_cmd -> Ast.smt_cmd =
   function
   | DeclareDatatype (sy, dtdec) -> desugar_declare_datatype_inner sy dtdec
   | _ -> raise DesugarInvalidArgument
@@ -28,6 +28,14 @@ let desugar_declare_datatype_opt : Ast.smt_cmd -> Ast.smt_cmd option =
   function
   | DeclareDatatype (sy, dtdec) -> Some (desugar_declare_datatype_inner sy dtdec)
   | _ -> None
+
+let desugar_declare_datatype_change_cmd : Ast.cmd -> Ast.cmd = function
+  | SmtCmd (DeclareDatatype (sy, dtdec)) -> SmtCmd (desugar_declare_datatype_inner sy dtdec)
+  | _ as c -> c
+
+let desugar_declare_datatype_change_cmdlist : Ast.cmd list -> Ast.cmd list =
+  fun clist ->
+  List.map desugar_declare_datatype_change_cmd clist
 
 
 (******************************)
@@ -44,6 +52,15 @@ let desugar_synth_inv_opt : Ast.cmd -> Ast.cmd option =
   function
   | SynthInv (sy, svl, gdo) -> Some (desugar_synth_inv_inner sy svl gdo)
   | _ -> None
+
+let desugar_synth_inv_change_cmd : Ast.cmd -> Ast.cmd = function
+  | SynthInv (sy, svl, gdo) -> desugar_synth_inv_inner sy svl gdo
+  | _ as c -> c
+
+let desugar_synth_inv_change_cmdlist : Ast.cmd list -> Ast.cmd list =
+  fun clist ->
+  List.map desugar_synth_inv_change_cmd clist
+
 
 
 (****************************************************************)
