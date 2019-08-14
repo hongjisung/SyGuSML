@@ -185,14 +185,29 @@ let synthed_fun_to_Z3String : Ast.smt_cmd -> string =
 (* 'synthed_fun_to_Z3String' calls 'List.map' in 'collect_args' for the same arguments. 
     If you want to evaluate the duplicated parts only once, use following fuctions.
 *)
-let synthed_fun_constraint_bake_head : Ast.smt_cmd -> Ast.cmd = function
-  | DefineFun (sy, svl, s, t) ->
+(*
+  Example Usage:
+    let synthFunVal : Ast.cmd = Ast.SynthFun (...)
+    let template = synthed_fun_constraint_bake_head synthFunVal
+    let synthedFun_to_Z3String : Ast.term -> string = 
+      cmd_to_Z3String (append_synthed_term_to_baked_head template)
+
+    let tmp_synthedValue : Ast.term = Ast.Literal (Numeral "42")
+    let tmp_solutionZ3String : string = synthedFun_to_Z3String tmp_synthedValue
+
+    let tmp2_synthedValue : Ast.term = Ast.Literal (BoolConst "true")
+    let tmp2_solutionZ3String : string = synthedFun_to_Z3String tmp2_synthedValue
+*)
+let synthed_fun_constraint_bake_head : Ast.cmd -> Ast.cmd = function
+  | SynthFun (sy, svl, _, _) ->
+    Constraint (Forall (svl, IdentifierTerms ((gen_id "="), [(make_applyTerm sy svl)])))
+  | SmtCmd( DefineFun (sy, svl, _, _)) ->
     Constraint (Forall (svl, IdentifierTerms ((gen_id "="), [(make_applyTerm sy svl)])))
   | _ -> raise UnexpectedSmtCmdException
 
 let append_synthed_term_to_baked_head : Ast.cmd -> Ast.term -> Ast.cmd = 
-  fun c t ->
+  fun c ->
   match c with
   | Constraint (Forall (svl, IdentifierTerms ((id_head), [id_tail_1]))) ->
-    Constraint (Forall (svl, IdentifierTerms ((id_head, [id_tail_1; t]))))
+    (fun t -> Constraint (Forall (svl, IdentifierTerms ((id_head, [id_tail_1; t])))))
   | _ -> raise UnexpectedCmdException
