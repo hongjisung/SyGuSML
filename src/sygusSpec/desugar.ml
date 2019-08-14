@@ -174,4 +174,83 @@ let desugar_inv_constraint : Ast.cmd list -> int -> Ast.cmd list =
       frontcmds @ all_desugared_parts @ rearcmds
     )
 
+(* find and desugar inv_constraint automatically. *)
+  (*
+    'desugar_inv_constraint_auto' desugars first-appearing 'inv_constraint'.
 
+    result_value : (Ast.cmd list * bool * bool) = 
+      (desugared_cmds_or_original_cmds, is_inv_constraint_exists_in_input, is_desugar_successful)
+  *)
+  (*
+    'desugar_inv_constraints_auto' desugars every 'inv_constraint's.
+    result_value : (Ast.cmd list * int * bool) =
+      (last_desugared_cmds, how_many_inv_constraint_desugar_performed, is_desugar_fully_successful_or_not_performed)
+  *)
+
+(* helper functions *)
+let rec find_inv_constraint_index_inner : Ast.cmd list -> int -> int =
+  fun clist n ->
+  match clist, n with
+  | [], _ -> (-1)
+  | (InvConstraint _) :: t, _ -> n + 1
+  | _ :: t, _ -> find_inv_constraint_index_inner t (n + 1)
+let find_inv_constraint_index : Ast.cmd list -> int option =
+  fun clist ->
+  let n = find_inv_constraint_index_inner clist (-1) in
+  if (n = (-1)) then None else Some n
+let is_inv_constraint : Ast.cmd -> int = function
+  | InvConstraint _ -> 1
+  | _ -> 0
+let count_inv_constraints : Ast.cmd list -> int =
+  fun clist->
+  List.fold_left (fun acc c -> (is_inv_constraint c) + acc) 0 clist
+
+let desugar_inv_constraint_auto : Ast.cmd list -> (Ast.cmd list * bool * bool) =
+  fun clist ->
+  match find_inv_constraint_index clist with
+  | None -> (clist, false, true)
+  | Some n -> 
+    (
+      try
+        (desugar_inv_constraint clist n, true, true)
+      with Invalid_argument _ -> (clist, true, false)
+    )
+
+let rec desugar_inv_constraints_auto_inner : Ast.cmd list -> int -> (Ast.cmd list * int * bool) = 
+  fun clist n ->
+  match desugar_inv_constraint_auto clist with
+  | (_, false, true) -> (clist, n, true)
+  | (_, true, false) -> (clist, n, false)
+  | (desugared_clist, true, true) -> desugar_inv_constraints_auto_inner desugared_clist (n + 1)
+  | _ -> raise DesugarInvalidArgument   (* CANNOT REACH HERE *)
+let desugar_inv_constraints_auto : Ast.cmd list -> (Ast.cmd list * int * bool) =
+  fun clist -> desugar_inv_constraints_auto_inner clist 0
+
+(* 'desugar_inv_constraints requires all inv_constraints are well-formed. *)
+let desugar_inv_constraints : Ast.cmd list -> Ast.cmd list =
+  fun clist -> 
+  match desugar_inv_constraints_auto clist with
+  | (desugared_clist, _, true) -> desugared_clist
+  | _ -> raise DesugarInvalidArgument
+
+(***************************)
+(* Desugar for convenience *)
+(***************************)
+(*
+  'simple_desugar_process' wrap-up following processes.
+  input value should be well-formed.
+
+  * "declare-datatype" to "declare-datatypes"
+    - desugar_declare_datatype_change_cmdlist : Ast.cmd list -> Ast.cmd list
+  * "synth-inv" to "synth-fun"
+    - desugar_synth_inv_change_cmdlist : Ast.cmd list -> Ast.cmd list
+  * "inv-constraint" to complex ("declare-var" list, "constraint" list)
+    - desugar_inv_constraints : Ast.cmd list -> Ast.cmd list
+*)
+
+let simple_desugar_process : Ast.cmd list -> Ast.cmd list =
+  fun clist ->
+  clist
+  |> desugar_declare_datatype_change_cmdlist
+  |> desugar_synth_inv_change_cmdlist
+  |> desugar_inv_constraints
