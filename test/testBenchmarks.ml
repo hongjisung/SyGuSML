@@ -14,7 +14,7 @@ let searchTactic_timeout = Search.searchByHeap_timeout
 let costFunction = Cost.basicCost
 let timeout : float = 10.0
 let testdirlist = [
-  "benchmarks"
+  "benchmarks/bvsmall"
 ]
 
 
@@ -26,6 +26,7 @@ let intervalSums = ref 0.0
 let timeoutIntervalSums = ref 0.0
 let z3ErrorIntervalSums = ref 0.0
 let errorIntervalSums = ref 0.0
+
 
 let isSatTest testcode =
   let cfg = [] in
@@ -191,12 +192,14 @@ let rec testAllFile_timeout name=
         (
           let _ = if debug_log_switch then print_endline ("<DEBUG> start solve file \"" ^ name ^"\"\n") else () in
           let startTime = Sys.time () in
+          let _ = Verifier.z3TimeMiddleAcc := 0.0 in
+          let _ = Verifier.z3CallCountMiddleAcc := 0 in
           let _ = runCount := !runCount + 1 in
           try
             let res = Solver.solve_timeout s searchTactic_timeout costFunction timeout in
             let interval = Sys.time () -. startTime in
             let intervalstr = string_of_float interval in
-            print_endline ("Filename: " ^ name ^ "\nTime: " ^ intervalstr ^ "\nResult:\n" ^ res ^ "\n");
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ intervalstr ^ "\nZ3CallCount: " ^ (string_of_int !Verifier.z3CallCountMiddleAcc) ^ "\nZ3Time: " ^ (string_of_float !Verifier.z3TimeMiddleAcc) ^ "\nResult:\n" ^ res ^ "\n");
             if res = "error in z3 solver" then
               (z3ErrorCount := !z3ErrorCount + 1;
                z3ErrorIntervalSums := !z3ErrorIntervalSums +. interval)
@@ -210,13 +213,13 @@ let rec testAllFile_timeout name=
             let intervalstr = string_of_float interval in
             timeoutIntervalSums := !timeoutIntervalSums +. interval;
             timeoutCount := !timeoutCount + 1;
-            print_endline ("Filename: " ^ name ^ "\nTime: " ^ (intervalstr ^ "\nTimeOut!!!\n"))
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ (intervalstr ^ "\nZ3CallCount: " ^ (string_of_int !Verifier.z3CallCountMiddleAcc) ^ "\nZ3Time: " ^ (string_of_float !Verifier.z3TimeMiddleAcc) ^ "\nTimeOut!!!\n"))
           | _ -> 
             let interval = Sys.time () -. startTime in
             let intervalstr= string_of_float interval in
             errorIntervalSums := !errorIntervalSums +. interval;
             errorCount := !errorCount + 1;
-            print_endline ("Filename: " ^ name ^ "\nTime: " ^ (intervalstr ^ "\nError!!!\n"))
+            print_endline ("Filename: " ^ name ^ "\nTime: " ^ (intervalstr ^ "\nZ3CallCount: " ^ (string_of_int !Verifier.z3CallCountMiddleAcc) ^ "\nZ3Time: " ^ (string_of_float !Verifier.z3TimeMiddleAcc) ^ "\nError!!!\n"))
         )
       | None ->
         Printf.printf "Can't read given file '%s'\n" name
@@ -254,7 +257,9 @@ let _ =
       "\n\tz3Error Avg. Time: \t" ^ string_of_float (!z3ErrorIntervalSums /. float_of_int (!z3ErrorCount)) ^
       "\n\terror Avg. Time: \t" ^ string_of_float (!errorIntervalSums /. float_of_int (!errorCount)) ^
       "\n\n\ttimeout_on: \t" ^ string_of_bool search_with_timeout ^
-      "\n\ttimeout_time: \t" ^ (string_of_float timeout)
+      "\n\ttimeout_time: \t" ^ (string_of_float timeout) ^
+      (*temporary print*) "\n\nZ3TimeAcc : " ^ (string_of_float !Verifier.z3TimeAcc) ^
+      "\nZ3CallCountAcc : " ^ (string_of_int !Verifier.z3CallCountAcc)
       ^ ("\n\n")
     )
 
