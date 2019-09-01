@@ -18,7 +18,7 @@ $ cat input/file/name | docker run -i --rm sygusml/sygusml:1.0
 
 ```Bash
 $ git clone https://github.com/hongjisung/SyGuSML && cd SyGuSML
-$ make install-deps
+$ make switch
 $ eval $(opam env)
 $ export LD_LIBRARY_PATH={/path/to/your/z3/lib/path}:$LD_LIBRARY_PATH
 $ make solvertest
